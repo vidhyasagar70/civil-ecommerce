@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Header from './components/AdminDashboard/Header';
 import Products from './ui/admin/Products'; // adjust import path accordingly
 import AdminDashboard from './ui/admin/Dashboard'; // if you have this
+import SignupPage from './pages/SignupPage';
 import './App.css';
 
 // Create a client
@@ -15,6 +16,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<div>Welcome to Home Page</div>} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="/products" element={<Products />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
