@@ -5,6 +5,7 @@ import FormSelect from '../../../components/Select/FormSelect';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css'
 import type { Product } from "../../../api/productApi";
+import Swal from "sweetalert2";
 
 const categories = [
     { value: "CAD Software", label: "CAD Software" },
@@ -85,17 +86,53 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const productData = {
-            ...form,
-            price1: Number(form.price1),
-            price3: form.price3 ? Number(form.price3) : undefined,
-            priceLifetime: form.priceLifetime ? Number(form.priceLifetime) : undefined,
-        };
+        // Show confirmation dialog
+        const result = await Swal.fire({
+            title: product ? 'Update Product?' : 'Create New Product?',
+            text: product
+                ? `Are you sure you want to update "${form.name}"?`
+                : `Are you sure you want to create "${form.name}"?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: product ? 'Yes, update it!' : 'Yes, create it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-xl',
+                confirmButton: 'px-4 py-2 rounded-lg',
+                cancelButton: 'px-4 py-2 rounded-lg'
+            }
+        });
 
-        onSave(productData);
+        if (result.isConfirmed) {
+            const productData = {
+                ...form,
+                price1: Number(form.price1),
+                price3: form.price3 ? Number(form.price3) : undefined,
+                priceLifetime: form.priceLifetime ? Number(form.priceLifetime) : undefined,
+            };
+
+            onSave(productData);
+
+            // Show success message
+            Swal.fire({
+                title: product ? 'Updated!' : 'Created!',
+                text: product
+                    ? `"${form.name}" has been successfully updated.`
+                    : `"${form.name}" has been successfully created.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
+        }
     };
 
     return (
