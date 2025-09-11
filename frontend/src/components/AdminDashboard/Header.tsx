@@ -3,6 +3,7 @@ import { Search, Phone, User, ShoppingCart, Menu, X, Shield, UserCheck, BarChart
 import AddProductModal from '../../ui/admin/products/AddProductModal';
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, type Product } from "../../api/productApi";
 import ProductViewModal from '../../ui/admin/products/ProductViewModal';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 // Header configuration - easily customizable
 const headerConfig = {
@@ -160,10 +161,39 @@ const AdminDashboard = () => {
     setModalOpen(true);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      deleteProductMutation.mutate(id);
-    }
+  const handleDeleteProduct = (id: string, productName: string) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete "${productName}". This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-xl',
+        confirmButton: 'px-4 py-2 rounded-lg',
+        cancelButton: 'px-4 py-2 rounded-lg'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteProductMutation.mutate(id);
+        
+        // Show success message
+        Swal.fire({
+          title: 'Deleted!',
+          text: `"${productName}" has been deleted.`,
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'rounded-xl'
+          }
+        });
+      }
+    });
   };
 
 
@@ -371,7 +401,7 @@ const AdminDashboard = () => {
                         </button>
                         <button
                           className="p-1 text-gray-500 hover:text-red-600"
-                          onClick={() => product._id && handleDeleteProduct(product._id)}
+                          onClick={() => product._id && handleDeleteProduct(product._id, product.name)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
