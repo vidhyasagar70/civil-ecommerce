@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Search, Phone, User, ShoppingCart, Menu, X, Shield, UserCheck, BarChart3, Package, Tag, Building2, Settings as settingsicon, Filter, List, Grid3X3, Plus, Eye, Edit, Trash2, TrendingUp, Users, Package2 } from 'lucide-react';
 import AddProductModal from '../../ui/admin/products/AddProductModal';
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, type Product } from "../../api/productApi";
+import ProductViewModal from '../../ui/admin/products/ProductViewModal';
 
 // Header configuration - easily customizable
 const headerConfig = {
@@ -38,7 +40,14 @@ const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [viewMode, setViewMode] = useState('list');
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [viewingProduct, setViewingProduct] = useState<Product | null>(null); // Add this line
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  const { data: products = [], isLoading, error } = useProducts();
+  const createProductMutation = useCreateProduct();
+  const updateProductMutation = useUpdateProduct();
+  const deleteProductMutation = useDeleteProduct();
   // Sample data
   const sampleProducts = [
     {
@@ -131,10 +140,30 @@ const AdminDashboard = () => {
     { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/orders' },
     { id: 'settings', label: 'Settings', icon: settingsicon, path: '/settings' }
   ];
-  const handleSaveProduct = (product: any) => {
+  const handleSaveProduct = (productData: any) => {
+    if (editingProduct && editingProduct._id) {
+      // Update existing product
+      updateProductMutation.mutate({
+        id: editingProduct._id,
+        updatedProduct: productData
+      });
+    } else {
+      // Create new product
+      createProductMutation.mutate(productData);
+    }
     setModalOpen(false);
-    // TODO: Add product saving logic here (update state/backend)
-    console.log("Saved product:", product);
+    setEditingProduct(null);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setModalOpen(true);
+  };
+
+  const handleDeleteProduct = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      deleteProductMutation.mutate(id);
+    }
   };
 
 
@@ -265,76 +294,105 @@ const AdminDashboard = () => {
               <Grid3X3 className="w-4 h-4" />
             </button>
           </div>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600" onClick={() => setModalOpen(true)}>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
+            onClick={() => {
+              setEditingProduct(null);
+              setModalOpen(true);
+            }}
+          >
             <Plus className="w-4 h-4" />
             <span>Add Product</span>
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Product</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Company</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Category</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Price (1-year)</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Rating</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {sampleProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <span className="text-lg">{product.image}</span>
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">{product.name}</div>
-                        <div className="text-sm text-gray-500">{product.version}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-gray-900">{product.company}</td>
-                  <td className="py-4 px-4">
-                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                      {product.category}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 font-medium">₹{product.price.toLocaleString()}</td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center space-x-1">
-                      <span className="font-medium">{product.rating}</span>
-                      <span className="text-gray-500">({product.reviews})</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center space-x-2">
-                      <button className="p-1 text-gray-500 hover:text-blue-600">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 text-gray-500 hover:text-green-600">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 text-gray-500 hover:text-red-600">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+      {isLoading && <div className="text-center py-8">Loading products...</div>}
+      {error && <div className="text-center py-8 text-red-500">Error loading products</div>}
+
+      {!isLoading && !error && (
+        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Product</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Company</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Category</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Price (1-year)</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {products.map((product) => (
+                  <tr key={product._id} className="hover:bg-gray-50">
+                    <td className="py-4 px-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                            
+                          />
+                          <div className="w-full h-full flex items-center justify-center hidden">
+                            <span className="text-lg">🎨</span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">{product.name}</div>
+                          <div className="text-sm text-gray-500">{product.version}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 text-gray-900">{product.company}</td>
+                    <td className="py-4 px-4">
+                      <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        {product.category}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 font-medium">₹{product.price1.toLocaleString()}</td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          className="p-1 text-gray-500 hover:text-blue-600"
+                          onClick={() => {
+                            setViewingProduct(product);
+                            setIsViewModalOpen(true);
+                          }}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          className="p-1 text-gray-500 hover:text-green-600"
+                          onClick={() => handleEditProduct(product)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          className="p-1 text-gray-500 hover:text-red-600"
+                          onClick={() => product._id && handleDeleteProduct(product._id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
+
       <AddProductModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingProduct(null);
+        }}
         onSave={handleSaveProduct}
+        product={editingProduct}
       />
     </div>
   );
@@ -385,6 +443,14 @@ const AdminDashboard = () => {
       <div className="px-6 py-8">
         {renderContent()}
       </div>
+      <ProductViewModal
+        product={viewingProduct}
+        isOpen={isViewModalOpen}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setViewingProduct(null);
+        }}
+      />
     </div>
   );
 };
