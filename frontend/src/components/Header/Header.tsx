@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Phone, User, ShoppingCart, Menu, X, Shield, UserCheck, BarChart3, Package, Tag, Building2, Settings as settingsicon, Filter, List, Grid3X3, Plus, Eye, Edit, Trash2, TrendingUp, Users, Package2 } from 'lucide-react';
+import AddProductModal from '../../ui/admin/products/AddProductModal';
 
 // Header configuration - easily customizable
 const headerConfig = {
@@ -36,6 +37,7 @@ const headerConfig = {
 const AdminDashboard = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [viewMode, setViewMode] = useState('list');
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Sample data
   const sampleProducts = [
@@ -129,6 +131,12 @@ const AdminDashboard = () => {
     { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/orders' },
     { id: 'settings', label: 'Settings', icon: settingsicon, path: '/settings' }
   ];
+  const handleSaveProduct = (product: any) => {
+    setModalOpen(false);
+    // TODO: Add product saving logic here (update state/backend)
+    console.log("Saved product:", product);
+  };
+
 
   // Dashboard Component
   const Dashboard = () => (
@@ -241,7 +249,7 @@ const AdminDashboard = () => {
             ))}
           </select>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <div className="flex items-center border border-gray-300 rounded-lg">
             <button
@@ -257,7 +265,7 @@ const AdminDashboard = () => {
               <Grid3X3 className="w-4 h-4" />
             </button>
           </div>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600" onClick={() => setModalOpen(true)}>
             <Plus className="w-4 h-4" />
             <span>Add Product</span>
           </button>
@@ -323,6 +331,11 @@ const AdminDashboard = () => {
           </table>
         </div>
       </div>
+      <AddProductModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveProduct}
+      />
     </div>
   );
 
@@ -346,7 +359,7 @@ const AdminDashboard = () => {
             <p className="text-gray-600">Manage your e-commerce platform and monitor performance.</p>
           </div>
         </div>
-        
+
         <div className="px-6">
           <nav className="flex space-x-8">
             {menuItems.map((item) => {
@@ -355,11 +368,10 @@ const AdminDashboard = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveMenu(item.id)}
-                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${
-                    activeMenu === item.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${activeMenu === item.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                    }`}
                 >
                   <IconComponent className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
@@ -396,22 +408,22 @@ const Header = () => {
     console.log('Search query:', searchQuery);
   };
 
-  const handleKeyPress = (e:any) => {
+  const handleKeyPress = (e: any) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
-  const handleNavigation = (href:any ) => {
+  const handleNavigation = (href: any) => {
     console.log('Navigate to:', href);
-    
+
     // Show admin dashboard when admin login is clicked
     if (href === '/admin-login') {
       setShowAdminDashboard(true);
     } else if (href === '/') {
       setShowAdminDashboard(false);
     }
-    
+
     setIsMenuOpen(false);
     setIsAuthDropdownOpen(false);
   };
@@ -609,7 +621,7 @@ const Header = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              
+
               {/* Auth Dropdown Menu */}
               {isAuthDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
@@ -745,8 +757,8 @@ const Header = () => {
 
       {/* Overlay to close auth dropdown when clicking outside */}
       {isAuthDropdownOpen && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => setIsAuthDropdownOpen(false)}
         />
       )}
