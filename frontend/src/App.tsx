@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Header from './components/AdminDashboard/Header';
-import Products from './ui/admin/Products'; // adjust import path accordingly
+import Header from './components/Header/Header';
+import Products from './ui/admin/products/Products'; // adjust import path accordingly
 import AdminDashboard from './ui/admin/Dashboard'; // if you have this
 import './App.css';
 
