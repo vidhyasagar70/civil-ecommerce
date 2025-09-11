@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FormInput from '../../../components/Input/FormInput';
 import FormTextarea from '../../../components/Textarea/FormTextarea';
 import FormSelect from '../../../components/Select/FormSelect';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css'
+import type { Product } from "../../../api/productApi";
 
 const categories = [
     { value: "CAD Software", label: "CAD Software" },
@@ -26,12 +27,13 @@ interface AddProductModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (form: any) => void;
+    product?: Product | null;
 }
 
 const AddProductModal: React.FC<AddProductModalProps> = ({
-    open, onClose, onSave,
+    open, onClose, onSave, product
 }) => {
-    const [form, setForm] = React.useState({
+    const [form, setForm] = useState({
         name: "",
         version: "",
         description: "",
@@ -43,21 +45,37 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         image: "",
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (open) {
-            setForm({
-                name: "",
-                version: "",
-                description: "",
-                category: categories[0].value,
-                company: companies[0].value,
-                price1: "",
-                price3: "",
-                priceLifetime: "",
-                image: "",
-            });
+            if (product) {
+                // Editing existing product
+                setForm({
+                    name: product.name || "",
+                    version: product.version || "",
+                    description: product.description || "",
+                    category: product.category || categories[0].value,
+                    company: product.company || companies[0].value,
+                    price1: product.price1?.toString() || "",
+                    price3: product.price3?.toString() || "",
+                    priceLifetime: product.priceLifetime?.toString() || "",
+                    image: product.image || "",
+                });
+            } else {
+                // Creating new product
+                setForm({
+                    name: "",
+                    version: "",
+                    description: "",
+                    category: categories[0].value,
+                    company: companies[0].value,
+                    price1: "",
+                    price3: "",
+                    priceLifetime: "",
+                    image: "",
+                });
+            }
         }
-    }, [open]);
+    }, [open, product]);
 
     if (!open) return null;
 
@@ -69,7 +87,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(form);
+
+        const productData = {
+            ...form,
+            price1: Number(form.price1),
+            price3: form.price3 ? Number(form.price3) : undefined,
+            priceLifetime: form.priceLifetime ? Number(form.priceLifetime) : undefined,
+        };
+
+        onSave(productData);
     };
 
     return (
@@ -82,7 +108,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 >
                     &times;
                 </button>
-                <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                    {product ? "Edit Product" : "Add New Product"}
+                </h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Basic Info */}
                     <div className="p-4 border rounded-lg">
@@ -157,6 +185,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 onChange={handleChange}
                                 placeholder="0"
                                 type="number"
+                                min="0"
+                                step="0.01"
                                 required
                             />
                             <FormInput
@@ -166,6 +196,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 onChange={handleChange}
                                 placeholder="0"
                                 type="number"
+                                min="0"
+                                step="0.01"
                             />
                             <FormInput
                                 label="Lifetime License"
@@ -174,6 +206,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 onChange={handleChange}
                                 placeholder="0"
                                 type="number"
+                                min="0"
+                                step="0.01"
                             />
                         </div>
                     </div>
@@ -196,7 +230,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             Cancel
                         </FormButton>
                         <FormButton type="submit" variant="primary">
-                            Save Product
+                            {product ? "Update Product" : "Save Product"}
                         </FormButton>
                     </div>
                 </form>
