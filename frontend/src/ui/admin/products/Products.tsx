@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Search, Plus, Eye, Edit, Trash2, List, Grid3X3 } from 'lucide-react';
-import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from "../../../api/productApi";
+import React, { useEffect, useState } from 'react';
+import { Search, Plus, Eye, Edit, Trash2, List, Grid3X3, X } from 'lucide-react';
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useCategories, useCompanies } from "../../../api/productApi";
 import type { Product } from '../../../types/index';
 import AddProductModal from './AddProductModal';
 import ProductViewModal from './ProductViewModal';
@@ -13,20 +13,35 @@ const Products: React.FC = () => {
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  const { data: products = [], isLoading, error } = useProducts();
+  // Search and filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [selectedCompany, setSelectedCompany] = useState('All Companies');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Build query params
+  const queryParams = {
+    search: debouncedSearch || undefined,
+    category: selectedCategory !== 'All Categories' ? selectedCategory : undefined,
+    company: selectedCompany !== 'All Companies' ? selectedCompany : undefined,
+  };
+  const { data: productsData, isLoading, error } = useProducts(queryParams);
+  const { data: categories = [] } = useCategories();
+  const { data: companies = [] } = useCompanies();
   const createProductMutation = useCreateProduct();
   const updateProductMutation = useUpdateProduct();
   const deleteProductMutation = useDeleteProduct();
 
-  const sampleCategories = [
-    { id: 1, name: "CAD Software", products: 4, icon: "📐" },
-    { id: 2, name: "BIM Software", products: 1, icon: "🏢" },
-    { id: 3, name: "Design Software", products: 3, icon: "🎨" },
-    { id: 4, name: "Rendering", products: 2, icon: "🖼️" },
-    { id: 5, name: "Simulation", products: 2, icon: "⚙️" },
-    { id: 6, name: "Structural Analysis", products: 1, icon: "🏗️" }
-  ];
-
+  const products = productsData?.products || [];
+  
   const handleSaveProduct = (productData: any) => {
     if (editingProduct && editingProduct._id) {
       updateProductMutation.mutate({
@@ -64,7 +79,7 @@ const Products: React.FC = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteProductMutation.mutate(id);
-        
+
         Swal.fire({
           title: 'Deleted!',
           text: `"${productName}" has been deleted.`,
@@ -79,24 +94,63 @@ const Products: React.FC = () => {
     });
   };
 
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('All Categories');
+    setSelectedCompany('All Companies');
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search products..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
             />
           </div>
-          <select className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+          >
             <option>All Categories</option>
-            {sampleCategories.map((cat) => (
-              <option key={cat.id}>{cat.name}</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
           </select>
+
+          <select
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+          >
+            <option>All Companies</option>
+            {companies.map((company) => (
+              <option key={company} value={company}>
+                {company}
+              </option>
+            ))}
+          </select>
+
+          {(searchTerm || selectedCategory !== 'All Categories' || selectedCompany !== 'All Companies') && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center space-x-1 text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-4 h-4" />
+              <span>Clear filters</span>
+            </button>
+          )}
         </div>
 
         <div className="flex items-center space-x-3">
