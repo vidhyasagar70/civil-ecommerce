@@ -4,7 +4,7 @@ import FormTextarea from '../../../components/Textarea/FormTextarea';
 import FormSelect from '../../../components/Select/FormSelect';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css'
-import type { Product } from "../../../api/productApi";
+import type { Product } from "../../../api/types/productTypes";
 import Swal from "sweetalert2";
 
 const categories = [

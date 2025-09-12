@@ -12,11 +12,63 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Get all products
+// Get all products with search and filter
 export const getProducts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const products: IProduct[] = await Product.find();
-    res.json(products);
+    const { search, category, company, page = 1, limit = 10 } = req.query;
+    
+    // Build filter object
+    const filter: any = {};
+    
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search as string, $options: 'i' } },
+        { description: { $regex: search as string, $options: 'i' } },
+        { version: { $regex: search as string, $options: 'i' } }
+      ];
+    }
+    
+    if (category) {
+      filter.category = { $regex: category as string, $options: 'i' };
+    }
+    
+    if (company) {
+      filter.company = { $regex: company as string, $options: 'i' };
+    }
+
+    const products: IProduct[] = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(Number(limit) * 1)
+      .skip((Number(page) - 1) * Number(limit));
+
+    const total = await Product.countDocuments(filter);
+
+    res.json({
+      products,
+      totalPages: Math.ceil(total / Number(limit)),
+      currentPage: Number(page),
+      total
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get unique categories
+export const getCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await Product.distinct('category');
+    res.json(categories);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get unique companies
+export const getCompanies = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const companies = await Product.distinct('company');
+    res.json(companies);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
