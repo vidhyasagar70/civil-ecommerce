@@ -3,6 +3,7 @@ import React from 'react';
 interface FormButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const FormButton: React.FC<FormButtonProps> = ({ children, variant = 'primary', ...props }) => {
