@@ -105,8 +105,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Show confirmation dialog
         const result = await Swal.fire({
             title: product ? 'Update Product?' : 'Create New Product?',
             text: product
@@ -154,7 +152,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50">
             <div className="relative bg-white rounded-xl shadow-lg max-w-xl w-full p-6 overflow-y-auto max-h-[90vh] modal-scroll-container">
                 <button
                     onClick={onClose}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Package, Building2, Tag, DollarSign, Calendar, FileText, Plus, Image as ImageIcon } from 'lucide-react';
 import type { ProductViewModalProps } from './ProductViewModal';
 import FormButton from '../../../components/Button/FormButton';
-
+import './AddProductModal.css';
 const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, onClose }) => {
   
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -25,7 +25,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50">
-      <div className="relative bg-white rounded-xl shadow-lg max-w-6xl w-full p-6 overflow-y-auto max-h-[90vh]">
+      <div className="relative bg-white rounded-xl shadow-lg max-w-6xl w-full p-6 overflow-y-auto max-h-[90vh] modal-scroll-container">
         <button
           onClick={onClose}
           className="absolute top-4 right-6 text-2xl font-bold text-gray-400 hover:text-gray-600 transition-colors"
