@@ -3,7 +3,7 @@ import { Search, Plus, Eye, Edit, Trash2, List, Grid3X3, X } from 'lucide-react'
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useCategories, useCompanies } from "../../../api/productApi";
 import type { Product } from '../../../types/index';
 import AddProductModal from './AddProductModal';
-import ProductViewModal from './ProductViewModal';
+import ProductViewModal from './ProductViewModal.tsx';
 import Swal from 'sweetalert2';
 
 const Products: React.FC = () => {
