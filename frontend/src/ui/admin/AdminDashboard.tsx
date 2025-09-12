@@ -3,6 +3,10 @@ import { BarChart3, Package, Tag, Building2, ShoppingCart, Settings as SettingsI
 import Dashboard from './Dashboard';
 import Products from './products/Products';
 import type { MenuItem } from '../../types';
+import Categories from './Categories';
+import Companies from './Companies';
+import Orders from './Orders';
+import Settings from './Settings';
 
 const AdminDashboard: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -22,8 +26,17 @@ const AdminDashboard: React.FC = () => {
         return <Dashboard />;
       case 'products':
         return <Products />;
+      case 'categories':
+        return <Categories />;
+      case 'companies':
+        return <Companies />;
+      case 'orders':
+        return <Orders />
+      case 'settings':
+        return <Settings />;
       default:
         return <Dashboard />;
+
     }
   };
 
@@ -45,11 +58,10 @@ const AdminDashboard: React.FC = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveMenu(item.id)}
-                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${
-                    activeMenu === item.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${activeMenu === item.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                    }`}
                 >
                   <IconComponent className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
