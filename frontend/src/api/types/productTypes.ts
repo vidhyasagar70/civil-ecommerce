@@ -9,6 +9,7 @@ export interface Product {
   price3?: number;
   priceLifetime?: number;
   image: string;
+  additionalImages?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
