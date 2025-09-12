@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Package, Building2, Tag, DollarSign, Calendar, FileText } from 'lucide-react';
-import type { Product } from "../../../api/productApi";
+import type { Product } from "../../../api/types/productTypes";
 
 interface ProductViewModalProps {
   product: Product | null;
