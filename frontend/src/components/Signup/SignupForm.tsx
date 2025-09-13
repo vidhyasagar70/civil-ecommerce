@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, Phone } from 'lucide-react';
-import FormInput from '../Input/FormInput';
+import SignupInput from '../Input/SignupInput';
 import PasswordInput from './PasswordInput';
 
 interface SignupFormData {
@@ -42,7 +42,7 @@ const SignupForm: React.FC = () => {
           <User className="text-gray-400 w-5 h-5" />
           Full Name
         </label>
-        <FormInput
+        <SignupInput
           name="fullName"
           type="text"
           value={formData.fullName}
@@ -58,7 +58,7 @@ const SignupForm: React.FC = () => {
           <Phone className="text-gray-400 w-5 h-5" />
           Phone Number
         </label>
-        <FormInput
+        <SignupInput
           name="phoneNumber"
           type="tel"
           value={formData.phoneNumber}
@@ -73,7 +73,7 @@ const SignupForm: React.FC = () => {
         <label className="block font-medium mb-1 text-gray-700">
           Email Address
         </label>
-        <FormInput
+        <SignupInput
           name="email"
           type="email"
           value={formData.email}
