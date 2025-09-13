@@ -19,7 +19,7 @@ const ProductDetail: React.FC = () => {
       price: product.price1,
       subtitle: 'Most Popular',
       style: selectedLicense === '1year' ? 'border-blue-600 ring-2 ring-blue-300' : 'border-gray-200',
-      savings: product.oldPrice1 
+      savings: product.oldPrice1 && product.price1
         ? `${Math.round((1 - product.price1 / product.oldPrice1) * 100)}%`
         : null,
       oldPrice: product.oldPrice1,
@@ -30,7 +30,7 @@ const ProductDetail: React.FC = () => {
       price: product.price3,
       subtitle: 'Save 30%',
       style: selectedLicense === '3year' ? 'border-blue-600 ring-2 ring-blue-300' : 'border-gray-200',
-      savings: product.oldPrice3
+      savings: product.oldPrice3 && product.price3
         ? `${Math.round((1 - product.price3 / product.oldPrice3) * 100)}%`
         : '30%',
       oldPrice: product.oldPrice3,
@@ -41,7 +41,7 @@ const ProductDetail: React.FC = () => {
       price: product.priceLifetime,
       subtitle: 'Best Value',
       style: selectedLicense === 'lifetime' ? 'border-green-600 ring-2 ring-green-300' : 'border-gray-200',
-      savings: product.oldPriceLifetime
+      savings: product.oldPriceLifetime && product.priceLifetime
         ? `${Math.round((1 - product.priceLifetime / product.oldPriceLifetime) * 100)}%`
         : '60%',
       oldPrice: product.oldPriceLifetime,
@@ -114,7 +114,7 @@ const ProductDetail: React.FC = () => {
                 >
                   <div className="font-semibold text-blue-700 text-lg">{opt.label}</div>
                   <div className="text-2xl font-bold text-gray-900 my-1">
-                    ₹{opt.price?.toLocaleString()}
+                    ₹{opt.price?.toLocaleString() ?? "0"}
                   </div>
                   <div className={`text-xs mt-1 ${opt.subtitle === 'Best Value' ? 'text-green-700 font-bold' : 'text-blue-600'}`}>{opt.subtitle}</div>
                   {opt.oldPrice && (

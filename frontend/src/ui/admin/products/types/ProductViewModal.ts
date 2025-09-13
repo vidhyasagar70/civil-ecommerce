@@ -1,4 +1,4 @@
-import type { Product } from "../../../api/types/productTypes";
+import type { Product } from "../../../../api/types/productTypes";
 export interface ProductViewModalProps {
   product: Product | null;
   isOpen: boolean;

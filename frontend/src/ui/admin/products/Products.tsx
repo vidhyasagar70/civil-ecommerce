@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Plus, Eye, Edit, Trash2, List, Grid3X3, X } from 'lucide-react';
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useCategories, useCompanies } from "../../../api/productApi";
-import type { Product } from '../../../types/index';
+import type { Product } from '../../../api/types/productTypes.ts';
 import AddProductModal from './AddProductModal';
 import ProductViewModal from './ProductViewModal.tsx';
 import Swal from 'sweetalert2';
@@ -224,7 +224,7 @@ const Products: React.FC = () => {
                         {product.category}
                       </span>
                     </td>
-                    <td className="py-4 px-4 font-medium">₹{product.price1.toLocaleString()}</td>
+                    <td className="py-4 px-4 font-medium">₹{product.price1?.toLocaleString()}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
                         <button

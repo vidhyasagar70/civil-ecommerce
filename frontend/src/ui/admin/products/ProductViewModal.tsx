@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Package, Building2, Tag, DollarSign, Calendar, FileText, Plus, Image as ImageIcon } from 'lucide-react';
-import type { ProductViewModalProps } from './ProductViewModal';
+import type { ProductViewModalProps } from './types/ProductViewModal';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css';
 const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, onClose }) => {
@@ -146,7 +146,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
               <div className="space-y-3">
                 <div>
                   <span className="text-sm font-medium text-gray-600">1-Year License</span>
-                  <p className="text-gray-900">₹{product.price1.toLocaleString()}</p>
+                  <p className="text-gray-900">₹{product.price1?.toLocaleString()}</p>
                 </div>
                 {product.price3 && (
                   <div>
