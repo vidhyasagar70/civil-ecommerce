@@ -6,7 +6,7 @@ interface Option {
 }
 
 interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label: string;
+  label?: string;
   required?: boolean;
   options: Option[];
 }

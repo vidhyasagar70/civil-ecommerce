@@ -5,6 +5,9 @@ import Products from './ui/admin/products/Products'; // adjust import path accor
 import AdminDashboard from './ui/admin/Dashboard'; // if you have this
 import './App.css';
 import { Orders, Settings, Categories, Companies, Dashboard } from './ui/admin';
+import CategoryListing from './pages/CategoryListing';
+import CompanyListing from './pages/CompanyListing';
+import ProductDetail from './pages/ProductDetail';
 
 
 // Create a client
@@ -24,7 +27,9 @@ function App() {
           <Route path='/admin/categories' element={<Categories />} />
           <Route path='/admin/companies' element={<Companies />} />
           <Route path='/admin/dashboard' element={<Dashboard />} />
-          
+          <Route path="/software" element={<CategoryListing />} />
+          <Route path="/company/:company" element={<CompanyListing />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
         </Routes>
       </Router>
     </QueryClientProvider>
