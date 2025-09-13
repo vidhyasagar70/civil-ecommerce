@@ -22,35 +22,55 @@ const Header: React.FC = () => {
   const { data: categories = [] } = useCategories();
   const { data: companies = [] } = useCompanies();
 
-  // Category options for dropdown
-  const categoryOptions = categories.map((category: string) => ({
-    value: category,
-    label: category
-  }));
+  // Category options for dropdown with placeholder
+  const categoryOptions = [
+    { value: '', label: 'All Categories' },
+    ...categories.map((category: string) => ({
+      value: category,
+      label: category
+    }))
+  ];
 
-  // Company options for dropdown
-  const companyOptions = companies.map((company: string) => ({
-    value: company,
-    label: company
-  }));
+  // Company options for dropdown with placeholder
+  const companyOptions = [
+    { value: '', label: 'All Brands' },
+    ...companies.map((company: string) => ({
+      value: company,
+      label: company
+    }))
+  ];
 
   // Dropdown change handlers
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(e.target.value);
-    navigate(`/software?category=${encodeURIComponent(e.target.value)}`);
+    const categoryValue = e.target.value;
+    setSelectedCategory(categoryValue);
+    
+    if (categoryValue) {
+      navigate(`/software?category=${encodeURIComponent(categoryValue)}`);
+    } else {
+      navigate('/software');
+    }
   };
 
   const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCompany(e.target.value);
-    navigate(`/company/${encodeURIComponent(e.target.value)}`);
+    const companyValue = e.target.value;
+    setSelectedCompany(companyValue);
+    
+    if (companyValue) {
+      navigate(`/company/${encodeURIComponent(companyValue)}`);
+    } else {
+      navigate('/companies');
+    }
   };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
 
   const handleSearch = () => {
-    console.log('Search query:', searchQuery);
-    navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+    if (searchQuery.trim()) {
+      console.log('Search query:', searchQuery);
+      navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -180,32 +200,33 @@ const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Center section */}
+          {/* Center section - Desktop */}
           <div className="flex-1 flex items-center justify-center px-4 lg:px-8">
-            {/* Category and Company Dropdowns */}
-            <div className="hidden md:flex items-center space-x-4 mr-4">
-              <div className="min-w-[160px]">
+            {/* Category and Company Dropdowns - Desktop Only */}
+            <div className="hidden lg:flex items-center space-x-3 mr-6">
+              <div className="min-w-[140px] max-w-[180px]">
                 <FormSelect
-                  
                   options={categoryOptions}
                   value={selectedCategory}
                   onChange={handleCategoryChange}
+                  className="text-sm"
                 />
               </div>
-              <div className="min-w-[160px]">
+              <div className="min-w-[140px] max-w-[180px]">
                 <FormSelect
-                  
                   options={companyOptions}
                   value={selectedCompany}
                   onChange={handleCompanyChange}
+                  className="text-sm"
                 />
               </div>
             </div>
             
+            {/* Desktop Navigation */}
             <DesktopNavigation onNavigate={handleNavigation} />
 
-            {/* Search Bar */}
-            <div className="hidden md:flex flex-1 max-w-xs lg:max-w-md xl:max-w-lg">
+            {/* Search Bar - Desktop */}
+            <div className="hidden md:flex flex-1 max-w-xs lg:max-w-md xl:max-w-lg ml-4">
               <div className="relative w-full">
                 <input
                   type="text"
@@ -227,29 +248,29 @@ const Header: React.FC = () => {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
-            {/* Contact info */}
-            {/* <div className="hidden xl:flex items-center space-x-2 text-gray-700">
+            {/* Contact info - Desktop */}
+            <div className="hidden xl:flex items-center space-x-2 text-gray-700">
               <Phone className="w-4 h-4" />
               <span className="text-sm whitespace-nowrap">Need help? Call us:</span>
               <a
-                href={headerConfig.contact.phoneHref}
+                href={headerConfig.contact?.phoneHref || '#'}
                 className="font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap"
               >
-                {headerConfig.contact.phone}
+                {headerConfig.contact?.phone || 'Contact Us'}
               </a>
             </div>
 
             <div className="hidden lg:flex xl:hidden items-center space-x-2 text-gray-700">
               <Phone className="w-4 h-4" />
               <a
-                href={headerConfig.contact.phoneHref}
+                href={headerConfig.contact?.phoneHref || '#'}
                 className="font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
               >
-                {headerConfig.contact.phone}
+                {headerConfig.contact?.phone || 'Contact'}
               </a>
-            </div> */}
+            </div>
 
-            {/* Auth Dropdown */}
+            {/* Auth Dropdown - Desktop */}
             <div className="hidden sm:block relative">
               <button
                 onClick={toggleAuthDropdown}
@@ -300,9 +321,10 @@ const Header: React.FC = () => {
         onSearchChange={setSearchQuery}
         onSearchKeyPress={handleKeyPress}
         onNavigate={handleNavigation}
-        // Pass category and company options to mobile menu if needed
         categoryOptions={categoryOptions}
         companyOptions={companyOptions}
+        selectedCategory={selectedCategory}
+        selectedCompany={selectedCompany}
         onCategoryChange={handleCategoryChange}
         onCompanyChange={handleCompanyChange}
       />

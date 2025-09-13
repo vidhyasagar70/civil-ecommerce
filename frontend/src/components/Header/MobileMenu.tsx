@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, Phone, UserCheck, Shield, X } from 'lucide-react';
+import { Search, Phone, UserCheck, Shield, Filter, ChevronDown } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
+import FormSelect from '../Select/FormSelect';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface MobileMenuProps {
   onNavigate: (href: string) => void;
   categoryOptions: { value: string; label: string }[];
   companyOptions: { value: string; label: string }[];
+  selectedCategory: string;
+  selectedCompany: string;
   onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onCompanyChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
@@ -23,15 +26,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   onSearch,
   onSearchChange,
   onSearchKeyPress,
-  onNavigate
+  onNavigate,
+  categoryOptions,
+  companyOptions,
+  selectedCategory,
+  selectedCompany,
+  onCategoryChange,
+  onCompanyChange
 }) => {
   if (!isOpen) return null;
 
   return (
     <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
-      <div className="px-2 sm:px-4 py-2 sm:py-4 space-y-1">
+      <div className="px-2 sm:px-4 py-2 sm:py-4 space-y-4">
         {/* Mobile search */}
-        <div className="relative mb-3 sm:mb-4">
+        <div className="relative">
           <input
             type="text"
             value={searchQuery}
@@ -46,6 +55,36 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           >
             <Search className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Mobile Filters Section */}
+        <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+          <div className="flex items-center space-x-2 text-gray-700 mb-2">
+            <Filter className="w-4 h-4" />
+            <span className="text-sm font-medium">Filter Options</span>
+          </div>
+          
+          {/* Category Dropdown - Mobile */}
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-gray-700">Software Category</label>
+            <FormSelect
+              options={categoryOptions}
+              value={selectedCategory}
+              onChange={onCategoryChange}
+              className="w-full text-sm"
+            />
+          </div>
+
+          {/* Company/Brand Dropdown - Mobile */}
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-gray-700">Brand</label>
+            <FormSelect
+              options={companyOptions}
+              value={selectedCompany}
+              onChange={onCompanyChange}
+              className="w-full text-sm"
+            />
+          </div>
         </div>
 
         {/* Mobile navigation */}
@@ -82,20 +121,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
         </div>
 
         {/* Mobile contact */}
-        <div className="px-3 py-2 sm:py-3 border-t border-gray-200 mt-4">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 text-gray-700">
-            <div className="flex items-center space-x-2">
-              <Phone className="w-4 h-4" />
-              <span className="text-sm">Need help?</span>
+        {headerConfig.contact && (
+          <div className="px-3 py-2 sm:py-3 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 text-gray-700">
+              <div className="flex items-center space-x-2">
+                <Phone className="w-4 h-4" />
+                <span className="text-sm">Need help?</span>
+              </div>
+              <a
+                href={headerConfig.contact.phoneHref}
+                className="font-semibold text-blue-600 hover:text-blue-800 text-sm sm:text-base"
+              >
+                {headerConfig.contact.phone}
+              </a>
             </div>
-            <a
-              href={headerConfig.contact.phoneHref}
-              className="font-semibold text-blue-600 hover:text-blue-800 text-sm sm:text-base"
-            >
-              {headerConfig.contact.phone}
-            </a>
           </div>
-        </div>
+        )}
 
         {/* Mobile legal links */}
         <div className="pt-2 border-t border-gray-200">
