@@ -5,7 +5,7 @@ export interface Product {
   description: string;
   category: string;
   company: string;
-  price1: number | undefined;
+  price1?: number | undefined;
   price3?: number | undefined;
   priceLifetime?: number | undefined;
   oldPrice1?: number;
