@@ -10,6 +10,10 @@ interface MobileMenuProps {
   onSearchChange: (query: string) => void;
   onSearchKeyPress: (e: React.KeyboardEvent) => void;
   onNavigate: (href: string) => void;
+  categoryOptions: { value: string; label: string }[];
+  companyOptions: { value: string; label: string }[];
+  onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onCompanyChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({

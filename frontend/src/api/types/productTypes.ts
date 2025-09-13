@@ -5,9 +5,15 @@ export interface Product {
   description: string;
   category: string;
   company: string;
-  price1: number;
-  price3?: number;
-  priceLifetime?: number;
+  price1: number | undefined;
+  price3?: number | undefined;
+  priceLifetime?: number | undefined;
+  oldPrice1?: number;
+  oldPrice3?: number;
+  oldPriceLifetime?: number;
+  rating?: number;
+  ratingCount?: number;
+  tags?: string[];
   image: string;
   additionalImages?: string[];
   createdAt?: string;
