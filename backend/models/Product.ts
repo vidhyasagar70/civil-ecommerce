@@ -10,6 +10,7 @@ export interface IProduct extends Document {
   price3?: number;
   priceLifetime?: number;
   image: string;
+  additionalImages?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const productSchema: Schema = new Schema(
     price3: { type: Number },
     priceLifetime: { type: Number },
     image: { type: String, required: true },
+    additionalImages: [{ type: String }],
   },
   { timestamps: true }
 );

@@ -4,7 +4,9 @@ import FormTextarea from '../../../components/Textarea/FormTextarea';
 import FormSelect from '../../../components/Select/FormSelect';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css'
-import type { Product } from "../../../api/productApi";
+import type { Product } from "../../../api/types/productTypes";
+import Swal from "sweetalert2";
+import { Plus, X } from "lucide-react";
 
 const categories = [
     { value: "CAD Software", label: "CAD Software" },
@@ -44,6 +46,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         priceLifetime: "",
         image: "",
     });
+    const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+    const [newAdditionalImage, setNewAdditionalImage] = useState('');
+
 
     useEffect(() => {
         if (open) {
@@ -79,27 +84,75 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
     if (!open) return null;
 
+    // Add this function
+    const handleAddAdditionalImage = () => {
+        if (newAdditionalImage.trim()) {
+            setAdditionalImages([...additionalImages, newAdditionalImage]);
+            setNewAdditionalImage('');
+        }
+    };
+
+    // Add this function to remove images
+    const handleRemoveAdditionalImage = (index: number) => {
+        setAdditionalImages(additionalImages.filter((_, i) => i !== index));
+    };
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const result = await Swal.fire({
+            title: product ? 'Update Product?' : 'Create New Product?',
+            text: product
+                ? `Are you sure you want to update "${form.name}"?`
+                : `Are you sure you want to create "${form.name}"?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: product ? 'Yes, update it!' : 'Yes, create it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-xl',
+                confirmButton: 'px-4 py-2 rounded-lg',
+                cancelButton: 'px-4 py-2 rounded-lg'
+            }
+        });
 
-        const productData = {
-            ...form,
-            price1: Number(form.price1),
-            price3: form.price3 ? Number(form.price3) : undefined,
-            priceLifetime: form.priceLifetime ? Number(form.priceLifetime) : undefined,
-        };
+        if (result.isConfirmed) {
+            const productData = {
+                ...form,
+                price1: Number(form.price1),
+                price3: form.price3 ? Number(form.price3) : undefined,
+                priceLifetime: form.priceLifetime ? Number(form.priceLifetime) : undefined,
+                additionalImages: additionalImages.length > 0 ? additionalImages : undefined
+            };
 
-        onSave(productData);
+            onSave(productData);
+
+            // Show success message
+            Swal.fire({
+                title: product ? 'Updated!' : 'Created!',
+                text: product
+                    ? `"${form.name}" has been successfully updated.`
+                    : `"${form.name}" has been successfully created.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
+        }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50">
             <div className="relative bg-white rounded-xl shadow-lg max-w-xl w-full p-6 overflow-y-auto max-h-[90vh] modal-scroll-container">
                 <button
                     onClick={onClose}
@@ -222,6 +275,42 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             placeholder="https://example.com/image.jpg"
                             required
                         />
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                        <label className="block font-medium mb-2">Additional Images</label>
+                        <div className="space-y-2">
+                            <div className="flex gap-2">
+                                <input
+                                    type="url"
+                                    value={newAdditionalImage}
+                                    onChange={(e) => setNewAdditionalImage(e.target.value)}
+                                    placeholder="https://example.com/additional-image.jpg"
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                />
+                                <FormButton
+                                    type="button"
+                                    variant="primary"
+                                    onClick={handleAddAdditionalImage}
+                                    disabled={!newAdditionalImage.trim()}
+                                >
+                                    <Plus className="w-4 h-4" />
+                                </FormButton>
+                            </div>
+
+                            {additionalImages.map((image, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                    <img src={image} alt={`Additional ${index + 1}`} className="w-8 h-8 object-cover rounded" />
+                                    <span className="flex-1 text-sm truncate">{image}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveAdditionalImage(index)}
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Actions */}
