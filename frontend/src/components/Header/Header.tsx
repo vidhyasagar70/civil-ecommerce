@@ -5,18 +5,52 @@ import DesktopNavigation from './DesktopNavigation';
 import AuthDropdown from './AuthDropdown';
 import MobileMenu from './MobileMenu';
 import AdminDashboard from '../../ui/admin/AdminDashboard';
+import FormSelect from '../Select/FormSelect'; // Reusable select component
+import { useCategories, useCompanies } from '../../api/productApi'; // Custom hooks
+import { useNavigate } from 'react-router-dom'; // If using react-router
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
+  const navigate = useNavigate();
+
+  // Fetch categories & companies from API
+  const { data: categories = [] } = useCategories();
+  const { data: companies = [] } = useCompanies();
+
+  // Category options for dropdown
+  const categoryOptions = categories.map((category: string) => ({
+    value: category,
+    label: category
+  }));
+
+  // Company options for dropdown
+  const companyOptions = companies.map((company: string) => ({
+    value: company,
+    label: company
+  }));
+
+  // Dropdown change handlers
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
+    navigate(`/software?category=${encodeURIComponent(e.target.value)}`);
+  };
+
+  const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCompany(e.target.value);
+    navigate(`/company/${encodeURIComponent(e.target.value)}`);
+  };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
 
   const handleSearch = () => {
     console.log('Search query:', searchQuery);
+    navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -31,6 +65,9 @@ const Header: React.FC = () => {
       setShowAdminDashboard(true);
     } else if (href === '/') {
       setShowAdminDashboard(false);
+      navigate('/');
+    } else {
+      navigate(href);
     }
     setIsMenuOpen(false);
     setIsAuthDropdownOpen(false);
@@ -144,7 +181,27 @@ const Header: React.FC = () => {
           </div>
 
           {/* Center section */}
-          <div className="flex-1 flex items-center justify-center px-2 lg:px-8">
+          <div className="flex-1 flex items-center justify-center px-4 lg:px-8">
+            {/* Category and Company Dropdowns */}
+            <div className="hidden md:flex items-center space-x-4 mr-4">
+              <div className="min-w-[160px]">
+                <FormSelect
+                  
+                  options={categoryOptions}
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                />
+              </div>
+              <div className="min-w-[160px]">
+                <FormSelect
+                  
+                  options={companyOptions}
+                  value={selectedCompany}
+                  onChange={handleCompanyChange}
+                />
+              </div>
+            </div>
+            
             <DesktopNavigation onNavigate={handleNavigation} />
 
             {/* Search Bar */}
@@ -171,7 +228,7 @@ const Header: React.FC = () => {
           {/* Right side actions */}
           <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
             {/* Contact info */}
-            <div className="hidden xl:flex items-center space-x-2 text-gray-700">
+            {/* <div className="hidden xl:flex items-center space-x-2 text-gray-700">
               <Phone className="w-4 h-4" />
               <span className="text-sm whitespace-nowrap">Need help? Call us:</span>
               <a
@@ -190,7 +247,7 @@ const Header: React.FC = () => {
               >
                 {headerConfig.contact.phone}
               </a>
-            </div>
+            </div> */}
 
             {/* Auth Dropdown */}
             <div className="hidden sm:block relative">
@@ -243,6 +300,11 @@ const Header: React.FC = () => {
         onSearchChange={setSearchQuery}
         onSearchKeyPress={handleKeyPress}
         onNavigate={handleNavigation}
+        // Pass category and company options to mobile menu if needed
+        categoryOptions={categoryOptions}
+        companyOptions={companyOptions}
+        onCategoryChange={handleCategoryChange}
+        onCompanyChange={handleCompanyChange}
       />
 
       {/* Overlay to close auth dropdown */}

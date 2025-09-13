@@ -29,6 +29,18 @@ export const useProducts = (params?: {
   });
 };
 
+export const useProductDetail = (id?: string) => {
+  return useQuery<Product | null>({
+    queryKey: ['product', id],
+    enabled: !!id, // Only run if id is present
+    queryFn: async () => {
+      if (!id) return null;
+      const { data } = await apiClient.get(`/${id}`);
+      return data;
+    },
+  });
+};
+
 export const useCategories = () => {
   return useQuery<string[]>({
     queryKey: ['categories'],

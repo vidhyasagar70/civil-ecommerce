@@ -5,15 +5,15 @@ export const headerConfig = {
   },
   navigation: [
     { label: "Home", href: "/" },
-    { label: "Products", href: "/products" },
-    { label: "Services", href: "/services" },
+    // { label: "Products", href: "/products" },
+    // { label: "Services", href: "/services" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" }
   ],
-  contact: {
-    phone: "790-355-4767",
-    phoneHref: "tel:+17903554767"
-  },
+  // contact: {
+  //   phone: "790-355-4767",
+  //   phoneHref: "tel:+17903554767"
+  // },
   legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms & Conditions", href: "/terms-conditions" },
