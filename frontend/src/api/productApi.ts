@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
+import type { Product } from './types/productTypes';
 // Use Vite's import.meta.env instead of process.env
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -8,30 +8,58 @@ const apiClient = axios.create({
   baseURL: `${apiBaseUrl}/api/products`,
 });
 
-export interface Product {
-  _id?: string;
-  name: string;
-  version: string;
-  description: string;
-  category: string;
-  company: string;
-  price1: number;
-  price3?: number;
-  priceLifetime?: number;
-  image: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export const useProducts = () => {
-  return useQuery<Product[]>({
-    queryKey: ['products'],
+export const useProducts = (params?: {
+  search?: string;
+  category?: string;
+  company?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  return useQuery<{
+    products: Product[];
+    totalPages: number;
+    currentPage: number;
+    total: number;
+  }>({
+    queryKey: ['products', params],
     queryFn: async () => {
-      const { data } = await apiClient.get('/');
+      const { data } = await apiClient.get('/', { params });
       return data;
     },
   });
 };
+
+export const useProductDetail = (id?: string) => {
+  return useQuery<Product | null>({
+    queryKey: ['product', id],
+    enabled: !!id, // Only run if id is present
+    queryFn: async () => {
+      if (!id) return null;
+      const { data } = await apiClient.get(`/${id}`);
+      return data;
+    },
+  });
+};
+
+export const useCategories = () => {
+  return useQuery<string[]>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data } = await apiClient.get('/categories');
+      return data;
+    },
+  });
+}
+
+export const useCompanies = () => {
+  return useQuery<string[]>({
+    queryKey: ['companies'],
+    queryFn: async () => {
+      const { data } = await apiClient.get('/companies');
+      return data;
+    },
+  });
+}
 
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();

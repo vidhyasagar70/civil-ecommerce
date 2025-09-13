@@ -1,28 +1,27 @@
 import React from 'react';
 import { TrendingUp, Users, Package2, BarChart3 } from 'lucide-react';
-
-// Sample data for categories and companies
-const sampleCategories = [
-  { id: 1, name: "CAD Software", products: 4, icon: "📐" },
-  { id: 2, name: "BIM Software", products: 1, icon: "🏢" },
-  { id: 3, name: "Design Software", products: 3, icon: "🎨" },
-  { id: 4, name: "Rendering", products: 2, icon: "🖼️" },
-  { id: 5, name: "Simulation", products: 2, icon: "⚙️" },
-  { id: 6, name: "Structural Analysis", products: 1, icon: "🏗️" }
-];
-
-const sampleCompanies = [
-  { id: 1, name: "Autodesk", products: 4 },
-  { id: 2, name: "Microsoft", products: 3 },
-  { id: 3, name: "Trimble", products: 2 },
-  { id: 4, name: "Adobe", products: 2 },
-  { id: 5, name: "ANSYS", products: 1 }
-];
+import type { Category, Company } from '../../types';
 
 const Dashboard: React.FC = () => {
+  const sampleCategories: Category[] = [
+    { id: 1, name: "CAD Software", products: 4, icon: "📐" },
+    { id: 2, name: "BIM Software", products: 1, icon: "🏢" },
+    { id: 3, name: "Design Software", products: 3, icon: "🎨" },
+    { id: 4, name: "Rendering", products: 2, icon: "🖼️" },
+    { id: 5, name: "Simulation", products: 2, icon: "⚙️" },
+    { id: 6, name: "Structural Analysis", products: 1, icon: "🏗️" }
+  ];
+
+  const sampleCompanies: Company[] = [
+    { id: 1, name: "Autodesk", products: 4 },
+    { id: 2, name: "Microsoft", products: 3 },
+    { id: 3, name: "Trimble", products: 2 },
+    { id: 4, name: "Adobe", products: 2 },
+    { id: 5, name: "ANSYS", products: 1 }
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex items-center justify-between">
@@ -80,7 +79,6 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Categories and Companies */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Product Categories</h3>
