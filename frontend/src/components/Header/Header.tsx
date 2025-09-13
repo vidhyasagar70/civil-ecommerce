@@ -63,21 +63,19 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-            <div className="flex items-center justify-between py-2 sm:py-4">
+          <div className="w-full">
+            <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
+              {/* Logo flush left */}
               <div className="flex items-center flex-shrink-0">
                 <button
                   onClick={() => handleNavigation(headerConfig.logo.href)}
-                  className="flex items-center space-x-1 sm:space-x-2"
+                  className="flex items-center"
                 >
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-400 to-pink-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm sm:text-lg">WF</span>
-                  </div>
-                  <span className="text-lg sm:text-2xl font-bold">
-                    <span className="bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">
-                      {headerConfig.logo.text}
-                    </span>
-                  </span>
+                  <img
+                    src="/logo1.png"
+                    alt="Logo"
+                    className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
+                  />
                 </button>
               </div>
 
@@ -129,29 +127,26 @@ const Header: React.FC = () => {
       </div>
 
       {/* Main header content */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-        <div className="flex items-center justify-between py-2 sm:py-4">
-          {/* Logo */}
+      <div className="w-full">
+        <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
+          {/* Logo flush left */}
           <div className="flex items-center flex-shrink-0">
             <button
               onClick={() => handleNavigation(headerConfig.logo.href)}
-              className="flex items-center space-x-1 sm:space-x-2"
+              className="flex items-center"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-400 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm sm:text-lg">WF</span>
-              </div>
-              <span className="text-lg sm:text-2xl font-bold">
-                <span className="bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">
-                  {headerConfig.logo.text}
-                </span>
-              </span>
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
+              />
             </button>
           </div>
 
           {/* Center section */}
-          <div className="flex-1 flex items-center justify-center px-4 lg:px-8">
+          <div className="flex-1 flex items-center justify-center px-2 lg:px-8">
             <DesktopNavigation onNavigate={handleNavigation} />
-            
+
             {/* Search Bar */}
             <div className="hidden md:flex flex-1 max-w-xs lg:max-w-md xl:max-w-lg">
               <div className="relative w-full">
