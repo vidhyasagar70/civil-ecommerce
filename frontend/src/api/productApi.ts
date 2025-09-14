@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Product } from './types/productTypes';
 // Use Vite's import.meta.env instead of process.env
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5173';
 
 const apiClient = axios.create({
   baseURL: `${apiBaseUrl}/api/products`,
