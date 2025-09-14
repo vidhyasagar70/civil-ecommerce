@@ -8,7 +8,7 @@ interface AuthDropdownProps {
   onNavigate: (href: string) => void;
 }
 
-const AuthDropdown: React.FC<AuthDropdownProps> = ({ isOpen, onClose, onNavigate }) => {
+const AuthDropdown: React.FC<AuthDropdownProps> = ({ isOpen, onNavigate }) => {
   if (!isOpen) return null;
 
   return (

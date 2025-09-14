@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Phone, UserCheck, Shield, Filter, ChevronDown } from 'lucide-react';
+import { Search, Phone, UserCheck, Shield, Filter } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import FormSelect from '../Select/FormSelect';
 
@@ -22,7 +22,6 @@ interface MobileMenuProps {
 const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   searchQuery,
-  onClose,
   onSearch,
   onSearchChange,
   onSearchKeyPress,
