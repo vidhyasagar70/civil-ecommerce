@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { X, Package, Building2, Tag, DollarSign, Calendar, FileText, Plus, Image as ImageIcon } from 'lucide-react';
+import { X, Package, Building2, DollarSign, Calendar, Image as ImageIcon } from 'lucide-react';
 import type { ProductViewModalProps } from './types/ProductViewModal';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css';
 const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, onClose }) => {
-  
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   if (!isOpen || !product) return null;
   const allImages = [product.image, ...(product.additionalImages || [])].filter(Boolean);
@@ -17,7 +17,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
     });
   };
 
- 
+
 
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
@@ -37,8 +37,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
         <div className="flex items-center space-x-3 mb-6">
           <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
             {allImages[0] ? (
-              <img 
-                src={allImages[0]} 
+              <img
+                src={allImages[0]}
                 alt={product.name}
                 className="w-12 h-12 object-contain"
               />
@@ -58,8 +58,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
             {/* Main Image Display */}
             {allImages.length > 0 && (
               <div className="mb-4">
-                <img 
-                  src={allImages[selectedImageIndex]} 
+                <img
+                  src={allImages[selectedImageIndex]}
                   alt={`${product.name} - Image ${selectedImageIndex + 1}`}
                   className="w-full h-64 object-contain rounded-lg  bg-white"
                 />
@@ -72,14 +72,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
                   <button
                     key={index}
                     onClick={() => handleImageClick(index)}
-                    className={`p-1 border-2 rounded-lg transition-all ${
-                      selectedImageIndex === index 
-                        ? 'border-blue-500 ring-2 ring-blue-200' 
+                    className={`p-1 border-2 rounded-lg transition-all ${selectedImageIndex === index
+                        ? 'border-blue-500 ring-2 ring-blue-200'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
-                    <img 
-                      src={image} 
+                    <img
+                      src={image}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-16 object-cover rounded-md"
                     />
