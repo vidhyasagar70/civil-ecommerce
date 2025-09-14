@@ -29,7 +29,7 @@ export function useUser() {
         ...decoded,
         name: decoded.name || decoded.email.split("@")[0],
         picture: decoded.picture || "/default-avatar.png",
-        role: auth.role, // ✅ role stored from GoogleCallback
+        role: auth.role, 
       });
     } catch (err) {
       console.error("Invalid token:", err);
