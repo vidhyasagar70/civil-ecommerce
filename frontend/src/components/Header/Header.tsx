@@ -27,7 +27,8 @@ const Header: React.FC = () => {
       setUser({
         email: auth.email,
         role: auth.role,
-        fullName: auth.fullName
+        fullName: auth.fullName,
+        userId:auth.userId
       });
     }
   }, []);

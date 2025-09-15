@@ -1,30 +1,44 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveAuth } from '../../ui/utils/auth';
+import { getCurrentUser } from '../../api/auth';
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const handleGoogleAuthCallback = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
 
-    if (token) {
-      // Decode token to get user info (you might want to verify it properly)
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      
-      saveAuth({
-        token,
-        email: payload.email,
-        role: payload.role || 'user',
-        userId: payload.userId,
-        fullName: payload.fullName
-      });
+        if (token) {
+          // Save the token to localStorage temporarily
+          localStorage.setItem('token', token);
+          
+          // Fetch user data using the token
+          const userData = await getCurrentUser();
+          
+          // Save complete user data to localStorage
+          saveAuth({
+            token,
+            email: userData.email,
+            role: userData.role,
+            userId: userData.id,
+            fullName: userData.fullName
+          });
 
-      navigate('/');
-    } else {
-      navigate('/signin');
-    }
+          navigate('/');
+        } else {
+          navigate('/signin');
+        }
+      } catch (error) {
+        console.error('Auth callback failed:', error);
+        navigate('/signin');
+      }
+    };
+
+    handleGoogleAuthCallback();
   }, [navigate]);
 
   return (
