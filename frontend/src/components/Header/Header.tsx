@@ -9,6 +9,7 @@ import FormSelect from '../Select/FormSelect';
 import { useCategories, useCompanies } from '../../api/productApi';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, clearAuth, isAdmin } from '../../ui/utils/auth';
+import { useUser, useUserInvalidate } from '../../api/userQueries'; 
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,20 +19,21 @@ const Header: React.FC = () => {
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
-  const [user, setUser] = useState<any>(null);
+  const { data: user, isLoading: userLoading } = useUser();
+  const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const auth = getAuth();
-    if (auth) {
-      setUser({
-        email: auth.email,
-        role: auth.role,
-        fullName: auth.fullName,
-        userId:auth.userId
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   const auth = getAuth();
+  //   if (auth) {
+  //     setUser({
+  //       email: auth.email,
+  //       role: auth.role,
+  //       fullName: auth.fullName,
+  //       userId:auth.userId
+  //     });
+  //   }
+  // }, []);
 
   const { data: categories = [] } = useCategories();
   const { data: companies = [] } = useCompanies();
@@ -108,7 +110,8 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     clearAuth();
-    setUser(null);
+    // setUser(null);
+    invalidateUser();
     navigate('/');
     window.location.reload();
   };

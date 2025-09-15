@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveAuth } from '../../ui/utils/auth';
 import { getCurrentUser } from '../../api/auth';
-
+import { useUserInvalidate } from '../../api/userQueries';
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
+  const invalidateUser=useUserInvalidate();
 
   useEffect(() => {
     const handleGoogleAuthCallback = async () => {
@@ -27,6 +28,7 @@ export default function AuthCallbackPage() {
             userId: userData.id,
             fullName: userData.fullName
           });
+          invalidateUser();
 
           navigate('/');
         } else {
@@ -39,7 +41,7 @@ export default function AuthCallbackPage() {
     };
 
     handleGoogleAuthCallback();
-  }, [navigate]);
+  }, [navigate,invalidateUser]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
