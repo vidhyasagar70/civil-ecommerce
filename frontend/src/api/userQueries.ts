@@ -1,6 +1,5 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {  useQueryClient } from '@tanstack/react-query';
 import { useCurrentUser, useSignIn, useSignUp, useLogout } from './auth';
-import type { User } from './auth';
 
 // Keep this hook for backward compatibility
 export const useUser = () => {
