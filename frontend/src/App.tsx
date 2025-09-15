@@ -6,7 +6,7 @@ import AdminDashboard from './ui/admin/AdminDashboard';
 import SignupPage from './pages/auth/SignupPage';
 import SigninPage from './pages/auth/SigninPage';
 import AuthCallbackPage from './pages/auth/AuthCallbackPage';
-import ProfilePage from './pages/auth/ProfilePage';
+import ProfilePage from './ui/profile/ProfilePage';
 import './App.css';
 import { Orders, Settings, Categories, Companies, Dashboard } from './ui/admin';
 import CategoryListing from './pages/CategoryListing';
