@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
+import Swal from 'sweetalert2';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const api = axios.create({
@@ -67,7 +67,11 @@ export const authApi = {
 
   googleAuth: (): void => {
     window.location.href = `${API_BASE_URL}/api/auth/google`;
-  }
+  },
+  updateProfile: async (data: { fullName?: string; phoneNumber?: string }): Promise<User> => {
+    const response = await api.put('/profile', data);
+    return response.data;
+  },
 };
 
 // React Query hooks
@@ -140,10 +144,39 @@ export const useLogout = () => {
   });
 };
 
+// Add to auth.ts
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { fullName?: string; phoneNumber?: string }) =>
+      authApi.updateProfile(data),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['currentUser'], data);
+
+      // Show success message
+      Swal.fire({
+        title: 'Success!',
+        text: 'Your profile has been updated successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onError: (error: any) => {
+      // Show error message
+      Swal.fire({
+        title: 'Error!',
+        text: error.response?.data?.message || 'Failed to update profile.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+  });
+};
 // Optional: Hook for checking authentication status
 export const useAuth = () => {
   const { data: user, isLoading, error } = useCurrentUser();
-  
+
   return {
     user,
     isLoading,

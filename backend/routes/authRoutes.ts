@@ -5,7 +5,8 @@ import {
   login,
   googleCallback,
   getCurrentUser,
-  logout
+  logout, 
+  updateProfile
 } from '../controllers/authController';
 import { authenticate } from '../middlewares/auth';
 
@@ -30,5 +31,6 @@ router.get(
 // Protected routes
 router.get('/me', authenticate, getCurrentUser);
 router.post('/logout', authenticate, logout);
+router.put('/profile', authenticate, updateProfile);
 
 export default router;
