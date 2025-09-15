@@ -6,7 +6,7 @@ import InputField from '../../components/Input/SignupInput';
 import { signUp } from '../../api/auth';
 import { saveAuth } from '../../ui/utils/auth';
 import { useNavigate } from 'react-router-dom';
-
+import { useUserInvalidate } from '../../api/userQueries';
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: '',
@@ -19,6 +19,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +62,7 @@ export default function SignupPage() {
         userId: res.user.id,
         fullName: res.user.fullName
       });
-
+      invalidateUser();
       alert('✅ Registration successful!');
       navigate('/');
     } catch (err: any) {

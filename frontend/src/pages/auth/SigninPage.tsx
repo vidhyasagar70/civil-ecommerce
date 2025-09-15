@@ -7,7 +7,7 @@ import InputField from "../../components/Input/SignupInput";
 import { signIn } from "../../api/auth";
 import { saveAuth } from "../../ui/utils/auth";
 import { useNavigate } from "react-router-dom";
-
+import { useUserInvalidate } from "../../api/userQueries";
 export default function SigninPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,6 +15,7 @@ export default function SigninPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const invalidateUser = useUserInvalidate();
 
   // 🔹 Login handler
   async function handleLogin(email: string, password: string) {
@@ -29,6 +30,7 @@ export default function SigninPage() {
         userId: res.user.id,
         fullName: res.user.fullName
       });
+      invalidateUser();
 
       alert("✅ Login successful!");
       navigate("/");
