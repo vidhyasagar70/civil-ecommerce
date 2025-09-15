@@ -1,28 +1,40 @@
-import React, { useState } from 'react';
-import { Search, Phone, User, ShoppingCart, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Phone, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import DesktopNavigation from './DesktopNavigation';
 import AuthDropdown from './AuthDropdown';
 import MobileMenu from './MobileMenu';
 import AdminDashboard from '../../ui/admin/AdminDashboard';
-import FormSelect from '../Select/FormSelect'; // Reusable select component
-import { useCategories, useCompanies } from '../../api/productApi'; // Custom hooks
-import { useNavigate } from 'react-router-dom'; // If using react-router
+import FormSelect from '../Select/FormSelect';
+import { useCategories, useCompanies } from '../../api/productApi';
+import { useNavigate } from 'react-router-dom';
+import { getAuth, clearAuth, isAdmin } from '../../ui/utils/auth';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
+  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
-  // Fetch categories & companies from API
+  useEffect(() => {
+    const auth = getAuth();
+    if (auth) {
+      setUser({
+        email: auth.email,
+        role: auth.role,
+        fullName: auth.fullName
+      });
+    }
+  }, []);
+
   const { data: categories = [] } = useCategories();
   const { data: companies = [] } = useCompanies();
 
-  // Category options for dropdown with placeholder
   const categoryOptions = [
     { value: '', label: 'All Categories' },
     ...categories.map((category: string) => ({
@@ -31,7 +43,6 @@ const Header: React.FC = () => {
     }))
   ];
 
-  // Company options for dropdown with placeholder
   const companyOptions = [
     { value: '', label: 'All Brands' },
     ...companies.map((company: string) => ({
@@ -40,7 +51,6 @@ const Header: React.FC = () => {
     }))
   ];
 
-  // Dropdown change handlers
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const categoryValue = e.target.value;
     setSelectedCategory(categoryValue);
@@ -65,10 +75,10 @@ const Header: React.FC = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
+  const toggleUserDropdown = () => setIsUserDropdownOpen(!isUserDropdownOpen);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      console.log('Search query:', searchQuery);
       navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -80,17 +90,26 @@ const Header: React.FC = () => {
   };
 
   const handleNavigation = (href: string) => {
-    console.log('Navigate to:', href);
     if (href === '/admin-login') {
       setShowAdminDashboard(true);
     } else if (href === '/') {
       setShowAdminDashboard(false);
       navigate('/');
+    } else if (href === '/logout') {
+      handleLogout();
     } else {
       navigate(href);
     }
     setIsMenuOpen(false);
     setIsAuthDropdownOpen(false);
+    setIsUserDropdownOpen(false);
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    setUser(null);
+    navigate('/');
+    window.location.reload();
   };
 
   if (showAdminDashboard) {
@@ -122,7 +141,6 @@ const Header: React.FC = () => {
 
           <div className="w-full">
             <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
-              {/* Logo flush left */}
               <div className="flex items-center flex-shrink-0">
                 <button
                   onClick={() => handleNavigation(headerConfig.logo.href)}
@@ -270,24 +288,70 @@ const Header: React.FC = () => {
               </a>
             </div>
 
-            {/* Auth Dropdown - Desktop */}
-            <div className="hidden sm:block relative">
-              <button
-                onClick={toggleAuthDropdown}
-                className="flex items-center space-x-1 lg:space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 px-1 lg:px-2"
-              >
-                <User className="w-4 h-4 lg:w-5 lg:h-5" />
-                <span className="text-sm lg:text-base whitespace-nowrap">Sign In</span>
-                <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <AuthDropdown
-                isOpen={isAuthDropdownOpen}
-                onClose={() => setIsAuthDropdownOpen(false)}
-                onNavigate={handleNavigation}
-              />
-            </div>
+            {/* User dropdown or Auth dropdown */}
+            {user ? (
+              <div className="hidden sm:block relative">
+                <button
+                  onClick={toggleUserDropdown}
+                  className="flex items-center space-x-1 lg:space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 px-1 lg:px-2"
+                >
+                  <User className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="text-sm lg:text-base whitespace-nowrap">
+                    {user.fullName || user.email}
+                  </span>
+                  <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* User Dropdown */}
+                {isUserDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
+                    {isAdmin() && (
+                      <button
+                        onClick={() => handleNavigation('/admin-dashboard')}
+                        className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span>Admin Dashboard</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleNavigation('/profile')}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/logout')}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="hidden sm:block relative">
+                <button
+                  onClick={toggleAuthDropdown}
+                  className="flex items-center space-x-1 lg:space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 px-1 lg:px-2"
+                >
+                  <User className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="text-sm lg:text-base whitespace-nowrap">Sign In</span>
+                  <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <AuthDropdown
+                  isOpen={isAuthDropdownOpen}
+                  onClose={() => setIsAuthDropdownOpen(false)}
+                  onNavigate={handleNavigation}
+                />
+              </div>
+            )}
 
             {/* Cart */}
             <button
@@ -327,13 +391,18 @@ const Header: React.FC = () => {
         selectedCompany={selectedCompany}
         onCategoryChange={handleCategoryChange}
         onCompanyChange={handleCompanyChange}
+        user={user}
+        onLogout={handleLogout}
       />
 
-      {/* Overlay to close auth dropdown */}
-      {isAuthDropdownOpen && (
+      {/* Overlay to close dropdowns */}
+      {(isAuthDropdownOpen || isUserDropdownOpen) && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => setIsAuthDropdownOpen(false)}
+          onClick={() => {
+            setIsAuthDropdownOpen(false);
+            setIsUserDropdownOpen(false);
+          }}
         />
       )}
     </header>
