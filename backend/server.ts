@@ -8,7 +8,9 @@ import passport from "passport";
 import session from "express-session";
 
 import authRoutes from "./routes/authRoutes";
-import productRoutes from "./routes/productRoutes"; // Add product routes
+import productRoutes from "./routes/productRoutes";
+import userRoutes from "./routes/userRoutes";
+
 import "./config/passport"; 
 
 dotenv.config();
@@ -39,7 +41,8 @@ app.use(passport.session());
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes); // Add product routes
+app.use("/api/products", productRoutes); 
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 

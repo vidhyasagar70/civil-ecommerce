@@ -6,7 +6,8 @@ import {
   Tag,
   Building2,
   ShoppingCart,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Users
 } from 'lucide-react';
 import Dashboard from './Dashboard';
 import Products from './products/Products';
@@ -14,14 +15,16 @@ import Categories from './Categories';
 import Companies from './Companies';
 import Orders from './Orders';
 import Settings from './Settings';
+import UserManagement from './users/UserManagement';
 
-type MenuType = 'dashboard' | 'products' | 'categories' | 'companies' | 'orders' | 'settings';
+type MenuType = 'dashboard'|'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings';
 
 const AdminDashboard: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>('dashboard');
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'users', label: 'Users', icon: Users },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'categories', label: 'Categories', icon: Tag },
     { id: 'companies', label: 'Companies', icon: Building2 },
@@ -33,6 +36,8 @@ const AdminDashboard: React.FC = () => {
     switch (activeMenu) {
       case 'dashboard':
         return <Dashboard />;
+      case 'users':
+        return <UserManagement />;
       case 'products':
         return <Products />;
       case 'categories':
