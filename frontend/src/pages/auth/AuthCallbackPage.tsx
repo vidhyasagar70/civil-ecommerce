@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveAuth } from '../../ui/utils/auth';
+import { saveAuth } from '../../utils/auth';
 import { useCurrentUser } from '../../api/auth'; // Use the new hook
 import { useUserInvalidate } from '../../api/userQueries';
 
@@ -18,10 +18,10 @@ export default function AuthCallbackPage() {
         if (token) {
           // Save the token to localStorage
           localStorage.setItem('token', token);
-          
+
           // Use the TanStack Query hook to fetch user data
           const { data: userData } = await refetch();
-          
+
           if (userData) {
             // Save complete user data to localStorage
             saveAuth({
