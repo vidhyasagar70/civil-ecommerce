@@ -18,7 +18,7 @@ const Header: React.FC = () => {
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
-  const { data: user, isLoading: userLoading } = useUser();
+  const { data: user} = useUser();
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
 
