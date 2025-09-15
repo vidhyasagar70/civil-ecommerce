@@ -8,7 +8,7 @@ import AdminDashboard from '../../ui/admin/AdminDashboard';
 import FormSelect from '../Select/FormSelect';
 import { useCategories, useCompanies } from '../../api/productApi';
 import { useNavigate } from 'react-router-dom';
-import { clearAuth, isAdmin } from '../../ui/utils/auth';
+import { clearAuth, isAdmin } from '../../utils/auth';
 import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,21 +18,11 @@ const Header: React.FC = () => {
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
-  const { data: user} = useUser();
+  const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const auth = getAuth();
-  //   if (auth) {
-  //     setUser({
-  //       email: auth.email,
-  //       role: auth.role,
-  //       fullName: auth.fullName,
-  //       userId:auth.userId
-  //     });
-  //   }
-  // }, []);
+
 
   const { data: categories = [] } = useCategories();
   const { data: companies = [] } = useCompanies();
@@ -56,7 +46,7 @@ const Header: React.FC = () => {
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const categoryValue = e.target.value;
     setSelectedCategory(categoryValue);
-    
+
     if (categoryValue) {
       navigate(`/software?category=${encodeURIComponent(categoryValue)}`);
     } else {
@@ -67,7 +57,7 @@ const Header: React.FC = () => {
   const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const companyValue = e.target.value;
     setSelectedCompany(companyValue);
-    
+
     if (companyValue) {
       navigate(`/company/${encodeURIComponent(companyValue)}`);
     } else {
@@ -106,25 +96,25 @@ const Header: React.FC = () => {
     setIsAuthDropdownOpen(false);
     setIsUserDropdownOpen(false);
   };
-const logoutMutation = useLogout();
+  const logoutMutation = useLogout();
 
-const handleLogout = () => {
-  logoutMutation.mutate(undefined, {
-    onSuccess: () => {
-      clearAuth();
-      invalidateUser();
-      navigate('/');
-      window.location.reload();
-    },
-    onError: () => {
-      // Fallback if mutation fails
-      clearAuth();
-      invalidateUser();
-      navigate('/');
-      window.location.reload();
-    }
-  });
-};
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        clearAuth();
+        invalidateUser();
+        navigate('/');
+        window.location.reload();
+      },
+      onError: () => {
+        // Fallback if mutation fails
+        clearAuth();
+        invalidateUser();
+        navigate('/');
+        window.location.reload();
+      }
+    });
+  };
 
   if (showAdminDashboard) {
     return (
@@ -253,7 +243,7 @@ const handleLogout = () => {
                 />
               </div>
             </div>
-            
+
             {/* Desktop Navigation */}
             <DesktopNavigation onNavigate={handleNavigation} />
 
@@ -317,7 +307,7 @@ const handleLogout = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 {/* User Dropdown */}
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">

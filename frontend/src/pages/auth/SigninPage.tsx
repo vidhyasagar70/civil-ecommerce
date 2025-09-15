@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useSignIn, useUserInvalidate } from "../../api/userQueries";
-import { saveAuth } from "../../ui/utils/auth";
+import { saveAuth } from "../../utils/auth";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import GoogleButton from "../../components/Button/GoogleButton";
@@ -87,9 +87,8 @@ export default function SigninPage() {
           <GoogleButton
             text="Continue with Google"
             onClick={() => {
-              window.location.href = `${
-                import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-              }/api/auth/google`;
+              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+                }/api/auth/google`;
             }}
           />
 

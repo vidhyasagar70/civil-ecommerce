@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useSignUp, useUserInvalidate } from "../../api/userQueries";
-import { saveAuth } from "../../ui/utils/auth";
+import { saveAuth } from "../../utils/auth";
 import FormButton from "../../components/Button/FormButton";
-import FormInput  from "../../components/Input/FormInput";
+import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
 export default function SignupPage() {
   const [formData, setFormData] = useState({
