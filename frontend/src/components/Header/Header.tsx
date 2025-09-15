@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Search, Phone, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import DesktopNavigation from './DesktopNavigation';
@@ -8,9 +8,8 @@ import AdminDashboard from '../../ui/admin/AdminDashboard';
 import FormSelect from '../Select/FormSelect';
 import { useCategories, useCompanies } from '../../api/productApi';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, clearAuth, isAdmin } from '../../ui/utils/auth';
-import { useUser, useUserInvalidate } from '../../api/userQueries'; 
-
+import { clearAuth, isAdmin } from '../../ui/utils/auth';
+import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
@@ -107,14 +106,25 @@ const Header: React.FC = () => {
     setIsAuthDropdownOpen(false);
     setIsUserDropdownOpen(false);
   };
+const logoutMutation = useLogout();
 
-  const handleLogout = () => {
-    clearAuth();
-    // setUser(null);
-    invalidateUser();
-    navigate('/');
-    window.location.reload();
-  };
+const handleLogout = () => {
+  logoutMutation.mutate(undefined, {
+    onSuccess: () => {
+      clearAuth();
+      invalidateUser();
+      navigate('/');
+      window.location.reload();
+    },
+    onError: () => {
+      // Fallback if mutation fails
+      clearAuth();
+      invalidateUser();
+      navigate('/');
+      window.location.reload();
+    }
+  });
+};
 
   if (showAdminDashboard) {
     return (
