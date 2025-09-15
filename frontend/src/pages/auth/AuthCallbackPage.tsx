@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveAuth } from '../../ui/utils/auth';
-import { getCurrentUser } from '../../api/auth';
+import { useCurrentUser } from '../../api/auth'; // Use the new hook
 import { useUserInvalidate } from '../../api/userQueries';
+
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
-  const invalidateUser=useUserInvalidate();
+  const invalidateUser = useUserInvalidate();
+  const { refetch } = useCurrentUser(); // Use the hook to get user data
 
   useEffect(() => {
     const handleGoogleAuthCallback = async () => {
@@ -14,23 +16,26 @@ export default function AuthCallbackPage() {
         const token = urlParams.get('token');
 
         if (token) {
-          // Save the token to localStorage temporarily
+          // Save the token to localStorage
           localStorage.setItem('token', token);
           
-          // Fetch user data using the token
-          const userData = await getCurrentUser();
+          // Use the TanStack Query hook to fetch user data
+          const { data: userData } = await refetch();
           
-          // Save complete user data to localStorage
-          saveAuth({
-            token,
-            email: userData.email,
-            role: userData.role,
-            userId: userData.id,
-            fullName: userData.fullName
-          });
-          invalidateUser();
-
-          navigate('/');
+          if (userData) {
+            // Save complete user data to localStorage
+            saveAuth({
+              token,
+              email: userData.email,
+              role: userData.role,
+              userId: userData.id,
+              fullName: userData.fullName
+            });
+            invalidateUser();
+            navigate('/');
+          } else {
+            throw new Error('Failed to fetch user data');
+          }
         } else {
           navigate('/signin');
         }
@@ -41,7 +46,7 @@ export default function AuthCallbackPage() {
     };
 
     handleGoogleAuthCallback();
-  }, [navigate,invalidateUser]);
+  }, [navigate, invalidateUser, refetch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

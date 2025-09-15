@@ -1,174 +1,227 @@
-import React, { useState } from 'react';
-import PasswordInput from '../../components/Input/SignupInput';
-// import logo from '../../assets/logo.png';
-import FormButton from '../../components/Button/FormButton';
-import InputField from '../../components/Input/SignupInput';
-import { signUp } from '../../api/auth';
-import { saveAuth } from '../../ui/utils/auth';
-import { useNavigate } from 'react-router-dom';
-import { useUserInvalidate } from '../../api/userQueries';
+import { useState } from "react";
+import { Chrome } from "lucide-react";
+import PasswordInput from "../../components/Input/SignupInput";
+import FormButton from "../../components/Button/FormButton";
+import InputField from "../../components/Input/SignupInput";
+import { useNavigate, Link } from "react-router-dom";
+import { useSignUp, useUserInvalidate } from "../../api/userQueries";
+import { saveAuth } from "../../ui/utils/auth";
+
 export default function SignupPage() {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    phoneNumber: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+    phoneNumber: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const invalidateUser = useUserInvalidate();
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const invalidateUser = useUserInvalidate();
+  
+  // Use the new TanStack Query mutation
+  const signUpMutation = useSignUp();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const validateForm = () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return false;
+    }
+    
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return false;
+    }
+    
+    setError("");
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    
+    if (!validateForm()) {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const res = await signUp(
-        formData.email,
-        formData.password,
-        formData.fullName,
-        formData.phoneNumber
-      );
-
-      // Save everything in localStorage
-      saveAuth({
-        token: res.token,
-        email: res.user.email,
-        role: res.user.role,
-        userId: res.user.id,
-        fullName: res.user.fullName
-      });
-      invalidateUser();
-      alert('✅ Registration successful!');
-      navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Something went wrong');
-      console.error('Registration failed:', err);
-    } finally {
-      setLoading(false);
-    }
+    const { confirmPassword, ...signUpData } = formData;
+    
+    signUpMutation.mutate(
+      signUpData,
+      {
+        onSuccess: (data) => {
+          // Save everything in localStorage
+          saveAuth({
+            token: data.token,
+            email: data.user.email,
+            role: data.user.role,
+            userId: data.user.id,
+            fullName: data.user.fullName
+          });
+          invalidateUser();
+          
+          alert("✅ Signup successful! Welcome to our platform.");
+          navigate("/");
+        },
+        onError: (err: any) => {
+          setError(err.response?.data?.message || "Something went wrong during signup");
+          console.error("Signup failed:", err);
+        }
+      }
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md mx-auto">
-        {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
-            {/* <img src={logo} alt="Logo" className="h-8 w-8" />q */}
-          </div>
-        </div>
-
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8 md:py-12">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Account</h1>
-          <p className="text-gray-600 text-sm leading-relaxed">
-            Join thousands of engineers who trust our software solutions
+        <div className="py-6 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
+          <div className="bg-white p-3 rounded-2xl shadow-md">
+            {/* <img src={logo} alt="Logo" className="h-12 w-12" /> */}
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mt-4">Create Account</h1>
+          <p className="text-gray-800 mt-2 text-sm text-center">
+            Join us to access software licenses and downloads
           </p>
         </div>
 
-        {/* Error Message */}
-        {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
+        {/* Body */}
+        <div className="p-8">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-4">
+              {error}
+            </div>
+          )}
 
-        {/* Signup Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <InputField
-            label="Full Name"
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            placeholder="Enter your full name"
-            required
-          />
+          {/* Google Signup Button */}
+          <div className="space-y-4">
+            <button
+              type="button"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition duration-200"
+              onClick={() => {
+                window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/auth/google`;
+              }}
+            >
+              <Chrome className="w-5 h-5" /> Sign up with Google
+            </button>
+          </div>
 
-          <InputField
-            label="Email Address"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            required
-            autoComplete="email"
-          />
+          {/* Divider */}
+          <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="mx-4 text-gray-400 text-sm">Or sign up with email</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
 
-          <InputField
-            label="Phone Number"
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            placeholder="+1 (555) 123-4567"
-          />
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <InputField
+              label="Full Name"
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              placeholder="John Doe"
+              autoComplete="name"
+            />
 
-          <PasswordInput
-            label="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            showPassword={showPassword}
-            toggleShow={() => setShowPassword(!showPassword)}
-            placeholder="At least 6 characters"
-            required
-          />
+            <InputField
+              label="Email Address"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="you@example.com"
+              required
+              autoComplete="email"
+            />
 
-          <PasswordInput
-            label="Confirm Password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            showPassword={showConfirmPassword}
-            toggleShow={() => setShowConfirmPassword(!showConfirmPassword)}
-            placeholder="Confirm your password"
-            required
-          />
+            <InputField
+              label="Phone Number (Optional)"
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleInputChange}
+              placeholder="+1 (555) 123-4567"
+              autoComplete="tel"
+            />
 
-          <FormButton
-            type="submit"
-            disabled={loading}
-            variant="primary"
-            size="lg"
-            className="w-full mt-4"
-          >
-            {loading ? "Creating Account..." : "Create Account"}
-          </FormButton>
-        </form>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <PasswordInput
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                showPassword={showPassword}
+                toggleShow={() => setShowPassword(!showPassword)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
 
-        {/* Login Link */}
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <a
-            href="/signin"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Sign in
-          </a>
-        </p>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <PasswordInput
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                showPassword={showConfirmPassword}
+                toggleShow={() => setShowConfirmPassword(!showConfirmPassword)}
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+
+            <FormButton
+              type="submit"
+              disabled={signUpMutation.isPending}
+              variant="primary"
+              size="lg"
+              className="w-full mt-2"
+            >
+              {signUpMutation.isPending ? "Creating Account..." : "Create Account"}
+            </FormButton>
+          </form>
+
+          {/* Terms and Signin Link */}
+          <div className="mt-6 space-y-4">
+            <p className="text-xs text-gray-500 text-center">
+              By creating an account, you agree to our{" "}
+              <Link to="/terms" className="text-blue-600 hover:text-blue-800">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="text-blue-600 hover:text-blue-800">
+                Privacy Policy
+              </Link>
+            </p>
+
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/signin"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

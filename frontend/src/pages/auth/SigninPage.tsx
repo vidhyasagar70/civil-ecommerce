@@ -1,52 +1,50 @@
 import { useState } from "react";
-import { Chrome } from "lucide-react"; // Using Chrome icon as Google icon
+import { Chrome } from "lucide-react";
 import PasswordInput from "../../components/Input/SignupInput";
-// import logo from "../../assets/logo.png";
 import FormButton from "../../components/Button/FormButton";
 import InputField from "../../components/Input/SignupInput";
-import { signIn } from "../../api/auth";
-import { saveAuth } from "../../ui/utils/auth";
 import { useNavigate } from "react-router-dom";
-import { useUserInvalidate } from "../../api/userQueries";
+import { useSignIn, useUserInvalidate } from "../../api/userQueries"; // Updated import
+import { saveAuth } from "../../ui/utils/auth";
+
 export default function SigninPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const invalidateUser = useUserInvalidate();
-
-  // 🔹 Login handler
-  async function handleLogin(email: string, password: string) {
-    try {
-      const res = await signIn(email, password);
-
-      // Save everything in localStorage
-      saveAuth({
-        token: res.token,
-        email: res.user.email,
-        role: res.user.role,
-        userId: res.user.id,
-        fullName: res.user.fullName
-      });
-      invalidateUser();
-
-      alert("✅ Login successful!");
-      navigate("/");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong");
-      console.error("Login failed:", err);
-    }
-  }
+  
+  // Use the new TanStack Query mutation
+  const signInMutation = useSignIn();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-
-    await handleLogin(email, password);
-    setLoading(false);
+    
+    signInMutation.mutate(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          // Save everything in localStorage
+          saveAuth({
+            token: data.token,
+            email: data.user.email,
+            role: data.user.role,
+            userId: data.user.id,
+            fullName: data.user.fullName
+          });
+          invalidateUser();
+          
+          alert("✅ Login successful!");
+          navigate("/");
+        },
+        onError: (err: any) => {
+          setError(err.response?.data?.message || "Something went wrong");
+          console.error("Login failed:", err);
+        }
+      }
+    );
   };
 
   return (
@@ -109,12 +107,12 @@ export default function SigninPage() {
 
             <FormButton
               type="submit"
-              disabled={loading}
+              disabled={signInMutation.isPending}
               variant="primary"
               size="lg"
               className="w-full"
             >
-              {loading ? "Signing in..." : "Sign In to Your Account"}
+              {signInMutation.isPending ? "Signing in..." : "Sign In to Your Account"}
             </FormButton>
           </form>
 

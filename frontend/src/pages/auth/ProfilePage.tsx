@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { getAuth } from '../../ui/utils/auth';
-import { getCurrentUser } from '../../api/auth';
+import { useState, useEffect } from 'react';
+import { authApi } from '../../api/auth';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -9,7 +8,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await getCurrentUser();
+        const userData = await authApi.getCurrentUser();
         setUser(userData);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
