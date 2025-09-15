@@ -22,6 +22,8 @@ export interface User {
   fullName?: string;
   phoneNumber?: string;
   role: 'user' | 'admin';
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface AuthResponse {
