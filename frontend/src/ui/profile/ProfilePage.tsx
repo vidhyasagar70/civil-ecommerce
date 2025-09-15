@@ -175,9 +175,15 @@ export default function ProfilePage() {
                     <p className="text-gray-900 capitalize">{user?.role}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Member Since</label>
+                    <label className="text-sm font-medium text-gray-600">Created</label>
                     <p className="text-gray-900">
                       {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Modified</label>
+                    <p className="text-gray-900">
+                      {user?.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'N/A'}
                     </p>
                   </div>
                 </div>
