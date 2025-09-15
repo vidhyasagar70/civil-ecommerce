@@ -321,7 +321,7 @@ const handleLogout = () => {
                 {/* User Dropdown */}
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
-                    {isAdmin() && (
+                    {isAdmin(user) && (
                       <button
                         onClick={() => handleNavigation('/admin-dashboard')}
                         className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"

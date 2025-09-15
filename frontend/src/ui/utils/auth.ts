@@ -50,6 +50,12 @@ export const isAuthenticated = (): boolean => {
   return !!localStorage.getItem('token');
 };
 
-export const isAdmin = (): boolean => {
+export const isAdmin = (user?: any): boolean => {
+  // Check if user object is provided and has admin role
+  if (user && user.role === 'admin') {
+    return true;
+  }
+  
+  // Fallback to localStorage check
   return localStorage.getItem('role') === 'admin';
 };

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Header from './components/Header/Header';
 import Products from './ui/admin/products/Products';
-import AdminDashboard from './ui/admin/Dashboard';
+import AdminDashboard from './ui/admin/AdminDashboard';
 import SignupPage from './pages/auth/SignupPage';
 import SigninPage from './pages/auth/SigninPage';
 import AuthCallbackPage from './pages/auth/AuthCallbackPage';
@@ -55,7 +55,13 @@ function App() {
               <Products />
             </AuthGuard>
           } />
-          <Route path="/admin" element={
+          <Route path="/admin-dashboard" element={
+            <AuthGuard>
+              <AdminDashboard />
+            </AuthGuard>
+          } />
+
+          <Route path="/admin/*" element={
             <AuthGuard>
               <AdminDashboard />
             </AuthGuard>
