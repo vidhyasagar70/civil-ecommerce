@@ -7,7 +7,7 @@ import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import GoogleButton from "../../components/Button/GoogleButton";
 import PasswordInput from "../../components/Input/PasswordInput";
-
+import logo from "../../assets/logo.png"
 export default function SigninPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,7 +67,7 @@ export default function SigninPage() {
         {/* Header */}
         <div className="py-6 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
           <div className="bg-white p-3 rounded-2xl shadow-md">
-            <img src="/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
+            <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mt-4">Welcome Back</h1>
           <p className="text-gray-800 mt-2 text-sm text-center">
