@@ -3,21 +3,44 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useProducts } from '../api/productApi';
 // You may want to import your RatingStar component if you have one.
 
-const CategoryListing: React.FC = () => {
+interface CategoryListingProps {
+  limit?: number; // 👈 optional, only used on home page
+}
+
+const CategoryListing: React.FC<CategoryListingProps> = ({ limit }) => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const category = params.get("category") || "";
-  const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } = useProducts({ category });
-  const products = data.products || [];
+
+  const {data = { products: [], totalPages: 0, currentPage: 0, total: 0 },
+  } = useProducts({ category });
+
+  let products = data.products || [];
+
+  // 👉 If limit is passed (Home page), shuffle + slice
+  if (limit) {
+    products = [...products].sort(() => Math.random() - 0.5).slice(0, limit);
+  }
+
   const navigate = useNavigate();
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4">
-      <h1 className="text-3xl font-bold mb-1">{category}</h1>
-      <p className="text-lg text-gray-500 mb-4">
-        {products.length} product{products.length !== 1 && 's'} found
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+      {/* Only show heading & count if not limited */}
+      {!limit && (
+        <>
+          <h1 className="text-3xl font-bold mb-1">{category}</h1>
+          <p className="text-lg text-gray-500 mb-4">
+            {products.length} product{products.length !== 1 && "s"} found
+          </p>
+        </>
+      )}
+
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 ${
+          limit ? "lg:grid-cols-4" : "xl:grid-cols-3"
+        } gap-8`}
+      >
         {products.map((product: any) => (
           <div
             key={product._id}
@@ -47,7 +70,7 @@ const CategoryListing: React.FC = () => {
 
             {/* Name */}
             <h2 className="text-lg font-semibold mb-1">{product.name} {product.version && <span className="text-gray-500 font-normal">({product.version})</span>}</h2>
-            
+
             {/* Description */}
             <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
 
@@ -74,7 +97,7 @@ const CategoryListing: React.FC = () => {
                 <>Lifetime: ₹{product.priceLifetime?.toLocaleString()}</>
               )}
             </div>
-            
+
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-2 mt-auto">
               <button

@@ -55,18 +55,18 @@ const HeroSection: React.FC = () => {
 
         {/* Heading */}
        <h1
-         className=" text-4xl sm:text-5xl font-extrabold font-sans mb-3 tracking-tight bg-gradient-to-br from-blue-700 via-violet-700  to-blue-500  bg-clip-text text-transparent leading-normal text-center ">Genuine Civil<br />
+         className=" text-4xl sm:text-5xl font-extrabold font-sans mb-7 tracking-tight bg-gradient-to-br from-blue-700 via-violet-700  to-blue-500  bg-clip-text text-transparent leading-normal text-center ">Genuine Civil<br />
          Engineering Software
          </h1>
 
 
         {/* Subtext */}
-        <p className="mb-10 text-base sm:text-xl text-gray-600 font-medium text-center font-sans max-w-2xl">
+        <p className="mb-12 text-base sm:text-xl text-gray-600 font-medium text-center font-sans max-w-2xl">
           Get authentic AutoCAD, Revit, Lumion, Tekla and other professional software licenses with instant delivery and lifetime support.
         </p>
 
         {/* Product Button Only */}
-        <div className="flex justify-center w-full sm:w-auto mb-12">
+        <div className="flex justify-center w-full sm:w-auto mb-15">
           <FormButton size="lg" variant="primary">Explore Products</FormButton>
         </div>
 
