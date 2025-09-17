@@ -1,8 +1,32 @@
-import React, { createContext, useContext } from 'react';
-import { useCart as useCartApi, useAddToCart as useAddToCartApi, useUpdateCartItem as useUpdateCartItemApi, useRemoveFromCart as useRemoveFromCartApi, useClearCart as useClearCartApi } from '../api/cartApi';
+import React, { createContext, useContext, useCallback, useRef } from 'react';
+// Custom debounce implementation - no lodash dependency
+const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: NodeJS.Timeout | null = null;
+  
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, wait);
+  };
+};
+import {
+  useCart as useCartApi,
+  useAddToCart as useAddToCartApi,
+  useUpdateCartItem as useUpdateCartItemApi,
+  useRemoveFromCart as useRemoveFromCartApi,
+  useClearCart as useClearCartApi
+} from '../api/cartApi';
 import { useUser } from '../api/userQueries';
 import type { CartItem, CartSummary, Product } from '../types/cartTypes';
 import Swal from 'sweetalert2';
+
 interface CartContextType {
   items: CartItem[];
   summary: CartSummary;
@@ -28,7 +52,30 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const removeFromCartMutation = useRemoveFromCartApi();
   const clearCartMutation = useClearCartApi();
 
-   const showSuccessToast = (message: string) => {
+  // Silent update - no toast notifications for quantity updates
+  const silentUpdateQuantity = useCallback(
+    debounce(async (itemId: string, quantity: number) => {
+      try {
+        await updateCartItemMutation.mutateAsync({ itemId, quantity });
+        // No success toast for silent updates
+      } catch (error) {
+        console.error('Failed to update item quantity:', error);
+        // Only show error toasts
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to update cart',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
+    }, 800), // Slightly longer debounce for less frequent API calls
+    [updateCartItemMutation]
+  );
+
+  const showSuccessToast = (message: string) => {
     Swal.fire({
       icon: 'success',
       title: message,
@@ -52,7 +99,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  // Convert backend cart items to frontend format
   const items: CartItem[] = cartData?.items.map(item => ({
     id: item._id,
     product: item.product,
@@ -70,7 +116,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     itemCount: 0
   };
 
-   const addItem = async (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity: number = 1) => {
+  const addItem = async (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity: number = 1) => {
     if (!user) {
       showErrorToast('Please login to add items to cart');
       return;
@@ -99,15 +145,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateQuantity = async (itemId: string, quantity: number) => {
-    try {
-      await updateCartItemMutation.mutateAsync({ itemId, quantity });
-      showSuccessToast('Cart updated');
-    } catch (error) {
-      console.error('Failed to update item quantity:', error);
-      showErrorToast('Failed to update cart');
-    }
-  };
+  // This is the key - silent quantity update with no UI feedback
+  const updateQuantity = useCallback((itemId: string, quantity: number) => {
+    silentUpdateQuantity(itemId, quantity);
+  }, [silentUpdateQuantity]);
 
   const clearCart = async () => {
     try {
@@ -119,13 +160,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const getItemCount = () => {
-    return summary.itemCount;
-  };
-
-  const getTotalPrice = () => {
-    return summary.total;
-  };
+  const getItemCount = () => summary.itemCount;
+  const getTotalPrice = () => summary.total;
 
   const isItemInCart = (productId: string, licenseType: '1year' | '3year' | 'lifetime') => {
     return items.some(
@@ -143,8 +179,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: CartContextType = {
     items,
     summary,
-    isLoading: isLoading || addToCartMutation.isPending || updateCartItemMutation.isPending || removeFromCartMutation.isPending || clearCartMutation.isPending,
-    error: error?.message || addToCartMutation.error?.message || updateCartItemMutation.error?.message || removeFromCartMutation.error?.message || clearCartMutation.error?.message || null,
+    isLoading: isLoading || addToCartMutation.isPending || removeFromCartMutation.isPending || clearCartMutation.isPending,
+    error: error?.message || addToCartMutation.error?.message || removeFromCartMutation.error?.message || clearCartMutation.error?.message || null,
     addItem,
     removeItem,
     updateQuantity,
