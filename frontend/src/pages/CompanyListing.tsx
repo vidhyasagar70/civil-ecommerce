@@ -79,7 +79,7 @@ const CompanyListing: React.FC = () => {
                 onClick={() => navigate(`/product/${product._id}`)}
                 className="w-full border border-gray-300 text-gray-700 font-medium rounded-lg py-2 hover:bg-gray-50 transition"
               >
-                View Details
+                BUY NOW
               </button>
               <button
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg py-2 font-semibold hover:from-blue-600 hover:to-purple-600 transition"

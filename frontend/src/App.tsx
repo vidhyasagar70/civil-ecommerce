@@ -14,14 +14,14 @@ import CompanyListing from './pages/CompanyListing';
 import ProductDetail from './pages/ProductDetail';
 import AuthGuard from './components/Auth/AuthGuard';
 import PublicRoute from './components/Auth/PublicRoute';
-
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 const queryClient = new QueryClient();
 
 function AppLayout() {
   const location = useLocation();
 
   // Define routes where you don't want the Header
-  const hideHeaderRoutes = ['/signin', '/signup'];
+  const hideHeaderRoutes = ['/signin', '/signup',"/forgot-password"];
 
   const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
 
@@ -37,6 +37,11 @@ function AppLayout() {
         <Route path="/signin" element={
           <PublicRoute>
             <SigninPage />
+          </PublicRoute>
+        } />
+        <Route path="/forgot-password" element={
+          <PublicRoute>
+            <ForgotPasswordPage />
           </PublicRoute>
         } />
 
