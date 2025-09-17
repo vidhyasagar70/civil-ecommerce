@@ -15,15 +15,19 @@ import ProductDetail from './pages/ProductDetail';
 import AuthGuard from './components/Auth/AuthGuard';
 import PublicRoute from './components/Auth/PublicRoute';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import PasswordResetPage from './pages/auth/PasswordResetPage';
+
 const queryClient = new QueryClient();
 
 function AppLayout() {
   const location = useLocation();
 
   // Define routes where you don't want the Header
-  const hideHeaderRoutes = ['/signin', '/signup',"/forgot-password"];
+  const hideHeaderRoutes = ['/signin', '/signup', '/forgot-password', '/reset-password'];
 
-  const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
+  const shouldHideHeader = hideHeaderRoutes.some(route => 
+    location.pathname === route || location.pathname.startsWith('/reset-password/')
+  );
 
   return (
     <>
@@ -42,6 +46,11 @@ function AppLayout() {
         <Route path="/forgot-password" element={
           <PublicRoute>
             <ForgotPasswordPage />
+          </PublicRoute>
+        } />
+        <Route path="/reset-password/:token" element={
+          <PublicRoute>
+            <PasswordResetPage />
           </PublicRoute>
         } />
 

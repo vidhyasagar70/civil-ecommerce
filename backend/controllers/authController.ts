@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User, { IUser } from '../models/User';
+import emailService from '../services/emailService';
 
 const JWT_SECRET: jwt.Secret = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
 const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
@@ -128,7 +130,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// Add to authController.ts
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).user._id;
@@ -168,5 +169,135 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     } else {
       res.status(500).json({ message: error.message });
     }
+  }
+};
+
+// Forgot Password
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: 'Email is required' });
+      return;
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      // Don't reveal if user exists or not for security
+      res.status(200).json({ 
+        message: 'If an account with that email exists, we have sent a password reset link.' 
+      });
+      return;
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Save reset token to user
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpiry;
+    await user.save();
+
+    // Send email
+    try {
+      await emailService.sendPasswordResetEmail(user.email, resetToken);
+      res.status(200).json({ 
+        message: 'Password reset email sent successfully' 
+      });
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      // Clear the reset token if email fails
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+      
+      res.status(500).json({ 
+        message: 'Failed to send password reset email' 
+      });
+    }
+  } catch (error: any) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Validate Reset Token
+export const validateResetToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.params;
+
+    if (!token) {
+      res.status(400).json({ message: 'Token is required' });
+      return;
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      res.status(400).json({ message: 'Invalid or expired reset token' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Token is valid' });
+  } catch (error: any) {
+    console.error('Validate reset token error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Reset Password
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!token || !password) {
+      res.status(400).json({ message: 'Token and password are required' });
+      return;
+    }
+
+    // Validate password
+    if (password.length < 8) {
+      res.status(400).json({ message: 'Password must be at least 8 characters long' });
+      return;
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      res.status(400).json({ message: 'Invalid or expired reset token' });
+      return;
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Update password and clear reset token
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    // Send confirmation email
+    try {
+      await emailService.sendPasswordChangeConfirmation(user.email);
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError);
+      // Don't fail the password reset if email fails
+    }
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error: any) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
