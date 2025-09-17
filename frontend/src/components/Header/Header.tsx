@@ -10,7 +10,7 @@ import { useCategories, useCompanies } from '../../api/productApi';
 import { useNavigate } from 'react-router-dom';
 import { clearAuth, isAdmin } from '../../utils/auth';
 import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
-import logo from "../../assets/logo.png"
+import { useCartContext } from '../../contexts/CartContext';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
@@ -22,6 +22,7 @@ const Header: React.FC = () => {
   const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
+  const { getItemCount } = useCartContext();
 
 
 
@@ -152,7 +153,7 @@ const Header: React.FC = () => {
                   className="flex items-center"
                 >
                   <img
-                    src={logo}
+                    src="/logo1.png"
                     alt="Logo"
                     className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
                   />
@@ -216,7 +217,7 @@ const Header: React.FC = () => {
               className="flex items-center"
             >
               <img
-                src={logo}
+                src="/logo.png"
                 alt="Logo"
                 className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
               />
@@ -365,9 +366,11 @@ const Header: React.FC = () => {
             >
               <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
               <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">My Cart</span>
-              <span className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 bg-blue-600 text-white text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center">
-                0
-              </span>
+              {getItemCount() > 0 && (
+                <span className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 bg-blue-600 text-white text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center">
+                  {getItemCount()}
+                </span>
+              )}
             </button>
 
             {/* Mobile menu button */}

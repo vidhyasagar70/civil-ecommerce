@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProductDetail } from '../api/productApi';
+import { useCartContext } from '../contexts/CartContext';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: product, isLoading } = useProductDetail(id);
   const [selectedLicense, setSelectedLicense] = useState<'1year' | '3year' | 'lifetime'>('1year');
   const [mainImage, setMainImage] = useState<string | null>(null);
+  const { addItem, isItemInCart, getItemQuantity } = useCartContext();
 
   if (isLoading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center py-20">Product not found.</div>;
@@ -53,6 +55,16 @@ const ProductDetail: React.FC = () => {
   // Images
   const images = [product.image, ...(product.additionalImages || [])];
   const currentMainImage = mainImage || product.image;
+
+  // Cart functionality
+  const handleAddToCart = () => {
+    if (product && selectedLicenseObj.price) {
+      addItem(product, selectedLicense, 1);
+    }
+  };
+
+  const isInCart = product ? isItemInCart(product._id!, selectedLicense) : false;
+  const cartQuantity = product ? getItemQuantity(product._id!, selectedLicense) : 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -159,8 +171,15 @@ const ProductDetail: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3">
-            <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl py-4 text-lg hover:from-blue-700 hover:to-purple-700 transition">
-              Add to Cart
+            <button 
+              onClick={handleAddToCart}
+              className={`w-full font-bold rounded-xl py-4 text-lg transition ${
+                isInCart 
+                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+              }`}
+            >
+              {isInCart ? `In Cart (${cartQuantity})` : 'Add to Cart'}
             </button>
             <button className="w-full border border-blue-200 rounded-xl py-3 text-blue-700 font-semibold transition hover:bg-blue-50">
               Buy Now - Instant Access
