@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { useCart as useCartApi, useAddToCart as useAddToCartApi, useUpdateCartItem as useUpdateCartItemApi, useRemoveFromCart as useRemoveFromCartApi, useClearCart as useClearCartApi } from '../api/cartApi';
 import { useUser } from '../api/userQueries';
 import type { CartItem, CartSummary, Product } from '../types/cartTypes';
-
+import Swal from 'sweetalert2';
 interface CartContextType {
   items: CartItem[];
   summary: CartSummary;
@@ -28,6 +28,30 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const removeFromCartMutation = useRemoveFromCartApi();
   const clearCartMutation = useClearCartApi();
 
+   const showSuccessToast = (message: string) => {
+    Swal.fire({
+      icon: 'success',
+      title: message,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+  };
+
+  const showErrorToast = (message: string) => {
+    Swal.fire({
+      icon: 'error',
+      title: message,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+    });
+  };
+
   // Convert backend cart items to frontend format
   const items: CartItem[] = cartData?.items.map(item => ({
     id: item._id,
@@ -46,10 +70,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     itemCount: 0
   };
 
-  const addItem = async (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity: number = 1) => {
+   const addItem = async (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity: number = 1) => {
     if (!user) {
-      // Handle guest user or redirect to login
-      console.error('User must be logged in to add to cart');
+      showErrorToast('Please login to add items to cart');
       return;
     }
 
@@ -59,32 +82,40 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         licenseType,
         quantity
       });
+      showSuccessToast('Item added to cart!');
     } catch (error) {
       console.error('Failed to add item to cart:', error);
+      showErrorToast('Failed to add item to cart');
     }
   };
 
   const removeItem = async (itemId: string) => {
     try {
       await removeFromCartMutation.mutateAsync(itemId);
+      showSuccessToast('Item removed from cart');
     } catch (error) {
       console.error('Failed to remove item from cart:', error);
+      showErrorToast('Failed to remove item from cart');
     }
   };
 
   const updateQuantity = async (itemId: string, quantity: number) => {
     try {
       await updateCartItemMutation.mutateAsync({ itemId, quantity });
+      showSuccessToast('Cart updated');
     } catch (error) {
       console.error('Failed to update item quantity:', error);
+      showErrorToast('Failed to update cart');
     }
   };
 
   const clearCart = async () => {
     try {
       await clearCartMutation.mutateAsync();
+      showSuccessToast('Cart cleared');
     } catch (error) {
       console.error('Failed to clear cart:', error);
+      showErrorToast('Failed to clear cart');
     }
   };
 
