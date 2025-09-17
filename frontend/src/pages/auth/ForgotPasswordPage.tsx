@@ -4,6 +4,7 @@ import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
+import { forgotPasswordAPI } from "../../services/api";
 import logo from "../../assets/logo.png";
 
 export default function ForgotPasswordPage() {
@@ -18,11 +19,8 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      // Replace this with your actual API call
-      // const response = await forgotPasswordAPI({ email });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // API call to send password reset email
+      await forgotPasswordAPI({ email });
       
       setIsEmailSent(true);
       
@@ -36,7 +34,7 @@ export default function ForgotPasswordPage() {
       });
 
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || "Failed to send reset email. Please try again.";
+      const errorMessage = err.message || "Failed to send reset email. Please try again.";
       setError(errorMessage);
 
       Swal.fire({
@@ -183,7 +181,7 @@ export default function ForgotPasswordPage() {
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• We'll send a secure link to your email</li>
               <li>• Click the link to create a new password</li>
-              <li>• The link expires in 10mintues for security</li>
+              <li>• The link expires in 10 minutes for security</li>
             </ul>
           </div>
 
