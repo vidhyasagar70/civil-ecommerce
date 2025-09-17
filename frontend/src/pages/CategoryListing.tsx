@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useProducts } from '../api/productApi';
 import { useUser } from '../api/userQueries';
 import { useCartContext } from '../contexts/CartContext';
-
+import Swal from 'sweetalert2';
 const CategoryListing: React.FC = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -14,14 +14,37 @@ const CategoryListing: React.FC = () => {
   const { addItem } = useCartContext();
   const { data: user } = useUser();
 
-  const handleAddToCart = (product: any, licenseType: '1year' = '1year') => {
+ const handleAddToCart = async (product: any, licenseType: '1year' = '1year') => {
     if (!user) {
       navigate('/login');
       return;
     }
 
-    addItem(product, licenseType, 1);
+    try {
+      await addItem(product, licenseType, 1);
+      Swal.fire({
+        title: 'Added to Cart!',
+        text: `${product.name} has been added to your cart`,
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Failed to add item to cart',
+        icon: 'error',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
   };
+
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4">

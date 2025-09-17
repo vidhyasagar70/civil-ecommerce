@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../contexts/CartContext';
 import { CartItem, CartSummary, CartEmpty } from '../components/Cart';
-
+import Swal from 'sweetalert2';
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, summary, isLoading, removeItem, updateQuantity, clearCart } = useCartContext();
@@ -17,10 +17,38 @@ const CartPage: React.FC = () => {
   const handleContinueShopping = () => {
     navigate('/'); // Navigate to home page
   };
+  const handleClearCart = async () => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will remove all items from your cart',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, clear cart!',
+      cancelButtonText: 'Cancel'
+    });
 
-  const handleClearCart = () => {
-    if (window.confirm('Are you sure you want to clear your cart?')) {
+    if (result.isConfirmed) {
       clearCart();
+      Swal.fire('Cleared!', 'Your cart has been cleared.', 'success');
+    }
+  };
+
+  const handleRemoveItem = async (itemId: string, productName: string) => {
+    const result = await Swal.fire({
+      title: 'Remove Item?',
+      text: `Are you sure you want to remove ${productName} from your cart?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
+      removeItem(itemId);
     }
   };
 
@@ -46,13 +74,13 @@ const CartPage: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
               <p className="text-gray-600 mt-1">
-                {items.length > 0 
+                {items.length > 0
                   ? `${summary.itemCount} item${summary.itemCount !== 1 ? 's' : ''} in your cart`
                   : 'Your cart is empty'
                 }
               </p>
             </div>
-            
+
             {items.length > 0 && (
               <button
                 onClick={handleClearCart}
@@ -74,14 +102,14 @@ const CartPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
                   Cart Items ({items.length})
                 </h2>
-                
+
                 <div className="space-y-6">
                   {items.map((item) => (
                     <CartItem
                       key={item.id}
                       item={item}
                       onUpdateQuantity={updateQuantity}
-                      onRemoveItem={removeItem}
+                      onRemoveItem={()=>handleRemoveItem(item.id, item.product.name)}
                     />
                   ))}
                 </div>
@@ -106,7 +134,7 @@ const CartPage: React.FC = () => {
                       <p className="text-xs text-gray-500">Get your software immediately</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -120,7 +148,7 @@ const CartPage: React.FC = () => {
                       <p className="text-xs text-gray-500">100% authentic software</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">

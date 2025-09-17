@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useProductDetail } from '../api/productApi';
 import { useCartContext } from '../contexts/CartContext';
 import { useUser } from '../api/userQueries';
+import Swal from 'sweetalert2';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,15 +61,45 @@ const ProductDetail: React.FC = () => {
   const currentMainImage = mainImage || product.image;
 
   // Cart functionality
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!user) {
       // Redirect to login if user is not authenticated
       navigate('/login', { state: { returnTo: `/product/${id}` } });
       return;
     }
 
+    if (isInCart) {
+      Swal.fire({
+        title: 'Already in Cart',
+        text: `${product.name} is already in your cart with ${selectedLicense} license`,
+        icon: 'info',
+        confirmButtonText: 'View Cart'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/cart');
+        }
+      });
+      return;
+    }
+
     if (product && selectedLicenseObj.price) {
-      addItem(product, selectedLicense, 1);
+      try {
+        await addItem(product, selectedLicense, 1);
+        Swal.fire({
+          title: 'Added to Cart!',
+          text: `${product.name} has been added to your cart`,
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: 'View Cart',
+          cancelButtonText: 'Continue Shopping'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/cart');
+          }
+        });
+      } catch (error) {
+        Swal.fire('Error', 'Failed to add item to cart', 'error');
+      }
     }
   };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { CartItem as CartItemType } from '../../types/cartTypes';
-
+import Swal from 'sweetalert2';
 interface CartItemProps {
   item: CartItemType;
   onUpdateQuantity: (id: string, quantity: number) => void;
@@ -8,8 +8,14 @@ interface CartItemProps {
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemoveItem }) => {
-  const handleQuantityChange = (newQuantity: number) => {
+  const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
+
+    if (newQuantity > 10) {
+      Swal.fire('Maximum Quantity', 'You can only add up to 10 of this item', 'warning');
+      return;
+    }
+
     onUpdateQuantity(item.id, newQuantity);
   };
 
