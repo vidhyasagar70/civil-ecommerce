@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useProductDetail } from '../api/productApi';
 import { useCartContext } from '../contexts/CartContext';
+import { useUser } from '../api/userQueries';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -9,6 +10,8 @@ const ProductDetail: React.FC = () => {
   const [selectedLicense, setSelectedLicense] = useState<'1year' | '3year' | 'lifetime'>('1year');
   const [mainImage, setMainImage] = useState<string | null>(null);
   const { addItem, isItemInCart, getItemQuantity } = useCartContext();
+  const { data: user } = useUser();
+  const navigate = useNavigate();
 
   if (isLoading) return <div className="text-center py-20">Loading...</div>;
   if (!product) return <div className="text-center py-20">Product not found.</div>;
@@ -58,6 +61,12 @@ const ProductDetail: React.FC = () => {
 
   // Cart functionality
   const handleAddToCart = () => {
+    if (!user) {
+      // Redirect to login if user is not authenticated
+      navigate('/login', { state: { returnTo: `/product/${id}` } });
+      return;
+    }
+
     if (product && selectedLicenseObj.price) {
       addItem(product, selectedLicense, 1);
     }
@@ -65,7 +74,6 @@ const ProductDetail: React.FC = () => {
 
   const isInCart = product ? isItemInCart(product._id!, selectedLicense) : false;
   const cartQuantity = product ? getItemQuantity(product._id!, selectedLicense) : 0;
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Top Section: Image + Info */}
@@ -171,13 +179,12 @@ const ProductDetail: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3">
-            <button 
+            <button
               onClick={handleAddToCart}
-              className={`w-full font-bold rounded-xl py-4 text-lg transition ${
-                isInCart 
-                  ? 'bg-green-600 text-white hover:bg-green-700' 
+              className={`w-full font-bold rounded-xl py-4 text-lg transition ${isInCart
+                  ? 'bg-green-600 text-white hover:bg-green-700'
                   : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
-              }`}
+                }`}
             >
               {isInCart ? `In Cart (${cartQuantity})` : 'Add to Cart'}
             </button>

@@ -1,14 +1,25 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../api/productApi';
-// Import any rating/star components if you use them
+import { useUser } from '../api/userQueries';
+import { useCartContext } from '../contexts/CartContext';
 
 const CompanyListing: React.FC = () => {
   const { company } = useParams<{ company: string }>();
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } = useProducts({ company });
   const products = data.products || [];
   const navigate = useNavigate();
+  const { addItem } = useCartContext();
+  const { data: user } = useUser();
 
+  const handleAddToCart = (product: any, licenseType: '1year' = '1year') => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    addItem(product, licenseType, 1);
+  };
   return (
     <div className="max-w-7xl mx-auto py-6 px-4">
       <h1 className="text-3xl font-bold mb-1">{company}</h1>
@@ -45,10 +56,10 @@ const CompanyListing: React.FC = () => {
 
             {/* Name */}
             <h2 className="text-lg font-semibold mb-1">{product.name} {product.version && <span className="text-gray-500 font-normal">({product.version})</span>}</h2>
-            
+
             {/* Description */}
             <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
-            
+
             {/* Stars & Rating */}
             <div className="flex items-center text-sm mb-2">
               {/* Replace with actual rating stars if you have a RatingStar component */}
@@ -72,7 +83,7 @@ const CompanyListing: React.FC = () => {
                 <>Lifetime: ₹{product.priceLifetime?.toLocaleString()}</>
               )}
             </div>
-            
+
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-2 mt-auto">
               <button
@@ -83,8 +94,7 @@ const CompanyListing: React.FC = () => {
               </button>
               <button
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg py-2 font-semibold hover:from-blue-600 hover:to-purple-600 transition"
-                // Implement Add to Cart functionality here
-              >
+                onClick={() => handleAddToCart(product)}>
                 Add to Cart
               </button>
             </div>

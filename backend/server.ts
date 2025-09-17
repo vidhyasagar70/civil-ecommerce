@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import passport from "passport";
 import session from "express-session";
-
+import cartRoutes from "./routes/cartRoutes";
 import authRoutes from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -43,6 +43,7 @@ app.use(passport.session());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes); 
 app.use("/api/users", userRoutes);
+app.use("/api/cart", cartRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
