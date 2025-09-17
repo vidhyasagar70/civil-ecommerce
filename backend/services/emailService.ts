@@ -4,7 +4,8 @@ class EmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransporter({
+    // FIX: Use createTransport instead of createTransporter
+    this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: false, // true for 465, false for other ports
@@ -12,7 +13,23 @@ class EmailService {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      // Add these for Gmail specifically
+      tls: {
+        rejectUnauthorized: false
+      }
     });
+  }
+
+  // Test email configuration
+  async testConnection(): Promise<boolean> {
+    try {
+      await this.transporter.verify();
+      console.log('✅ Email service connected successfully');
+      return true;
+    } catch (error) {
+      console.error('❌ Email service connection failed:', error);
+      return false;
+    }
   }
 
   async sendPasswordResetEmail(to: string, resetToken: string): Promise<void> {
@@ -74,7 +91,13 @@ class EmailService {
       `
     };
 
-    await this.transporter.sendMail(mailOptions);
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Password reset email sent successfully:', info.messageId);
+    } catch (error) {
+      console.error('❌ Failed to send password reset email:', error);
+      throw new Error('Failed to send password reset email');
+    }
   }
 
   async sendPasswordChangeConfirmation(to: string): Promise<void> {
@@ -128,7 +151,13 @@ class EmailService {
       `
     };
 
-    await this.transporter.sendMail(mailOptions);
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Password change confirmation email sent:', info.messageId);
+    } catch (error) {
+      console.error('❌ Failed to send confirmation email:', error);
+      throw new Error('Failed to send confirmation email');
+    }
   }
 }
 
