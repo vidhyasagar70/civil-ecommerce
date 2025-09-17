@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import type { CartSummary as CartSummaryType } from '../../types/cartTypes';
 import FormButton from '../Button/FormButton';
 
@@ -15,6 +15,38 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   onContinueShopping, 
   isLoading = false 
 }) => {
+  // Refs for direct DOM updates
+  const itemCountRef = useRef<HTMLSpanElement>(null);
+  const subtotalRef = useRef<HTMLSpanElement>(null);
+  const taxRef = useRef<HTMLSpanElement>(null);
+  const discountRef = useRef<HTMLDivElement>(null);
+  const totalRef = useRef<HTMLSpanElement>(null);
+
+  // Update summary display without re-render
+  useEffect(() => {
+    if (itemCountRef.current) {
+      itemCountRef.current.textContent = summary.itemCount.toString();
+    }
+    if (subtotalRef.current) {
+      subtotalRef.current.textContent = `₹${summary.subtotal.toLocaleString()}`;
+    }
+    if (taxRef.current) {
+      taxRef.current.textContent = `₹${summary.tax.toLocaleString()}`;
+    }
+    if (totalRef.current) {
+      totalRef.current.textContent = `₹${summary.total.toLocaleString()}`;
+    }
+    if (discountRef.current) {
+      discountRef.current.style.display = summary.discount > 0 ? 'flex' : 'none';
+      if (summary.discount > 0) {
+        const discountSpan = discountRef.current.querySelector('span:last-child');
+        if (discountSpan) {
+          discountSpan.textContent = `-₹${summary.discount.toLocaleString()}`;
+        }
+      }
+    }
+  }, [summary]);
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 sticky top-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
@@ -22,26 +54,30 @@ const CartSummary: React.FC<CartSummaryProps> = ({
       {/* Summary Details */}
       <div className="space-y-3 mb-6">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Subtotal ({summary.itemCount} items)</span>
-          <span className="font-medium">₹{summary.subtotal.toLocaleString()}</span>
+          <span className="text-gray-600">
+            Subtotal (<span ref={itemCountRef}>{summary.itemCount}</span> items)
+          </span>
+          <span ref={subtotalRef} className="font-medium">₹{summary.subtotal.toLocaleString()}</span>
         </div>
         
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Tax (GST)</span>
-          <span className="font-medium">₹{summary.tax.toLocaleString()}</span>
+          <span ref={taxRef} className="font-medium">₹{summary.tax.toLocaleString()}</span>
         </div>
         
-        {summary.discount > 0 && (
-          <div className="flex justify-between text-sm">
-            <span className="text-green-600">Discount</span>
-            <span className="font-medium text-green-600">-₹{summary.discount.toLocaleString()}</span>
-          </div>
-        )}
+        <div 
+          ref={discountRef}
+          className="flex justify-between text-sm"
+          style={{ display: summary.discount > 0 ? 'flex' : 'none' }}
+        >
+          <span className="text-green-600">Discount</span>
+          <span className="font-medium text-green-600">-₹{summary.discount.toLocaleString()}</span>
+        </div>
         
         <div className="border-t border-gray-200 pt-3">
           <div className="flex justify-between">
             <span className="text-lg font-semibold text-gray-900">Total</span>
-            <span className="text-lg font-bold text-gray-900">₹{summary.total.toLocaleString()}</span>
+            <span ref={totalRef} className="text-lg font-bold text-gray-900">₹{summary.total.toLocaleString()}</span>
           </div>
         </div>
       </div>

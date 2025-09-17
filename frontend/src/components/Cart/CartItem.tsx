@@ -1,39 +1,113 @@
-import React from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import type { CartItem as CartItemType } from '../../types/cartTypes';
 import Swal from 'sweetalert2';
+
 interface CartItemProps {
   item: CartItemType;
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemoveItem: (id: string) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemoveItem }) => {
-  const handleQuantityChange = async (newQuantity: number) => {
-    if (newQuantity < 1) return;
+const CartItem: React.FC<CartItemProps> = ({ 
+  item, 
+  onUpdateQuantity, 
+  onRemoveItem 
+}) => {
+  // Refs for direct DOM manipulation
+  const quantityDisplayRef = useRef<HTMLSpanElement>(null);
+  const totalPriceRef = useRef<HTMLDivElement>(null);
+  const decreaseButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Store current quantity in ref to avoid re-renders
+  const currentQuantityRef = useRef(item.quantity);
+  
+  // Update refs when item changes from external sources (initial load, etc.)
+  useEffect(() => {
+    currentQuantityRef.current = item.quantity;
+    if (quantityDisplayRef.current) {
+      quantityDisplayRef.current.textContent = item.quantity.toString();
+    }
+    if (totalPriceRef.current) {
+      totalPriceRef.current.textContent = `₹${item.totalPrice.toLocaleString()}`;
+    }
+    if (decreaseButtonRef.current) {
+      decreaseButtonRef.current.disabled = item.quantity <= 1;
+    }
+  }, [item.quantity, item.totalPrice]);
 
+  // Direct DOM update function - NO STATE CHANGE
+  const updateUIDirectly = useCallback((newQuantity: number) => {
+    const newTotalPrice = newQuantity * item.price;
+    
+    // Update quantity display
+    if (quantityDisplayRef.current) {
+      quantityDisplayRef.current.textContent = newQuantity.toString();
+    }
+    
+    // Update total price display
+    if (totalPriceRef.current) {
+      totalPriceRef.current.textContent = `₹${newTotalPrice.toLocaleString()}`;
+    }
+    
+    // Update decrease button state
+    if (decreaseButtonRef.current) {
+      decreaseButtonRef.current.disabled = newQuantity <= 1;
+    }
+    
+    // Update the ref
+    currentQuantityRef.current = newQuantity;
+  }, [item.price]);
+
+  const handleQuantityChange = useCallback(async (newQuantity: number) => {
+    if (newQuantity < 1) return;
+    
     if (newQuantity > 10) {
       Swal.fire('Maximum Quantity', 'You can only add up to 10 of this item', 'warning');
       return;
     }
-
+    
+    // Update UI immediately without re-render
+    updateUIDirectly(newQuantity);
+    
+    // Call API in background (this might cause parent re-render, but this component won't)
     onUpdateQuantity(item.id, newQuantity);
-  };
+  }, [item.id, onUpdateQuantity, updateUIDirectly]);
+
+  const handleIncrease = useCallback(() => {
+    handleQuantityChange(currentQuantityRef.current + 1);
+  }, [handleQuantityChange]);
+
+  const handleDecrease = useCallback(() => {
+    handleQuantityChange(currentQuantityRef.current - 1);
+  }, [handleQuantityChange]);
+
+  const handleRemove = useCallback(() => {
+    onRemoveItem(item.id);
+  }, [item.id, onRemoveItem]);
 
   const getLicenseBadgeColor = (licenseType: string) => {
     switch (licenseType) {
-      case '1year': return 'bg-blue-100 text-blue-800';
-      case '3year': return 'bg-green-100 text-green-800';
-      case 'lifetime': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case '1year':
+        return 'bg-blue-100 text-blue-800';
+      case '3year':
+        return 'bg-green-100 text-green-800';
+      case 'lifetime':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getLicenseLabel = (licenseType: string) => {
     switch (licenseType) {
-      case '1year': return '1 Year License';
-      case '3year': return '3 Year License';
-      case 'lifetime': return 'Lifetime License';
-      default: return 'License';
+      case '1year':
+        return '1 Year License';
+      case '3year':
+        return '3 Year License';
+      case 'lifetime':
+        return 'Lifetime License';
+      default:
+        return 'License';
     }
   };
 
@@ -61,7 +135,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemoveIte
               <p className="text-sm text-gray-600">{item.product.company}</p>
             </div>
             <button
-              onClick={() => onRemoveItem(item.id)}
+              onClick={handleRemove}
               className="text-gray-400 hover:text-red-500 transition-colors"
               aria-label="Remove item"
             >
@@ -88,19 +162,23 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemoveIte
             {/* Quantity Controls */}
             <div className="flex items-center border border-gray-300 rounded-lg">
               <button
-                onClick={() => handleQuantityChange(item.quantity - 1)}
-                className="p-2 hover:bg-gray-100 transition-colors"
+                ref={decreaseButtonRef}
+                onClick={handleDecrease}
+                className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50"
                 disabled={item.quantity <= 1}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                 </svg>
               </button>
-              <span className="px-4 py-2 font-medium min-w-[3rem] text-center">
+              <span 
+                ref={quantityDisplayRef}
+                className="px-4 py-2 font-medium min-w-[3rem] text-center"
+              >
                 {item.quantity}
               </span>
               <button
-                onClick={() => handleQuantityChange(item.quantity + 1)}
+                onClick={handleIncrease}
                 className="p-2 hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +189,10 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemoveIte
 
             {/* Price */}
             <div className="text-right">
-              <div className="text-lg font-bold text-gray-900">
+              <div 
+                ref={totalPriceRef}
+                className="text-lg font-bold text-gray-900"
+              >
                 ₹{item.totalPrice.toLocaleString()}
               </div>
               <div className="text-sm text-gray-500">
