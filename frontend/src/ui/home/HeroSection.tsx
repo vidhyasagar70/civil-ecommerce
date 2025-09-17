@@ -8,6 +8,7 @@ import {
   DevicePhoneMobileIcon,
   BoltIcon,
 } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 import FormButton from "../../components/Button/FormButton";
 
 const features = [
@@ -49,28 +50,40 @@ const paymentMethods = [
 ];
 
 const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-14 px-4 sm:py-20 sm:px-6 bg-gradient-to-tr from-blue-50 via-violet-50 to-white">
       <div className="max-w-4xl mx-auto flex flex-col items-center">
 
         {/* Heading */}
-       <h1
-         className=" text-4xl sm:text-5xl font-extrabold font-sans mb-7 tracking-tight bg-gradient-to-br from-blue-700 via-violet-700  to-blue-500  bg-clip-text text-transparent leading-normal text-center ">Genuine Civil<br />
-         Engineering Software
-         </h1>
-
+        <h1
+          className="text-4xl sm:text-5xl font-serif font-bold mb-6 tracking-wide 
+                     bg-gradient-to-r from-violet-800 via-indigo-700 to-blue-700 
+                     bg-clip-text text-transparent leading-snug text-center"
+        >
+          Genuine Civil <br />
+          Engineering Software
+        </h1>
 
         {/* Subtext */}
-        <p className="mb-12 text-base sm:text-xl text-gray-600 font-medium text-center font-sans max-w-2xl">
-          Get authentic AutoCAD, Revit, Lumion, Tekla and other professional software licenses with instant delivery and lifetime support.
+        <p className="mb-12 text-lg sm:text-xl text-gray-700 font-serif leading-relaxed text-center max-w-2xl">
+          Get authentic AutoCAD, Revit, Lumion, Tekla and other professional software licenses 
+          with instant delivery and lifetime support.
         </p>
 
-        {/* Product Button Only */}
+        {/* Explore Products Button */}
         <div className="flex justify-center w-full sm:w-auto mb-15">
-          <FormButton size="lg" variant="primary">Explore Products</FormButton>
+          <FormButton
+            size="lg"
+            variant="primary"
+            onClick={() => navigate("/products")} // 👈 Navigate to products page
+          >
+            Explore Products
+          </FormButton>
         </div>
 
-        {/* Features Grid with Hover Effect */}
+        {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full">
           {features.map((f) => (
             <div
@@ -88,7 +101,7 @@ const HeroSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Colored Payment Info Icons */}
+        {/* Payment Info */}
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-12 justify-center text-sm text-gray-500 font-medium font-sans">
           {paymentMethods.map((method) => (
             <span key={method.label} className="flex items-center gap-2">

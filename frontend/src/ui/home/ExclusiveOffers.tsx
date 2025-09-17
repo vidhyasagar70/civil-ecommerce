@@ -32,12 +32,13 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({ offers = defaultOffers 
   const navigate = useNavigate();
 
   return (
-    <section className="py-12 bg-gray-50">
+        <section className="w-full bg-gradient-to-r from-indigo-50 to-violet-50 rounded-3xl shadow-sm py-14 px-6 md:px-20">
+
       <div className="max-w-7xl mx-auto px-6">
         {/* Heading */}
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900">Exclusive Offers 🎉</h2>
-          <p className="text-gray-600 mt-2">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Exclusive Offers 🎉</h2>
+          <p className="text-gray-600 mt-3 text-lg">
             Limited-time deals — clean, simple and attention grabbing.
           </p>
         </div>

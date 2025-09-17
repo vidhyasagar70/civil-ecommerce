@@ -3,16 +3,14 @@ import CategoryListing from "../../pages/CategoryListing";
 
 const HomeProducts: React.FC = () => {
   return (
-    <section className="py-12 bg-gray-50">
+         <section className="w-full bg-gradient-to-r from-indigo-50 to-violet-50 rounded-3xl shadow-sm py-14 px-6 md:px-20">
+
       {/* Section Heading */}
       <div className="text-center mb-10">
-        <h1
-          className="text-2xl sm:text-4xl font-extrabold font-sans mb-7 tracking-tight 
-                     text-black-600"
-        >
+         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
           Featured Software
-        </h1>
-        <p className="mb-12 text-base sm:text-xl text-gray-600 font-medium font-sans max-w-2xl mx-auto">
+        </h2>
+       <p className="text-gray-600 mt-3 text-lg">
           Genuine civil engineering software licenses trusted by thousands of professionals across India
         </p>
       </div>
