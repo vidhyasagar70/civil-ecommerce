@@ -1,7 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProducts } from '../api/productApi';
-// You may want to import your RatingStar component if you have one.
+import { useUser } from '../api/userQueries';
+import { useCartContext } from '../contexts/CartContext';
 
 const CategoryListing: React.FC = () => {
   const { search } = useLocation();
@@ -10,6 +11,17 @@ const CategoryListing: React.FC = () => {
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } = useProducts({ category });
   const products = data.products || [];
   const navigate = useNavigate();
+  const { addItem } = useCartContext();
+  const { data: user } = useUser();
+
+  const handleAddToCart = (product: any, licenseType: '1year' = '1year') => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    addItem(product, licenseType, 1);
+  };
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4">
@@ -85,7 +97,7 @@ const CategoryListing: React.FC = () => {
               </button>
               <button
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg py-2 font-semibold hover:from-blue-600 hover:to-purple-600 transition"
-                // Implement Add to Cart functionality
+                onClick={() => handleAddToCart(product)}
               >
                 Add to Cart
               </button>
