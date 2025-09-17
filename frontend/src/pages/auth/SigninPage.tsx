@@ -8,6 +8,7 @@ import FormInput from "../../components/Input/FormInput";
 import GoogleButton from "../../components/Button/GoogleButton";
 import PasswordInput from "../../components/Input/PasswordInput";
 import logo from "../../assets/logo.png"
+
 export default function SigninPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -110,15 +111,26 @@ export default function SigninPage() {
               required
             />
 
-            {/* Password using reusable component */}
-            <PasswordInput
-              label="Password "
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
+            <div className="space-y-2">
+              <PasswordInput
+                label="Password "
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+              
+              {/* Forgot Password Link */}
+              <div className="text-right">
+                <Link 
+                  to="/forgot-password" 
+                  className="text-sm text-indigo-600 hover:text-indigo-500 font-medium transition-colors duration-200"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+            </div>
 
             <FormButton type="submit" disabled={signInMutation.isPending} className="w-full">
               {signInMutation.isPending ? "Signing in..." : "Sign In"}
@@ -126,7 +138,7 @@ export default function SigninPage() {
           </form>
 
           <p className="mt-8 text-center text-sm text-gray-600">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
               Sign up
             </Link>
