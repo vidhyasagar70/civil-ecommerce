@@ -251,10 +251,11 @@ export const validateResetToken = async (req: Request, res: Response): Promise<v
 };
 
 // Reset Password
+// Reset Password
 export const resetPassword = async (req: Request, res: Response): Promise<void> => {
   try {
     const { token } = req.params;
-    const { password } = req.body;
+    const { password, email } = req.body; // Accept both password and email
 
     if (!token || !password) {
       res.status(400).json({ message: 'Token and password are required' });
@@ -277,6 +278,12 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    // Optional: Verify email matches (additional security)
+    if (email && user.email.toLowerCase() !== email.toLowerCase()) {
+      res.status(400).json({ message: 'Email does not match the account associated with this token' });
+      return;
+    }
+
     // Hash new password
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -295,7 +302,10 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       // Don't fail the password reset if email fails
     }
 
-    res.status(200).json({ message: 'Password reset successfully' });
+    res.status(200).json({ 
+      message: 'Password reset successfully',
+      success: true 
+    });
   } catch (error: any) {
     console.error('Reset password error:', error);
     res.status(500).json({ message: 'Internal server error' });
