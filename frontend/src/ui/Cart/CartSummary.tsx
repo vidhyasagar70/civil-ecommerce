@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import type { CartSummary as CartSummaryType } from '../../types/cartTypes';
-import FormButton from '../Button/FormButton';
+import FormButton from '../../components/Button/FormButton';
 
 interface CartSummaryProps {
   summary: CartSummaryType;
@@ -9,11 +9,11 @@ interface CartSummaryProps {
   isLoading?: boolean;
 }
 
-const CartSummary: React.FC<CartSummaryProps> = ({ 
-  summary, 
-  onCheckout, 
-  onContinueShopping, 
-  isLoading = false 
+const CartSummary: React.FC<CartSummaryProps> = ({
+  summary,
+  onCheckout,
+  onContinueShopping,
+  isLoading = false
 }) => {
   // Refs for direct DOM updates
   const itemCountRef = useRef<HTMLSpanElement>(null);
@@ -50,7 +50,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 sticky top-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
-      
+
       {/* Summary Details */}
       <div className="space-y-3 mb-6">
         <div className="flex justify-between text-sm">
@@ -59,13 +59,13 @@ const CartSummary: React.FC<CartSummaryProps> = ({
           </span>
           <span ref={subtotalRef} className="font-medium">₹{summary.subtotal.toLocaleString()}</span>
         </div>
-        
+
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Tax (GST)</span>
           <span ref={taxRef} className="font-medium">₹{summary.tax.toLocaleString()}</span>
         </div>
-        
-        <div 
+
+        <div
           ref={discountRef}
           className="flex justify-between text-sm"
           style={{ display: summary.discount > 0 ? 'flex' : 'none' }}
@@ -73,7 +73,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
           <span className="text-green-600">Discount</span>
           <span className="font-medium text-green-600">-₹{summary.discount.toLocaleString()}</span>
         </div>
-        
+
         <div className="border-t border-gray-200 pt-3">
           <div className="flex justify-between">
             <span className="text-lg font-semibold text-gray-900">Total</span>
@@ -92,7 +92,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
         >
           {isLoading ? 'Processing...' : 'Proceed to Checkout'}
         </FormButton>
-        
+
         <button
           onClick={onContinueShopping}
           className="w-full py-3 text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"

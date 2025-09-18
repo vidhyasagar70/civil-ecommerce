@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../contexts/CartContext';
-import { CartItem, CartSummary, CartEmpty } from '../components/Cart';
+import { CartItem, CartSummary, CartEmpty } from '../ui/Cart';
 import Swal from 'sweetalert2';
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -109,7 +109,7 @@ const CartPage: React.FC = () => {
                       key={item.id}
                       item={item}
                       onUpdateQuantity={updateQuantity}
-                      onRemoveItem={()=>handleRemoveItem(item.id, item.product.name)}
+                      onRemoveItem={() => handleRemoveItem(item.id, item.product.name)}
                     />
                   ))}
                 </div>
