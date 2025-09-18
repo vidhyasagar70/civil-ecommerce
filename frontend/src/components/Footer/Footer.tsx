@@ -14,7 +14,7 @@ import {
 const Footer = () => {
     return (
         <footer className="bg-[#0b1a36] text-white font-light">
-            <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-b border-gray-700 text-center"> {[{ title: "Free Digital Shipping", desc: "5-10 Min Instant Delivery" }, { title: "Easy & Fast Exchange", desc: "7 Days Free Exchange Policy" }, { title: "24/7 Customer Support", desc: "Online Help By Our Agents" }, { title: "100% Secure Payments", desc: "UPI / Internet Banking / Cards" },].map((item, i) => (<div key={i}> <p className="font-semibold text-lg tracking-wide">{item.title}</p> <p className="text-sm text-gray-400 mt-1">{item.desc}</p> </div>))} </div>
+            <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 py-8 border-b border-gray-700 text-center"> {[{ title: "Free Digital Shipping", desc: "5-10 Min Instant Delivery" }, { title: "24/7 Customer Support", desc: "Online Help By Our Agents" }, { title: "100% Secure Payments", desc: "UPI / Internet Banking / Cards" },].map((item, i) => (<div key={i}> <p className="font-semibold text-lg tracking-wide">{item.title}</p> <p className="text-sm text-gray-400 mt-1">{item.desc}</p> </div>))} </div>
             {/* ===== Hero Section (keep as it is) ===== */}
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 py-12 px-6 border-b border-gray-700">
                 {/* Company Description */}
