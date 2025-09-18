@@ -14,6 +14,14 @@ import CompanyListing from './pages/CompanyListing';
 import ProductDetail from './pages/ProductDetail';
 import AuthGuard from './components/Auth/AuthGuard';
 import PublicRoute from './components/Auth/PublicRoute';
+import HomePage from './pages/auth/HomePage';
+import Disclaimer from './ui/policy/Disclaimer';
+
+import ReturnPolicy from './ui/policy/ReturnPolicy';
+
+import TermsAndConditions from './ui/policy/TermsAndConditions';
+import ShippingPolicy from './ui/policy/ShippingPolicy';
+import Footer from './components/Footer/Footer';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -29,6 +37,7 @@ function App() {
             <PublicRoute>
               <SignupPage />
             </PublicRoute>
+        
           } />
           <Route path="/signin" element={
             <PublicRoute>
@@ -42,7 +51,7 @@ function App() {
           {/* Protected routes (only accessible when logged in) */}
           <Route path="/" element={
             <AuthGuard>
-              <div>Welcome to Home Page</div>
+             <HomePage/>
             </AuthGuard>
           } />
           <Route path="/profile" element={
@@ -106,10 +115,27 @@ function App() {
               <ProductDetail />
             </AuthGuard>
           } />
+          <Route path="/products" element={
+            <AuthGuard>
+              <Products />
+           </AuthGuard>
+          } />
+
 
           {/* Catch all route - redirect to signin */}
           <Route path="*" element={<Navigate to="/signin" replace />} />
+
+
+
+            {/* policies */}
+            
+            <Route path="/policies/terms" element={<TermsAndConditions />} />
+            <Route path="/policies/disclaimer" element={<Disclaimer />} />
+            <Route path="/support/return" element={<ReturnPolicy />} />
+             <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
+           
         </Routes>
+        <Footer/>
       </Router>
     </QueryClientProvider>
   );
