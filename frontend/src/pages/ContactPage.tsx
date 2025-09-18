@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import Swal from 'sweetalert2';
+import { useSubmitContactForm } from '../api/contactApi';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import './ContactPage.css';
 
 interface ContactFormData {
@@ -18,81 +18,90 @@ const ContactPage: React.FC = () => {
     message: ''
   });
 
-  const contactMutation = useMutation({
-    mutationFn: async (data: ContactFormData) => {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/contact/submit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+  const submitContactForm = useSubmitContactForm();
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit contact form');
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      Swal.fire({
-        title: 'Success!',
-        text: 'Your message has been sent successfully. We will get back to you soon!',
-        icon: 'success',
-        confirmButtonText: 'OK'
-      });
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    },
-    onError: (error: any) => {
-      Swal.fire({
-        title: 'Error!',
-        text: error.message || 'Failed to send message. Please try again.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    }
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    contactMutation.mutate(formData);
+    submitContactForm.mutate(formData, {
+      onSuccess: () => {
+        // Reset form on success
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      }
+    });
   };
+
+  // Google Maps iframe embed code (replace with your actual location)
+  const googleMapsEmbedUrl = "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d250875.31940063165!2d79.082117!3d10.74012!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baabee185555555%3A0xcbb0bd1ecb02b6ec!2sCivil%20DigitalStore!5e0!3m2!1sen!2sin!4v1758196477578!5m2!1sen!2sin";
 
   return (
     <div className="contact-page">
       <div className="contact-container">
         <div className="contact-header">
           <h1>Contact Us</h1>
-          <p>We'd love to hear from you. Please fill out the form below.</p>
+          <p>We'd love to hear from you. Please fill out the form below or visit our headquarters.</p>
         </div>
 
         <div className="contact-content">
-          <div className="contact-info">
-            <div className="info-section">
-              <h3>Call to Us:</h3>
-              <p>We're available 24/7, 7 days a week.</p>
-              <p className="highlight">+918807423228</p>
+          {/* Left side - Contact Information and Map */}
+          <div className="contact-info-section">
+            <div className="contact-info">
+              <div className="info-section">
+                <div className="info-icon">
+                  <Phone size={20} />
+                </div>
+                <div>
+                  <h3>Call to Us:</h3>
+                  <p>We're available 24/7, 7 days a week.</p>
+                  <p className="highlight">+918807423228</p>
+                </div>
+              </div>
+
+              <div className="info-section">
+                <div className="info-icon">
+                  <Mail size={20} />
+                </div>
+                <div>
+                  <h3>Write to Us:</h3>
+                  <p>Fill out our form and we will contact you within 24 hours.</p>
+                  <p className="highlight">Civildigitalstore@gmail.com</p>
+                </div>
+              </div>
+
+              <div className="info-section">
+                <div className="info-icon">
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <h3>Business Hours:</h3>
+                  <p>Monday - Friday: 9:00-20:00</p>
+                  <p>Saturday: 11:00 - 15:00</p>
+                  <p>Sunday: Closed</p>
+                </div>
+              </div>
+
+              <div className="info-section">
+                <div className="info-icon">
+                  <MapPin size={20} />
+                </div>
+                <div>
+                  <h3>Headquarters Address:</h3>
+                  <p>Civil Digital Store</p>
+                  <p>Thanjavur, Tamilnadu</p>
+                  <p>India</p>
+                </div>
+              </div>
             </div>
 
-            <div className="info-section">
-              <h3>Write to Us:</h3>
-              <p>Fill out our form and we will contact you within 24 hours.</p>
-              <p className="highlight">Civildigitalstore@gmail.com</p>
-            </div>
-
-            <div className="info-section">
-              <h3>Headquarter:</h3>
-              <p>Monday - Friday: 9:00-20:00</p>
-              <p>Saturday: 11:00 - 15:00</p>
-            </div>
+            {/* Google Maps Embed */}
+           
           </div>
 
+          {/* Right side - Contact Form */}
           <form className="contact-form" onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
@@ -104,6 +113,7 @@ const ContactPage: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  disabled={submitContactForm.isPending}
                   placeholder="Enter your full name"
                 />
               </div>
@@ -116,6 +126,7 @@ const ContactPage: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  disabled={submitContactForm.isPending}
                   placeholder="Enter your email address"
                 />
               </div>
@@ -130,6 +141,7 @@ const ContactPage: React.FC = () => {
                 value={formData.subject}
                 onChange={handleChange}
                 required
+                disabled={submitContactForm.isPending}
                 placeholder="What is this regarding?"
               />
             </div>
@@ -142,6 +154,7 @@ const ContactPage: React.FC = () => {
                 value={formData.message}
                 onChange={handleChange}
                 rows={5}
+                disabled={submitContactForm.isPending}
                 placeholder="Tell us more about your inquiry..."
               />
             </div>
@@ -149,12 +162,44 @@ const ContactPage: React.FC = () => {
             <button 
               type="submit" 
               className="submit-btn"
-              disabled={contactMutation.isPending}
+              disabled={submitContactForm.isPending}
             >
-              {contactMutation.isPending ? 'Sending...' : 'SUBMIT'}
+              {submitContactForm.isPending ? (
+                <>
+                  <span className="spinner"></span>
+                  Sending...
+                </>
+              ) : (
+                'SUBMIT MESSAGE'
+              )}
             </button>
           </form>
+          
         </div>
+         <div className="map-section">
+              <div className="map-container">
+                <iframe
+                  src={googleMapsEmbedUrl}
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Civil Digital Store Location"
+                />
+              </div>
+              <div className="map-actions">
+                <a
+                  href="https://maps.app.goo.gl/UsepnwEqHCPHX3JY7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="map-link"
+                >
+                  Open in Google Maps
+                </a>
+              </div>
+            </div>
       </div>
     </div>
   );
