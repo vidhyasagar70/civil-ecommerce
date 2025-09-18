@@ -1,5 +1,5 @@
 import React from 'react';
-import FormButton from '../Button/FormButton';
+import FormButton from '../../components/Button/FormButton';
 
 interface CartEmptyProps {
   onContinueShopping: () => void;
@@ -20,7 +20,7 @@ const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
       {/* Empty Cart Message */}
       <h2 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
       <p className="text-lg text-gray-600 mb-8 max-w-md">
-        Looks like you haven't added any software to your cart yet. 
+        Looks like you haven't added any software to your cart yet.
         Start exploring our amazing collection of premium software!
       </p>
 
