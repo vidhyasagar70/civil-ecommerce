@@ -40,8 +40,7 @@ const HomePage: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer */}
-      <Footer />
+     
     </div>
   );
 };

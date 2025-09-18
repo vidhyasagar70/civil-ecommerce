@@ -192,9 +192,9 @@ const Footer = () => {
             </div>
 
             {/* Copyright */}
-            <div className="text-center text-xs text-gray-500 py-4 border-t border-gray-800">
-                © 2024{" "}
-                <span className="font-semibold text-gray-300">Webforest Digital</span>.
+            <div className="text-center text-xs text-gray-300 py-4 border-t border-gray-800">
+                © {" "}
+                <span className="font-semibold text-gray-300">Civil Digital Store</span>.
                 All rights reserved.
             </div>
         </footer>
