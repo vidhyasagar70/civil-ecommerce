@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { clearAuth, isAdmin } from '../../utils/auth';
 import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
 import { useCartContext } from '../../contexts/CartContext';
+import logo from '../../assets/logo.png';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
@@ -153,7 +154,7 @@ const Header: React.FC = () => {
                   className="flex items-center"
                 >
                   <img
-                    src="/logo1.png"
+                    src={logo}
                     alt="Logo"
                     className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
                   />
@@ -217,7 +218,7 @@ const Header: React.FC = () => {
               className="flex items-center"
             >
               <img
-                src="/logo.png"
+                src={logo}
                 alt="Logo"
                 className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
               />
