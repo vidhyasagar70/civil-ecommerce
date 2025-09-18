@@ -1,8 +1,9 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useProducts } from '../api/productApi';
-// You may want to import your RatingStar component if you have one.
-
+import { useUser } from '../api/userQueries';
+import { useCartContext } from '../contexts/CartContext';
+import Swal from 'sweetalert2';
 const CategoryListing: React.FC = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -10,6 +11,40 @@ const CategoryListing: React.FC = () => {
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } = useProducts({ category });
   const products = data.products || [];
   const navigate = useNavigate();
+  const { addItem } = useCartContext();
+  const { data: user } = useUser();
+
+ const handleAddToCart = async (product: any, licenseType: '1year' = '1year') => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await addItem(product, licenseType, 1);
+      Swal.fire({
+        title: 'Added to Cart!',
+        text: `${product.name} has been added to your cart`,
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Failed to add item to cart',
+        icon: 'error',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
+  };
+
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4">
@@ -85,7 +120,7 @@ const CategoryListing: React.FC = () => {
               </button>
               <button
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg py-2 font-semibold hover:from-blue-600 hover:to-purple-600 transition"
-                // Implement Add to Cart functionality
+                onClick={() => handleAddToCart(product)}
               >
                 Add to Cart
               </button>
