@@ -35,14 +35,17 @@ export const validateResetTokenAPI = async (token: string) => {
   return response.json();
 };
 
-// Reset Password API
-export const resetPasswordAPI = async (data: { token: string; password: string }) => {
+// Reset Password API - Updated to include email
+export const resetPasswordAPI = async (data: { token: string; email: string; password: string }) => {
   const response = await fetch(`${API_BASE_URL}/auth/reset-password/${data.token}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ password: data.password }),
+    body: JSON.stringify({ 
+      password: data.password,
+      email: data.email 
+    }),
   });
 
   if (!response.ok) {

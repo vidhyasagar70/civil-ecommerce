@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Lock, ArrowLeft, CheckCircle, Eye, EyeOff } from "lucide-react";
+import { Lock, ArrowLeft, CheckCircle, Eye, EyeOff, Mail } from "lucide-react";
 import Swal from "sweetalert2";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
@@ -8,6 +8,7 @@ import { validateResetTokenAPI, resetPasswordAPI } from "../../services/api";
 import logo from "../../assets/logo.png";
 
 export default function PasswordResetPage() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +45,11 @@ export default function PasswordResetPage() {
     validateToken();
   }, [token]);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const validatePassword = (pwd: string) => {
     const minLength = pwd.length >= 8;
     const hasUpper = /[A-Z]/.test(pwd);
@@ -70,6 +76,17 @@ export default function PasswordResetPage() {
       return;
     }
 
+    // Validate email
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     // Validate passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -86,7 +103,7 @@ export default function PasswordResetPage() {
     setIsLoading(true);
 
     try {
-      await resetPasswordAPI({ token, password });
+      await resetPasswordAPI({ token, email, password });
       
       setIsPasswordReset(true);
       
@@ -218,6 +235,7 @@ export default function PasswordResetPage() {
   }
 
   const passwordValidation = validatePassword(password);
+  const isEmailValid = validateEmail(email);
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
@@ -229,7 +247,7 @@ export default function PasswordResetPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mt-4">Reset Your Password</h1>
           <p className="text-gray-800 mt-2 text-sm text-center">
-            Create a strong, secure password for your account
+            Verify your email and create a strong, secure password for your account
           </p>
         </div>
 
@@ -254,6 +272,50 @@ export default function PasswordResetPage() {
 
           {/* Form */}
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Email Input */}
+            <div className="relative">
+              <FormInput
+                label="Email Address"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email address"
+                required
+                className={`pl-10 ${
+                  email && !isEmailValid 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : email && isEmailValid 
+                    ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
+                    : ''
+                }`}
+              />
+              <div className="absolute left-3 top-9 pointer-events-none">
+                <Mail className={`h-5 w-5 ${
+                  email && !isEmailValid 
+                    ? 'text-red-400' 
+                    : email && isEmailValid 
+                    ? 'text-green-400'
+                    : 'text-gray-400'
+                }`} />
+              </div>
+              {email && (
+                <div className="absolute right-3 top-9 pointer-events-none">
+                  {isEmailValid ? (
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <div className="h-5 w-5 rounded-full border-2 border-red-400"></div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Email validation message */}
+            {email && !isEmailValid && (
+              <div className="text-sm text-red-600 -mt-4">
+                Please enter a valid email address
+              </div>
+            )}
+
             {/* Password Input */}
             <div className="relative">
               <FormInput
@@ -263,10 +325,11 @@ export default function PasswordResetPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your new password"
                 required
+                className="pr-10"
               />
               <button
                 type="button"
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition-colors z-10"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
@@ -286,10 +349,17 @@ export default function PasswordResetPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your new password"
                 required
+                className={`pr-10 ${
+                  confirmPassword && password !== confirmPassword 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : confirmPassword && password === confirmPassword && password
+                    ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
+                    : ''
+                }`}
               />
               <button
                 type="button"
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition-colors z-10"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
@@ -331,8 +401,9 @@ export default function PasswordResetPage() {
 
             {/* Password Match Indicator */}
             {confirmPassword && (
-              <div className={`text-sm ${password === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
-                {password === confirmPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
+              <div className={`text-sm flex items-center ${password === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
+                <CheckCircle className={`h-4 w-4 mr-2 ${password === confirmPassword ? 'text-green-500' : 'text-red-500'}`} />
+                {password === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
               </div>
             )}
 
@@ -340,12 +411,14 @@ export default function PasswordResetPage() {
               type="submit" 
               disabled={
                 isLoading || 
+                !email.trim() || 
+                !isEmailValid ||
                 !password.trim() || 
                 !confirmPassword.trim() || 
                 password !== confirmPassword || 
                 !passwordValidation.isValid
               } 
-              className="w-full"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
@@ -371,6 +444,7 @@ export default function PasswordResetPage() {
               <li>• Use a unique password you haven't used before</li>
               <li>• Consider using a password manager</li>
               <li>• Don't share your password with anyone</li>
+              <li>• Make sure the email matches your account email</li>
             </ul>
           </div>
 
