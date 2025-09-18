@@ -16,9 +16,7 @@ import AuthGuard from './components/Auth/AuthGuard';
 import PublicRoute from './components/Auth/PublicRoute';
 import HomePage from './pages/auth/HomePage';
 import Disclaimer from './ui/policy/Disclaimer';
-
 import ReturnPolicy from './ui/policy/ReturnPolicy';
-
 import TermsAndConditions from './ui/policy/TermsAndConditions';
 import ShippingPolicy from './ui/policy/ShippingPolicy';
 import Footer from './components/Footer/Footer';
@@ -37,7 +35,7 @@ function App() {
             <PublicRoute>
               <SignupPage />
             </PublicRoute>
-        
+
           } />
           <Route path="/signin" element={
             <PublicRoute>
@@ -51,7 +49,7 @@ function App() {
           {/* Protected routes (only accessible when logged in) */}
           <Route path="/" element={
             <AuthGuard>
-             <HomePage/>
+              <HomePage />
             </AuthGuard>
           } />
           <Route path="/profile" element={
@@ -118,7 +116,7 @@ function App() {
           <Route path="/products" element={
             <AuthGuard>
               <Products />
-           </AuthGuard>
+            </AuthGuard>
           } />
 
 
@@ -127,15 +125,15 @@ function App() {
 
 
 
-            {/* policies */}
-            
-            <Route path="/policies/terms" element={<TermsAndConditions />} />
-            <Route path="/policies/disclaimer" element={<Disclaimer />} />
-            <Route path="/support/return" element={<ReturnPolicy />} />
-             <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
-           
+          {/* policies */}
+
+          <Route path="/policies/terms" element={<TermsAndConditions />} />
+          <Route path="/policies/disclaimer" element={<Disclaimer />} />
+          <Route path="/support/return" element={<ReturnPolicy />} />
+          <Route path="/ShippingPolicy" element={<ShippingPolicy />} />
+
         </Routes>
-        <Footer/>
+        <Footer />
       </Router>
     </QueryClientProvider>
   );
