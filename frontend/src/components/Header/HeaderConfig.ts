@@ -17,7 +17,8 @@ export const headerConfig = {
   legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms & Conditions", href: "/terms-conditions" },
-    { label: "Disclaimer", href: "/disclaimer" }
+    { label: "Disclaimer", href: "/disclaimer" },
+    { href: '/contact', label: 'Contact Us' },
   ],
   search: {
     placeholder: "Search for software, brands, or categories..."
