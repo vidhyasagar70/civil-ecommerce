@@ -4,7 +4,11 @@ import { useProducts } from '../api/productApi';
 import { useUser } from '../api/userQueries';
 import { useCartContext } from '../contexts/CartContext';
 import Swal from 'sweetalert2';
-const CategoryListing: React.FC = () => {
+interface CategoryListingProps {
+  limit?: number; 
+  showCount?: boolean;
+}
+const CategoryListing: React.FC<CategoryListingProps> = ({limit,showCount=true}) => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const category = params.get("category") || "";
@@ -45,15 +49,20 @@ const CategoryListing: React.FC = () => {
     }
   };
 
+  const displayedProducts = limit ? products.slice(0, limit) : products;
+
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4">
       <h1 className="text-3xl font-bold mb-1">{category}</h1>
-      <p className="text-lg text-gray-500 mb-4">
-        {products.length} product{products.length !== 1 && 's'} found
-      </p>
+      {showCount && (
+        <p className="text-lg text-gray-500 mb-4">
+          {displayedProducts.length} product
+          {displayedProducts.length !== 1 && "s"} found
+        </p>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {products.map((product: any) => (
+        {displayedProducts.map((product: any) => (
           <div
             key={product._id}
             className="bg-white border rounded-2xl shadow hover:shadow-lg transition p-5 flex flex-col"
