@@ -17,7 +17,12 @@ import AuthGuard from './components/Auth/AuthGuard';
 import PublicRoute from './components/Auth/PublicRoute';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import PasswordResetPage from './pages/auth/PasswordResetPage';
-
+import Footer from './components/Footer/Footer';
+import HomePage from './pages/HomePage';
+import Disclaimer from './ui/policy/Disclaimer';
+import ReturnPolicy from './ui/policy/ReturnPolicy';
+import TermsAndConditions from './ui/policy/TermsAndConditions';
+import ShippingPolicy from './ui/policy/ShippingPolicy';
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -26,7 +31,7 @@ function AppLayout() {
   // Define routes where you don't want the Header
   const hideHeaderRoutes = ['/signin', '/signup', '/forgot-password', '/reset-password'];
 
-  const shouldHideHeader = hideHeaderRoutes.some(route => 
+  const shouldHideHeader = hideHeaderRoutes.some(route =>
     location.pathname === route || location.pathname.startsWith('/reset-password/')
   );
 
@@ -63,7 +68,7 @@ function AppLayout() {
           path="/"
           element={
             <AuthGuard>
-              <div>Welcome to Home Page</div>
+              <HomePage />
             </AuthGuard>
           }
         />
@@ -174,7 +179,12 @@ function AppLayout() {
 
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/signin" replace />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/disclaimer" element={<Disclaimer />} />
+        <Route path="/return-policy" element={<ReturnPolicy />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
       </Routes>
+      {!shouldHideHeader && <Footer />}
     </>
   );
 }
