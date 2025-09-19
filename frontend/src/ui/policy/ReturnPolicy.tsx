@@ -1,110 +1,206 @@
-import React from "react";
 
-const ReturnPolicy: React.FC = () => {
-    return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4">
-            <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-12">
-                {/* Title */}
-                <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">
-                    Return and Refund Policy
-                </h1>
+import {
+  Info,
+  FileText,
+  RefreshCcw,
+  Package,
+  Gift,
+  Mail,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
-                {/* Last Updated */}
-                <p className="text-sm text-gray-500 mb-6 text-center">
-                    Last updated: July 12, 2023
-                </p>
+const sections = [
+  {
+    icon: Info,
+    title: "Introduction",
+    content: (
+      <p className="text-gray-700 leading-relaxed">
+        Thank you for shopping at{" "}
+        <span className="font-medium text-indigo-600">Civil DigitalStore</span>.
+        If you are dissatisfied with your purchase, this policy explains how
+        returns and refunds work. By placing an order, you agree to these terms.
+      </p>
+    ),
+  },
+  {
+    icon: FileText,
+    title: "Interpretation & Definitions",
+    content: (
+      <ul className="list-disc pl-6 text-gray-700 space-y-2">
+        <li>
+          <b>Company:</b> Civil Engineering DigitalStore.
+        </li>
+        <li>
+          <b>Goods:</b> The products available for sale.
+        </li>
+        <li>
+          <b>Orders:</b> Your purchase requests from us.
+        </li>
+        <li>
+          <b>Website:</b>{" "}
+          <a
+            href="https://civildigitalstore.com/"
+            className="text-indigo-600 underline"
+          >
+            civildigitalstore.com
+          </a>
+        </li>
+        <li>
+          <b>You:</b> The customer using our service.
+        </li>
+      </ul>
+    ),
+  },
+  {
+    icon: RefreshCcw,
+    title: "Order Cancellation Rights",
+    content: (
+      <>
+        <p className="text-gray-700 leading-relaxed">
+          You have the right to cancel your order within <b>7 days</b> without
+          giving any reason.
+        </p>
+        <p className="text-gray-700 leading-relaxed mt-2">
+          To cancel, please notify us clearly by:
+        </p>
+        <ul className="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+          <li>
+            Email:{" "}
+            <span className="text-indigo-600 font-medium">
+              civildigitalstore@gmail.com
+            </span>
+          </li>
+          <li>
+            Phone:{" "}
+            <span className="text-indigo-600 font-medium">8807423228</span>
+          </li>
+        </ul>
+        <p className="text-gray-700 leading-relaxed mt-2">
+          Refunds will be processed within 14 days using your original payment
+          method. No fees will be charged for reimbursement.
+        </p>
+      </>
+    ),
+  },
+  {
+    icon: Package,
+    title: "Conditions for Returns",
+    content: (
+      <>
+        <p className="text-gray-700">For goods to be eligible for a return:</p>
+        <ul className="list-disc pl-6 text-gray-700 space-y-1 mt-2">
+          <li>They were purchased within the last 7 days.</li>
+          <li>They are in the original packaging.</li>
+        </ul>
+        <p className="text-gray-700 mt-3 font-semibold">
+          The following items cannot be returned:
+        </p>
+        <ul className="list-disc pl-6 text-gray-700 space-y-1 mt-1">
+          <li>Customized goods or made-to-order products.</li>
+          <li>Digital items once downloaded.</li>
+          <li>
+            Goods not suitable for return due to hygiene reasons and unsealed
+            after delivery.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    icon: Gift,
+    title: "Gifts",
+    content: (
+      <>
+        <p className="text-gray-700 leading-relaxed">
+          If the goods were marked as a gift and shipped directly to you, you
+          will receive a gift credit for the value of your return. Once the
+          returned item is received, a gift certificate will be sent.
+        </p>
+        <p className="text-gray-700 leading-relaxed mt-2">
+          If the goods were not marked as a gift, or shipped to the gift giver,
+          the refund will be issued to the original purchaser.
+        </p>
+      </>
+    ),
+  },
+  {
+    icon: Mail,
+    title: "Contact Us",
+    content: (
+      <>
+        <p className="text-gray-700 leading-relaxed">
+          For any questions about this Return & Refund Policy, contact us:
+        </p>
+        <ul className="list-disc pl-6 text-gray-700 mt-2">
+          <li>
+            Email:{" "}
+            <span className="text-indigo-600 font-medium">
+              civildigitalstore@gmail.com
+            </span>
+          </li>
+          <li>
+            Phone:{" "}
+            <span className="text-indigo-600 font-medium">8807423228</span>
+          </li>
+        </ul>
+      </>
+    ),
+  },
+];
 
-                {/* Intro */}
-                <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                    Thank you for shopping at <strong>Civil DigitalStore</strong>.
-                </p>
-                <p className="text-gray-700 mb-6 leading-relaxed">
-                    If, for any reason, you are not completely satisfied with a purchase, we invite you to review our policy on refunds and returns. The following terms are applicable for any products that you purchased with us.
-                </p>
+export default function ReturnPolicy() {
+  return (
+    <div className="min-h-screen bg-gradient-to-tr from-indigo-50 via-purple-50 to-white font-sans text-gray-800 antialiased">
+      <div className="max-w-5xl mx-auto py-14 px-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-14"
+        >
+          <h1 className="text-5xl font-serif font-bold text-gray-900">
+            Return & Refund Policy
+          </h1>
+          <p className="text-gray-600 mt-4 max-w-2xl mx-auto text-lg">
+            Please read this policy carefully before purchasing from{" "}
+            <span className="text-indigo-600 font-semibold">
+              Civil DigitalStore
+            </span>
+            . Your rights as a customer matter to us.
+          </p>
+          <p className="text-sm text-gray-400 mt-3">
+            Last updated: July 12, 2023
+          </p>
+        </motion.div>
 
-                {/* Interpretation and Definitions */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">Interpretation and Definitions</h2>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Interpretation</h3>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.
-                </p>
-
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Definitions</h3>
-                <p className="text-gray-700 mb-4 leading-relaxed">For the purposes of this Return and Refund Policy:</p>
-                <ul className="list-disc pl-6 space-y-2 text-gray-700">
-                    <li><strong>Company</strong>: Civil Engineering DigitalStore.</li>
-                    <li><strong>Goods</strong>: Items offered for sale on the Service.</li>
-                    <li><strong>Orders</strong>: A request by You to purchase Goods from Us.</li>
-                    <li><strong>Service</strong>: Refers to the Website.</li>
-                    <li>
-                        <strong>Website</strong>: Civil Engineering Data, accessible from{" "}
-                        <a href="https://civildigitalstore.com/" className="text-violet-700 font-semibold hover:underline" target="_blank" rel="noopener noreferrer">
-                            https://civildigitalstore.com/
-                        </a>
-                    </li>
-                    <li><strong>You</strong>: The individual or entity accessing or using the Service.</li>
-                </ul>
-
-                {/* Cancellation Rights */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">Your Order Cancellation Rights</h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    You are entitled to cancel your order within 7 days without giving any reason. The deadline is 7 days from the date you received the goods or a third party (not the carrier) took possession.
-                </p>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    To exercise your right of cancellation, inform us via:
-                </p>
-                <ul className="list-disc pl-6 space-y-2 text-gray-700">
-                    <li>📧 Email: civildigitalstore@gmail.com</li>
-                    <li>📞 Phone: 8807423228</li>
-                </ul>
-                <p className="text-gray-700 mb-6 leading-relaxed">
-                    We will reimburse you within 14 days of receiving the returned goods, using the same payment method with no fees.
-                </p>
-
-                {/* Conditions for Returns */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">Conditions for Returns</h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">To be eligible for a return:</p>
-                <ul className="list-disc pl-6 space-y-2 text-gray-700">
-                    <li>Refunds are processed within 2–3 business days after inspection.</li>
-                    <li>
-                        The following goods cannot be returned:
-                        <ul className="list-disc pl-6 space-y-2 mt-2">
-                            <li>Customized or personalized goods.</li>
-                            <li>Goods that deteriorate quickly or are expired.</li>
-                            <li>Unsealed goods unsuitable for return due to hygiene reasons.</li>
-                            <li>Goods inseparably mixed with other items after delivery.</li>
-                        </ul>
-                    </li>
-                </ul>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    We reserve the right to refuse returns that don’t meet these conditions. Sale items are non-refundable unless required by law.
-                </p>
-
-                {/* Returning Goods */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">Returning Goods</h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    You are responsible for the cost and risk of returning goods. Since this is a digital product, returns generally do not apply.
-                </p>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    We recommend using an insured and trackable mail service. Refunds require proof of return delivery.
-                </p>
-
-                {/* Gifts */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">Gifts</h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                    If marked as a gift, you’ll receive a gift credit. Otherwise, refunds go to the original purchaser.
-                </p>
-
-                {/* Contact */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">Contact Us</h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">Questions about this policy?</p>
-                <ul className="list-disc pl-6 space-y-2 text-gray-700">
-                    <li>📧 Email: civildigitalstore@gmail.com</li>
-                    <li>📞 Phone: 8807423228</li>
-                </ul>
-            </div>
+        {/* Segmented cards */}
+        <div className="grid gap-8">
+          {sections.map((section, i) => {
+            const Icon = section.icon;
+            return (
+              <motion.section
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-shadow"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-indigo-100 p-2 rounded-full">
+                    <Icon className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    {section.title}
+                  </h2>
+                </div>
+                {section.content}
+              </motion.section>
+            );
+          })}
         </div>
-    );
-};
-
-export default ReturnPolicy;
+      </div>
+    </div>
+  );
+}

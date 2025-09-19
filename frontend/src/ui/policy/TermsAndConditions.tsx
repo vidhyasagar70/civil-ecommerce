@@ -1,19 +1,23 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { Cookie, FileText, Link, Layout, Shield, AlertCircle } from "lucide-react";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const TermsAndConditions: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-12">
-        {/* Title */}
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">
-          Terms and Conditions
+  <div className="py-14 px-4 sm:py-20 sm:px-6 bg-gradient-to-tr from-blue-92 via-violet-50 to-white-50">
+      {/* Header */}
+      <div className="max-w-5xl mx-auto text-center mb-14">
+        <h1 className="text-5xl font-serif font-bold text-gray-900">
+          Terms & Conditions
         </h1>
-
-        {/* Intro */}
-        <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-          Welcome to <strong>Civil DigitalStore</strong>! These terms and
-          conditions outline the rules and regulations for the use of Civil
-          DigitalStore Website, located at{" "}
+        <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Welcome to <strong>Civil DigitalStore</strong>! Please read these Terms
+          & Conditions carefully before using our website{" "}
           <a
             href="https://civildigitalstore.com/"
             target="_blank"
@@ -21,98 +25,166 @@ const TermsAndConditions: React.FC = () => {
             className="text-violet-700 font-semibold hover:underline"
           >
             https://civildigitalstore.com/
-          </a>
-          .
+          </a>.
         </p>
+      </div>
 
-        <p className="text-gray-700 mb-6 leading-relaxed">
-          By accessing this website, we assume you accept these terms and
-          conditions. Do not continue to use Civil DigitalStore if you do not
-          agree with all the terms and conditions stated on this page.
-        </p>
-
+      {/* Cards */}
+      <div className="max-w-5xl mx-auto grid gap-8">
         {/* Cookies */}
-        <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">
-          Cookies
-        </h2>
-        <p className="text-gray-700 mb-4 leading-relaxed">
-          We employ the use of cookies. By accessing Civil DigitalStore, you
-          agree to use cookies in accordance with our{" "}
-          <strong>Privacy Policy</strong>. Most interactive websites use cookies
-          to retrieve user details for each visit.
-        </p>
+        <motion.div
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-200"
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-indigo-100 rounded-full">
+              <Cookie className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900">Cookies</h2>
+          </div>
+          <p className="text-gray-700 leading-relaxed">
+            By using our website, you consent to the use of cookies in accordance
+            with our Privacy Policy. Cookies help improve user experience and
+            enable certain site functionalities.
+          </p>
+        </motion.div>
 
         {/* License */}
-        <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">
-          License
-        </h2>
-        <p className="text-gray-700 mb-4 leading-relaxed">
-          Unless otherwise stated, Civil DigitalStore and/or its licensors own
-          the intellectual property rights for all material on this website. All
-          rights are reserved. You may access this for your personal use subject
-          to restrictions set in these terms.
-        </p>
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>Do not republish material from Civil DigitalStore</li>
-          <li>Do not sell, rent or sub-license material</li>
-          <li>Do not reproduce, duplicate or copy material</li>
-          <li>Do not redistribute content without permission</li>
-        </ul>
+        <motion.div
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-200"
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-indigo-100 rounded-full">
+              <FileText className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900">License</h2>
+          </div>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            Unless otherwise stated, <strong>Civil DigitalStore</strong> owns the
+            intellectual property rights for all material on this site. You may
+            use it for personal purposes only under these restrictions:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-gray-700">
+            <li>No republishing of content</li>
+            <li>No selling or sublicensing</li>
+            <li>No reproduction or duplication</li>
+            <li>No redistribution without permission</li>
+          </ul>
+        </motion.div>
 
         {/* Hyperlinking */}
-        <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">
-          Hyperlinking to our Content
-        </h2>
-        <p className="text-gray-700 mb-4 leading-relaxed">
-          The following organizations may link to our Website without prior
-          written approval:
-        </p>
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>Government agencies</li>
-          <li>Search engines</li>
-          <li>News organizations</li>
-          <li>Online directory distributors</li>
-        </ul>
+        <motion.div
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-200"
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-indigo-100 rounded-full">
+              <Link className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Hyperlinking to Our Content
+            </h2>
+          </div>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            The following organizations may link to our website without prior
+            approval:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-gray-700">
+            <li>Government agencies</li>
+            <li>Search engines</li>
+            <li>News organizations</li>
+            <li>Online directories</li>
+          </ul>
+        </motion.div>
 
         {/* iFrames */}
-        <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">
-          iFrames
-        </h2>
-        <p className="text-gray-700 mb-4 leading-relaxed">
-          Without prior approval and written permission, you may not create
-          frames around our Webpages that alter the visual presentation or
-          appearance of our Website.
-        </p>
+        <motion.div
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-200"
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-indigo-100 rounded-full">
+              <Layout className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900">iFrames</h2>
+          </div>
+          <p className="text-gray-700 leading-relaxed">
+            Without written approval, you may not create frames around our web
+            pages that alter the appearance or presentation of our website.
+          </p>
+        </motion.div>
 
         {/* Content Liability */}
-        <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">
-          Content Liability
-        </h2>
-        <p className="text-gray-700 mb-4 leading-relaxed">
-          We shall not be held responsible for any content that appears on your
-          website. You agree to protect and defend us against all claims that
-          arise on your site.
-        </p>
+        <motion.div
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-200"
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-indigo-100 rounded-full">
+              <Shield className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Content Liability
+            </h2>
+          </div>
+          <p className="text-gray-700 leading-relaxed">
+            We are not responsible for any content that appears on your website.
+            You agree to defend and protect us against any claims arising from
+            your site.
+          </p>
+        </motion.div>
 
         {/* Disclaimer */}
-        <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4">
-          Disclaimer
-        </h2>
-        <p className="text-gray-700 mb-4 leading-relaxed">
-          To the maximum extent permitted by law, we exclude all
-          representations, warranties, and conditions relating to our website
-          and the use of this website. Nothing in this disclaimer will:
-        </p>
-        <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          <li>Limit or exclude liability for death or personal injury</li>
-          <li>
-            Limit or exclude liability for fraud or fraudulent misrepresentation
-          </li>
-          <li>
-            Exclude any liabilities that may not be excluded under applicable
-            law
-          </li>
-        </ul>
+        <motion.div
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-200"
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-indigo-100 rounded-full">
+              <AlertCircle className="w-7 h-7 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900">Disclaimer</h2>
+          </div>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            To the fullest extent permitted by law, we exclude all warranties and
+            conditions relating to this website. Nothing in this disclaimer will:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-gray-700">
+            <li>Limit liability for death or personal injury</li>
+            <li>Limit liability for fraud or misrepresentation</li>
+            <li>Exclude liabilities that cannot be excluded by law</li>
+          </ul>
+        </motion.div>
+      </div>
+
+      {/* Footer Notice */}
+      <div className="mt-12 text-center text-sm text-gray-500">
+        Last updated: <strong>September 2025</strong> • Subject to change anytime
       </div>
     </div>
   );
