@@ -4,7 +4,31 @@ import Product, { IProduct } from '../models/Product';
 // Create new product
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const product = new Product(req.body);
+    // Process the product data to handle both old and new field structures
+    const productData = { ...req.body };
+
+    // Handle backward compatibility - if new structure fields exist, also populate old fields
+    if (productData.brand && !productData.company) {
+      productData.company = productData.brand;
+    }
+    if (productData.imageUrl && !productData.image) {
+      productData.image = productData.imageUrl;
+    }
+
+    // If subscriptionDurations exist, also populate price1 and price3 for backward compatibility
+    if (productData.subscriptionDurations && productData.subscriptionDurations.length > 0) {
+      productData.price1 = productData.subscriptionDurations[0].price;
+      if (productData.subscriptionDurations.length > 1) {
+        productData.price3 = productData.subscriptionDurations[1].price;
+      }
+    }
+
+    // Handle lifetime pricing
+    if (productData.hasLifetime && productData.lifetimePrice) {
+      productData.priceLifetime = Number(productData.lifetimePrice);
+    }
+
+    const product = new Product(productData);
     const savedProduct = await product.save();
     res.status(201).json(savedProduct);
   } catch (error: any) {
@@ -16,10 +40,10 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 export const getProducts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { search, category, company, page = 1, limit = 10 } = req.query;
-    
+
     // Build filter object
     const filter: any = {};
-    
+
     if (search) {
       filter.$or = [
         { name: { $regex: search as string, $options: 'i' } },
@@ -27,11 +51,11 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
         { version: { $regex: search as string, $options: 'i' } }
       ];
     }
-    
+
     if (category) {
       filter.category = { $regex: category as string, $options: 'i' };
     }
-    
+
     if (company) {
       filter.company = { $regex: company as string, $options: 'i' };
     }
@@ -74,6 +98,21 @@ export const getCompanies = async (req: Request, res: Response): Promise<void> =
   }
 };
 
+// Get unique brands (for new structure)
+export const getBrands = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Try to get from brand field first, fallback to company field for backward compatibility
+    const brands = await Product.distinct('brand');
+    const companies = await Product.distinct('company');
+
+    // Combine and deduplicate
+    const allBrands = [...new Set([...brands.filter(b => b), ...companies])];
+    res.json(allBrands);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get single product by id
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -91,7 +130,31 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
 // Update product by id
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    // Process the product data to handle both old and new field structures
+    const productData = { ...req.body };
+
+    // Handle backward compatibility - if new structure fields exist, also populate old fields
+    if (productData.brand && !productData.company) {
+      productData.company = productData.brand;
+    }
+    if (productData.imageUrl && !productData.image) {
+      productData.image = productData.imageUrl;
+    }
+
+    // If subscriptionDurations exist, also populate price1 and price3 for backward compatibility
+    if (productData.subscriptionDurations && productData.subscriptionDurations.length > 0) {
+      productData.price1 = productData.subscriptionDurations[0].price;
+      if (productData.subscriptionDurations.length > 1) {
+        productData.price3 = productData.subscriptionDurations[1].price;
+      }
+    }
+
+    // Handle lifetime pricing
+    if (productData.hasLifetime && productData.lifetimePrice) {
+      productData.priceLifetime = Number(productData.lifetimePrice);
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,
       runValidators: true,
     });
