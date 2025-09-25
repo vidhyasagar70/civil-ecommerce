@@ -1,5 +1,23 @@
 import React, { useState } from 'react';
-import { X, Package, Building2, DollarSign, Calendar, Image as ImageIcon } from 'lucide-react';
+import {
+  X,
+  Package,
+  Building2,
+  DollarSign,
+  Calendar,
+  Image as ImageIcon,
+  Star,
+  Award,
+  Play,
+  CheckCircle,
+  Circle,
+  Tag,
+  Users,
+  CreditCard,
+  HelpCircle,
+  Monitor,
+  Zap
+} from 'lucide-react';
 import type { ProductViewModalProps } from './types/ProductViewModal';
 import FormButton from '../../../components/Button/FormButton';
 import './AddProductModal.css';
@@ -73,8 +91,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
                     key={index}
                     onClick={() => handleImageClick(index)}
                     className={`p-1 border-2 rounded-lg transition-all ${selectedImageIndex === index
-                        ? 'border-blue-500 ring-2 ring-blue-200'
-                        : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 ring-2 ring-blue-200'
+                      : 'border-gray-200 hover:border-gray-300'
                       }`}
                   >
                     <img
