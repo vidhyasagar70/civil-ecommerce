@@ -7,7 +7,7 @@ import {
   Building2,
   ShoppingCart,
   Settings as SettingsIcon,
-  Users
+  Users,Image 
 } from 'lucide-react';
 import Dashboard from './Dashboard';
 import Products from './products/Products';
@@ -16,8 +16,8 @@ import Companies from './Companies';
 import Orders from './Orders';
 import Settings from './Settings';
 import UserManagement from './users/UserManagement';
-
-type MenuType = 'dashboard'|'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings';
+import Banner from './Banner';
+type MenuType = 'dashboard'|'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings' | 'banner';
 
 const AdminDashboard: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>('dashboard');
@@ -29,6 +29,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'categories', label: 'Categories', icon: Tag },
     { id: 'companies', label: 'Companies', icon: Building2 },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
+    { id: 'banner', label: 'Banner', icon: Image },
     { id: 'settings', label: 'Settings', icon: SettingsIcon }
   ];
 
@@ -46,6 +47,8 @@ const AdminDashboard: React.FC = () => {
         return <Companies />;
       case 'orders':
         return <Orders />;
+        case 'banner': 
+        return <Banner />;
       case 'settings':
         return <Settings />;
       default:
