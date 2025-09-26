@@ -27,6 +27,8 @@ const brands = [
 interface SubscriptionDuration {
     duration: string;
     price: string;
+    priceINR: string;
+    priceUSD: string;
 }
 
 interface FAQ {
@@ -57,8 +59,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         subscriptions: [{ duration: "Monthly", price: "" }] as SubscriptionDuration[],
         hasLifetime: false,
         lifetimePrice: "",
+        lifetimePriceINR: "",
+        lifetimePriceUSD: "",
         hasMembership: false,
         membershipPrice: "",
+        membershipPriceINR: "",
+        membershipPriceUSD: "",
         imageUrl: "",
         additionalImages: [""] as string[],
         videoUrl: "",
@@ -84,17 +90,23 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     subscriptionDurations: product.subscriptionDurations && product.subscriptionDurations.length > 0
                         ? product.subscriptionDurations.map(sub => ({
                             duration: sub.duration,
-                            price: sub.price?.toString() || ""
+                            price: sub.price?.toString() || "",
+                            priceINR: sub.priceINR?.toString() || "",
+                            priceUSD: sub.priceUSD?.toString() || ""
                         }))
                         : [
-                            { duration: "1 Year", price: product.price1?.toString() || "" },
-                            ...(product.price3 ? [{ duration: "3 Year", price: product.price3.toString() }] : [])
+                            { duration: "1 Year", price: product.price1?.toString() || "", priceINR: product.price1INR?.toString() || "", priceUSD: product.price1USD?.toString() || "" },
+                            ...(product.price3 ? [{ duration: "3 Year", price: product.price3.toString(), priceINR: product.price3INR?.toString() || "", priceUSD: product.price3USD?.toString() || "" }] : [])
                         ],
-                    subscriptions: [{ duration: "Monthly", price: "" }],
+                    subscriptions: [{ duration: "Monthly", price: "", priceINR: "", priceUSD: "" }],
                     hasLifetime: product.hasLifetime || !!product.priceLifetime || !!product.lifetimePrice,
                     lifetimePrice: product.lifetimePrice?.toString() || product.priceLifetime?.toString() || "",
+                    lifetimePriceINR: product.lifetimePriceINR?.toString() || product.priceLifetimeINR?.toString() || "",
+                    lifetimePriceUSD: product.lifetimePriceUSD?.toString() || product.priceLifetimeUSD?.toString() || "",
                     hasMembership: product.hasMembership || !!product.membershipPrice,
                     membershipPrice: product.membershipPrice?.toString() || "",
+                    membershipPriceINR: product.membershipPriceINR?.toString() || "",
+                    membershipPriceUSD: product.membershipPriceUSD?.toString() || "",
                     imageUrl: product.imageUrl || product.image || "",
                     additionalImages: (product.additionalImages && product.additionalImages.length > 0) ? product.additionalImages : [""],
                     videoUrl: product.videoUrl || "",
@@ -114,12 +126,16 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     requirements: "",
                     category: categories[0].value,
                     brand: brands[0].value,
-                    subscriptionDurations: [{ duration: "1 Year", price: "" }],
-                    subscriptions: [{ duration: "Monthly", price: "" }],
+                    subscriptionDurations: [{ duration: "1 Year", price: "", priceINR: "", priceUSD: "" }],
+                    subscriptions: [{ duration: "Monthly", price: "", priceINR: "", priceUSD: "" }],
                     hasLifetime: false,
                     lifetimePrice: "",
+                    lifetimePriceINR: "",
+                    lifetimePriceUSD: "",
                     hasMembership: false,
                     membershipPrice: "",
+                    membershipPriceINR: "",
+                    membershipPriceUSD: "",
                     imageUrl: "",
                     additionalImages: [""],
                     videoUrl: "",
@@ -139,7 +155,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         setNewProduct(prev => ({ ...prev, [field]: value }));
     };
 
-    const updateSubscriptionDuration = (index: number, field: 'duration' | 'price', value: string) => {
+    const updateSubscriptionDuration = (index: number, field: 'duration' | 'price' | 'priceINR' | 'priceUSD', value: string) => {
         setNewProduct(prev => ({
             ...prev,
             subscriptionDurations: prev.subscriptionDurations.map((sub, i) =>
@@ -151,7 +167,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     const addSubscriptionDuration = () => {
         setNewProduct(prev => ({
             ...prev,
-            subscriptionDurations: [...prev.subscriptionDurations, { duration: "", price: "" }]
+            subscriptionDurations: [...prev.subscriptionDurations, { duration: "", price: "", priceINR: "", priceUSD: "" }]
         }));
     };
 
@@ -207,7 +223,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     };
 
     // Subscription management functions (separate from pricing)
-    const updateSubscription = (index: number, field: 'duration' | 'price', value: string) => {
+    const updateSubscription = (index: number, field: 'duration' | 'price' | 'priceINR' | 'priceUSD', value: string) => {
         setNewProduct(prev => ({
             ...prev,
             subscriptions: prev.subscriptions.map((sub, i) =>
@@ -219,7 +235,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     const addSubscription = () => {
         setNewProduct(prev => ({
             ...prev,
-            subscriptions: [...prev.subscriptions, { duration: "Monthly", price: "" }]
+            subscriptions: [...prev.subscriptions, { duration: "Monthly", price: "", priceINR: "", priceUSD: "" }]
         }));
     };
 
@@ -295,58 +311,58 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-50">
-            <div className="relative bg-white rounded-xl shadow-lg max-w-4xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh] modal-scroll-container">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-75">
+            <div className="relative bg-gray-800 rounded-xl shadow-xl max-w-4xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh] modal-scroll-container">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-6 text-2xl font-bold text-gray-400 hover:text-gray-600"
+                    className="absolute top-4 right-6 text-2xl font-bold text-gray-400 hover:text-white"
                     aria-label="Close modal"
                 >
                     &times;
                 </button>
 
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">{product ? 'Edit Product' : 'Add New Product'}</h1>
-                    <p className="text-gray-600 mt-1">Add a new software product to your catalog with advanced formatting options</p>
+                    <h1 className="text-2xl font-bold text-white">{product ? 'Edit Product' : 'Add New Product'}</h1>
+                    <p className="text-gray-300 mt-1">Add a new software product to your catalog with advanced formatting options</p>
                 </div>
 
                 <form onSubmit={handleAddProduct} className="space-y-8">
                     {/* Basic Information */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">Basic Information</h2>
+                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Basic Information</h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Product Name</label>
+                                <label className="block text-sm font-medium text-gray-300">Product Name</label>
                                 <input
                                     type="text"
                                     value={newProduct.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
                                     placeholder="e.g., AutoCAD 2025"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                     required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Version</label>
+                                <label className="block text-sm font-medium text-gray-300">Version</label>
                                 <input
                                     type="text"
                                     value={newProduct.version}
                                     onChange={(e) => handleInputChange('version', e.target.value)}
                                     placeholder="e.g., 2025.1"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                     required
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">Short Description</label>
+                            <label className="block text-sm font-medium text-gray-300">Short Description</label>
                             <textarea
                                 value={newProduct.shortDescription}
                                 onChange={(e) => handleInputChange('shortDescription', e.target.value)}
                                 placeholder="Brief product summary (1-2 sentences)..."
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[80px]"
+                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 min-h-[80px]"
                                 required
                             />
                         </div>
@@ -354,11 +370,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Description Section */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">Description Section</h2>
+                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Description Section</h2>
 
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Overall View</label>
+                                <label className="block text-sm font-medium text-gray-300">Overall View</label>
                                 <RichTextEditor
                                     value={newProduct.description}
                                     onChange={(value) => handleInputChange('description', value)}
@@ -367,7 +383,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Overall Features</label>
+                                <label className="block text-sm font-medium text-gray-300">Overall Features</label>
                                 <RichTextEditor
                                     value={newProduct.overallFeatures}
                                     onChange={(value) => handleInputChange('overallFeatures', value)}
@@ -376,7 +392,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">System Requirements</label>
+                                <label className="block text-sm font-medium text-gray-300">System Requirements</label>
                                 <RichTextEditor
                                     value={newProduct.requirements}
                                     onChange={(value) => handleInputChange('requirements', value)}
@@ -388,15 +404,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Category & Brand */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">Category & Brand</h2>
+                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Category & Brand</h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Category</label>
+                                <label className="block text-sm font-medium text-gray-300">Category</label>
                                 <select
                                     value={newProduct.category}
                                     onChange={(e) => handleInputChange('category', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                 >
                                     {categories.map((category) => (
                                         <option key={category.value} value={category.value}>
@@ -406,11 +422,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Brand</label>
+                                <label className="block text-sm font-medium text-gray-300">Brand</label>
                                 <select
                                     value={newProduct.brand}
                                     onChange={(e) => handleInputChange('brand', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                 >
                                     {brands.map((brand) => (
                                         <option key={brand.value} value={brand.value}>
@@ -424,56 +440,72 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Pricing Options */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">Pricing Options</h2>
+                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Pricing Options</h2>
 
                         <div className="space-y-4">
-                            <p className="text-sm text-gray-600">Add different year-based pricing options</p>
+                            <p className="text-sm text-gray-400">Add different year-based pricing options</p>
 
                             {/* Pricing Durations */}
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-gray-700">Pricing</label>
+                                <label className="block text-sm font-medium text-gray-300">Pricing</label>
                                 {newProduct.subscriptionDurations.map((sub, index) => (
-                                    <div key={index} className="flex gap-4 items-end">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                                            <select
-                                                value={sub.duration}
-                                                onChange={(e) => updateSubscriptionDuration(index, 'duration', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    <div key={index} className="p-4 border border-gray-600 rounded-lg bg-gray-700">
+                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">Duration</label>
+                                                <select
+                                                    value={sub.duration}
+                                                    onChange={(e) => updateSubscriptionDuration(index, 'duration', e.target.value)}
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                >
+                                                    <option value="1 Year">1 Year</option>
+                                                    <option value="2 Year">2 Year</option>
+                                                    <option value="3 Year">3 Year</option>
+                                                    <option value="6 Months">6 Months</option>
+                                                    <option value="Monthly">Monthly</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">Price INR (₹)</label>
+                                                <input
+                                                    type="number"
+                                                    value={sub.price}
+                                                    onChange={(e) => updateSubscriptionDuration(index, 'price', e.target.value)}
+                                                    placeholder="0.00"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">Price USD ($)</label>
+                                                <input
+                                                    type="number"
+                                                    value={sub.priceUSD}
+                                                    onChange={(e) => updateSubscriptionDuration(index, 'priceUSD', e.target.value)}
+                                                    placeholder="0.00"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSubscriptionDuration(index)}
+                                                disabled={newProduct.subscriptionDurations.length === 1}
+                                                className="px-3 py-2 text-red-400 border border-red-600 rounded-lg hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                <option value="1 Year">1 Year</option>
-                                                <option value="2 Year">2 Year</option>
-                                                <option value="3 Year">3 Year</option>
-                                                <option value="6 Months">6 Months</option>
-                                                <option value="Monthly">Monthly</option>
-                                            </select>
+                                                <X className="h-4 w-4" />
+                                            </button>
                                         </div>
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
-                                            <input
-                                                type="number"
-                                                value={sub.price}
-                                                onChange={(e) => updateSubscriptionDuration(index, 'price', e.target.value)}
-                                                placeholder="0.00"
-                                                step="0.01"
-                                                min="0"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            />
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeSubscriptionDuration(index)}
-                                            disabled={newProduct.subscriptionDurations.length === 1}
-                                            className="px-3 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
                                     </div>
                                 ))}
                                 <button
                                     type="button"
                                     onClick={addSubscriptionDuration}
-                                    className="flex items-center gap-2 px-4 py-2 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
+                                    className="flex items-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Add Duration
@@ -487,22 +519,39 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                     id="hasLifetime"
                                     checked={newProduct.hasLifetime}
                                     onChange={(e) => setNewProduct(prev => ({ ...prev, hasLifetime: e.target.checked }))}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="rounded border-gray-600 bg-gray-700 text-yellow-500 focus:ring-yellow-500"
                                 />
-                                <label htmlFor="hasLifetime" className="text-sm font-medium text-gray-700">Offer Lifetime License</label>
+                                <label htmlFor="hasLifetime" className="text-sm font-medium text-gray-300">Offer Lifetime License</label>
                             </div>
                             {newProduct.hasLifetime && (
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700">Lifetime Price ($)</label>
-                                    <input
-                                        type="number"
-                                        value={newProduct.lifetimePrice}
-                                        onChange={(e) => handleInputChange('lifetimePrice', e.target.value)}
-                                        placeholder="0.00"
-                                        step="0.01"
-                                        min="0"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
+                                <div className="space-y-4 p-4 border border-gray-600 rounded-lg bg-gray-700">
+                                    <h4 className="text-sm font-medium text-gray-300">Lifetime Pricing</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Lifetime Price INR (₹)</label>
+                                            <input
+                                                type="number"
+                                                value={newProduct.lifetimePrice}
+                                                onChange={(e) => handleInputChange('lifetimePrice', e.target.value)}
+                                                placeholder="0.00"
+                                                step="0.01"
+                                                min="0"
+                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Lifetime Price USD ($)</label>
+                                            <input
+                                                type="number"
+                                                value={newProduct.lifetimePriceUSD}
+                                                onChange={(e) => handleInputChange('lifetimePriceUSD', e.target.value)}
+                                                placeholder="0.00"
+                                                step="0.01"
+                                                min="0"
+                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
@@ -513,23 +562,40 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                     id="hasMembership"
                                     checked={newProduct.hasMembership}
                                     onChange={(e) => setNewProduct(prev => ({ ...prev, hasMembership: e.target.checked }))}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="rounded border-gray-600 bg-gray-700 text-yellow-500 focus:ring-yellow-500"
                                 />
-                                <label htmlFor="hasMembership" className="text-sm font-medium text-gray-700">VIP/Premium Membership Option</label>
+                                <label htmlFor="hasMembership" className="text-sm font-medium text-gray-300">VIP/Premium Membership Option</label>
                             </div>
-                            <p className="text-sm text-gray-500">Premium membership with exclusive benefits and priority support</p>
+                            <p className="text-sm text-gray-400">Premium membership with exclusive benefits and priority support</p>
                             {newProduct.hasMembership && (
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700">Membership Price ($)</label>
-                                    <input
-                                        type="number"
-                                        value={newProduct.membershipPrice}
-                                        onChange={(e) => handleInputChange('membershipPrice', e.target.value)}
-                                        placeholder="0.00"
-                                        step="0.01"
-                                        min="0"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
+                                <div className="space-y-4 p-4 border border-gray-600 rounded-lg bg-gray-700">
+                                    <h4 className="text-sm font-medium text-gray-300">Membership Pricing</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Membership Price INR (₹)</label>
+                                            <input
+                                                type="number"
+                                                value={newProduct.membershipPrice}
+                                                onChange={(e) => handleInputChange('membershipPrice', e.target.value)}
+                                                placeholder="0.00"
+                                                step="0.01"
+                                                min="0"
+                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Membership Price USD ($)</label>
+                                            <input
+                                                type="number"
+                                                value={newProduct.membershipPriceUSD}
+                                                onChange={(e) => handleInputChange('membershipPriceUSD', e.target.value)}
+                                                placeholder="0.00"
+                                                step="0.01"
+                                                min="0"
+                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -537,56 +603,72 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Subscription Plans */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">Subscription Plans</h2>
+                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Subscription Plans</h2>
 
                         <div className="space-y-4">
-                            <p className="text-sm text-gray-600">Add recurring subscription plans for your software</p>
+                            <p className="text-sm text-gray-400">Add recurring subscription plans for your software</p>
 
                             {/* Subscription Durations */}
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-gray-700">Subscription Plans</label>
+                                <label className="block text-sm font-medium text-gray-300">Subscription Plans</label>
                                 {newProduct.subscriptions.map((sub, index) => (
-                                    <div key={index} className="flex gap-4 items-end">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                                            <select
-                                                value={sub.duration}
-                                                onChange={(e) => updateSubscription(index, 'duration', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    <div key={index} className="bg-gray-700 p-4 rounded-lg space-y-4">
+                                        <div className="flex gap-4 items-center">
+                                            <div className="flex-1">
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">Duration</label>
+                                                <select
+                                                    value={sub.duration}
+                                                    onChange={(e) => updateSubscription(index, 'duration', e.target.value)}
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                >
+                                                    <option value="Monthly">Monthly</option>
+                                                    <option value="Quarterly">Quarterly</option>
+                                                    <option value="Semi-Annual">Semi-Annual</option>
+                                                    <option value="Annual">Annual</option>
+                                                    <option value="Weekly">Weekly</option>
+                                                </select>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSubscription(index)}
+                                                disabled={newProduct.subscriptions.length === 1}
+                                                className="px-3 py-2 text-red-400 border border-red-600 rounded-lg hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                <option value="Monthly">Monthly</option>
-                                                <option value="Quarterly">Quarterly</option>
-                                                <option value="Semi-Annual">Semi-Annual</option>
-                                                <option value="Annual">Annual</option>
-                                                <option value="Weekly">Weekly</option>
-                                            </select>
+                                                <X className="h-4 w-4" />
+                                            </button>
                                         </div>
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
-                                            <input
-                                                type="number"
-                                                value={sub.price}
-                                                onChange={(e) => updateSubscription(index, 'price', e.target.value)}
-                                                placeholder="0.00"
-                                                step="0.01"
-                                                min="0"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">INR (₹)</label>
+                                                <input
+                                                    type="number"
+                                                    value={sub.price}
+                                                    onChange={(e) => updateSubscription(index, 'price', e.target.value)}
+                                                    placeholder="0.00"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-1">USD ($)</label>
+                                                <input
+                                                    type="number"
+                                                    value={sub.priceUSD || ''}
+                                                    onChange={(e) => updateSubscription(index, 'priceUSD', e.target.value)}
+                                                    placeholder="0.00"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                />
+                                            </div>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeSubscription(index)}
-                                            disabled={newProduct.subscriptions.length === 1}
-                                            className="px-3 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
                                     </div>
                                 ))}
                                 <button
                                     type="button"
                                     onClick={addSubscription}
-                                    className="flex items-center gap-2 px-4 py-2 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
+                                    className="flex items-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Add Subscription Plan
@@ -597,24 +679,24 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Media Information */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">Media</h2>
+                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Media</h2>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Main Product Image</label>
+                                <label className="block text-sm font-medium text-gray-300">Main Product Image</label>
                                 <input
                                     type="url"
                                     value={newProduct.imageUrl}
                                     onChange={(e) => handleInputChange('imageUrl', e.target.value)}
                                     placeholder="https://example.com/image.jpg"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                     required
                                 />
-                                <p className="text-sm text-gray-500">Primary product image displayed in listings and product page</p>
+                                <p className="text-sm text-gray-400">Primary product image displayed in listings and product page</p>
                             </div>
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-gray-700">Additional Images</label>
+                                <label className="block text-sm font-medium text-gray-300">Additional Images</label>
                                 {newProduct.additionalImages.map((image, index) => (
                                     <div key={index} className="flex gap-4 items-center">
                                         <div className="flex-1">
@@ -623,14 +705,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 value={image}
                                                 onChange={(e) => updateImageField('additionalImages', index, e.target.value)}
                                                 placeholder={`Image ${index + 1} URL - https://example.com/image${index + 1}.jpg`}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                             />
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => removeImageField('additionalImages', index)}
                                             disabled={newProduct.additionalImages.length === 1}
-                                            className="px-3 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-3 py-2 text-red-400 border border-red-600 rounded-lg hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             <X className="h-4 w-4" />
                                         </button>
@@ -639,36 +721,36 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => addImageField('additionalImages')}
-                                    className="flex items-center gap-2 px-4 py-2 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
+                                    className="flex items-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Add Image
                                 </button>
-                                <p className="text-sm text-gray-500">Additional product screenshots, interface images, or feature highlights</p>
+                                <p className="text-sm text-gray-400">Additional product screenshots, interface images, or feature highlights</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700">Product Demo Video URL (Optional)</label>
+                                    <label className="block text-sm font-medium text-gray-300">Product Demo Video URL (Optional)</label>
                                     <input
                                         type="url"
                                         value={newProduct.videoUrl}
                                         onChange={(e) => handleInputChange('videoUrl', e.target.value)}
                                         placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                     />
-                                    <p className="text-sm text-gray-500">YouTube, Vimeo, or direct video link for product demonstration</p>
+                                    <p className="text-sm text-gray-400">YouTube, Vimeo, or direct video link for product demonstration</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700">Activation Demo Video URL (Optional)</label>
+                                    <label className="block text-sm font-medium text-gray-300">Activation Demo Video URL (Optional)</label>
                                     <input
                                         type="url"
                                         value={newProduct.activationVideoUrl}
                                         onChange={(e) => handleInputChange('activationVideoUrl', e.target.value)}
                                         placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                     />
-                                    <p className="text-sm text-gray-500">YouTube, Vimeo, or direct video link for activation demonstration</p>
+                                    <p className="text-sm text-gray-400">YouTube, Vimeo, or direct video link for activation demonstration</p>
                                 </div>
                             </div>
                         </div>
@@ -677,45 +759,45 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     {/* FAQ Section */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-2">
-                            <HelpCircle className="h-5 w-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
+                            <HelpCircle className="h-5 w-5 text-yellow-400" />
+                            <h2 className="text-xl font-semibold text-white">Frequently Asked Questions</h2>
                         </div>
-                        <p className="text-sm text-gray-600">Add common questions and answers to help customers understand your product better.</p>
+                        <p className="text-sm text-gray-400">Add common questions and answers to help customers understand your product better.</p>
 
                         {newProduct.faqs.length > 0 ? (
                             <div className="space-y-4">
                                 {newProduct.faqs.map((faq, index) => (
-                                    <div key={index} className="p-4 border border-gray-200 rounded-lg">
+                                    <div key={index} className="p-4 border border-gray-600 rounded-lg bg-gray-700">
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <label className="text-sm font-medium text-gray-700">FAQ #{index + 1}</label>
+                                                <label className="text-sm font-medium text-gray-300">FAQ #{index + 1}</label>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeFAQ(index)}
-                                                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                                    className="p-1 text-red-400 hover:bg-red-900 rounded"
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </button>
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-gray-700">Question</label>
+                                                <label className="block text-sm font-medium text-gray-300">Question</label>
                                                 <input
                                                     type="text"
                                                     value={faq.question}
                                                     onChange={(e) => updateFAQ(index, 'question', e.target.value)}
                                                     placeholder="Enter the question"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                                                 />
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-gray-700">Answer</label>
+                                                <label className="block text-sm font-medium text-gray-300">Answer</label>
                                                 <textarea
                                                     value={faq.answer}
                                                     onChange={(e) => updateFAQ(index, 'answer', e.target.value)}
                                                     placeholder="Enter the answer"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[80px]"
+                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 min-h-[80px]"
                                                 />
                                             </div>
                                         </div>
@@ -723,7 +805,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-8 text-gray-500">
+                            <div className="text-center py-8 text-gray-400">
                                 <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                                 <p>No FAQs added yet. Click "Add FAQ" to get started.</p>
                             </div>
@@ -732,7 +814,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <button
                             type="button"
                             onClick={addFAQ}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
                         >
                             <Plus className="h-4 w-4" />
                             Add FAQ
@@ -740,10 +822,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     </div>
 
                     {/* Form Actions */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-600">
                         <button
                             type="submit"
-                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                         >
                             <Save className="h-4 w-4" />
                             {product ? 'Update Product' : 'Add Product'}
@@ -751,7 +833,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                            className="flex-1 px-6 py-3 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                         >
                             Cancel
                         </button>

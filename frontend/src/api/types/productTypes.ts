@@ -1,6 +1,8 @@
 export interface SubscriptionDuration {
   duration: string;
   price: number;
+  priceINR?: number;
+  priceUSD?: number;
 }
 
 export interface FAQ {
@@ -22,11 +24,22 @@ export interface Product {
   price1?: number | undefined; // Backward compatibility
   price3?: number | undefined; // Backward compatibility
   priceLifetime?: number | undefined; // Backward compatibility
+  // Dual currency pricing
+  price1INR?: number;
+  price1USD?: number;
+  price3INR?: number;
+  price3USD?: number;
+  priceLifetimeINR?: number;
+  priceLifetimeUSD?: number;
   subscriptionDurations?: SubscriptionDuration[];
   hasLifetime?: boolean;
   lifetimePrice?: number;
+  lifetimePriceINR?: number;
+  lifetimePriceUSD?: number;
   hasMembership?: boolean;
   membershipPrice?: number;
+  membershipPriceINR?: number;
+  membershipPriceUSD?: number;
   oldPrice1?: number;
   oldPrice3?: number;
   oldPriceLifetime?: number;

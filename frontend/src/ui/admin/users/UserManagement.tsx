@@ -82,8 +82,8 @@ const UserManagement: React.FC = () => {
         totalUsers={usersData?.total || 0}
       />
 
-      {isLoading && <div className="text-center py-8">Loading users...</div>}
-      {error && <div className="text-center py-8 text-red-500">Error loading users</div>}
+      {isLoading && <div className="text-center py-8 text-white">Loading users...</div>}
+      {error && <div className="text-center py-8 text-red-400">Error loading users</div>}
 
       {!isLoading && !error && (
         <>

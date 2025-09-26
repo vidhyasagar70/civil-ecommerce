@@ -17,7 +17,7 @@ import Orders from './Orders';
 import Settings from './Settings';
 import UserManagement from './users/UserManagement';
 
-type MenuType = 'dashboard'|'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings';
+type MenuType = 'dashboard' | 'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings';
 
 const AdminDashboard: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>('dashboard');
@@ -54,13 +54,13 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-gray-800 shadow-xl border-b border-gray-700">
         <div className="px-6 py-4">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600">Manage your e-commerce platform</p>
+            <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
+            <p className="text-gray-300">Manage your e-commerce platform</p>
           </div>
         </div>
 
@@ -73,11 +73,10 @@ const AdminDashboard: React.FC = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveMenu(item.id as MenuType)}
-                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors whitespace-nowrap ${
-                    activeMenu === item.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors whitespace-nowrap ${activeMenu === item.id
+                      ? 'border-yellow-500 text-yellow-400'
+                      : 'border-transparent text-gray-400 hover:text-white'
+                    }`}
                 >
                   <IconComponent className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
