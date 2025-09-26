@@ -1,22 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Eye, Edit, Trash2, Plus, X, ExternalLink, Globe, Monitor, Smartphone } from 'lucide-react';
-
-interface Banner {
-  id: string;
-  title: string;
-  description: string;
-  desktopImageUrl: string;
-  mobileImageUrl: string;
-  linkUrl: string;
-  ctaButtonText: string;
-  startDate: string;
-  endDate: string;
-  position: string;
-  bannerType: string;
-  priority: number;
-  status: string;
-}
-
+import type { Banner } from '../../types/Banner';
 const BannerManagement: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
@@ -51,21 +35,6 @@ const BannerManagement: React.FC = () => {
       priority: 8,
       status: 'INACTIVE'
     },
-    {
-      id: '3',
-      title: 'Professional CAD Software',
-      description: 'AutoCAD 2025 - The industry standard for design professionals',
-      desktopImageUrl: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&h=400&fit=crop',
-      mobileImageUrl: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=400&h=600&fit=crop',
-      linkUrl: 'https://example.com/cad-software',
-      ctaButtonText: 'Learn More',
-      startDate: '2025-09-21',
-      endDate: '2025-10-05',
-      position: 'Product',
-      bannerType: 'NORMAL',
-      priority: 5,
-      status: 'ACTIVE'
-    }
   ]);
 
   const [formData, setFormData] = useState<Partial<Banner>>({
