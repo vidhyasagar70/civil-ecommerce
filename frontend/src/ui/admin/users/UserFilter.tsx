@@ -33,7 +33,7 @@ const UserFilters: React.FC<Props> = ({
             placeholder="Search users..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
+            className="pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 w-full sm:w-64"
           />
         </div>
 
@@ -41,7 +41,7 @@ const UserFilters: React.FC<Props> = ({
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full sm:w-32"
+          className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 w-full sm:w-32"
         >
           <option value="">All Roles</option>
           <option value="user">User</option>
@@ -52,7 +52,7 @@ const UserFilters: React.FC<Props> = ({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full sm:w-32"
+          className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 w-full sm:w-32"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -63,7 +63,7 @@ const UserFilters: React.FC<Props> = ({
         {(searchTerm || roleFilter || statusFilter) && (
           <button
             onClick={clearFilters}
-            className="text-blue-500 hover:text-blue-700 text-sm"
+            className="text-yellow-400 hover:text-yellow-300 text-sm"
           >
             Clear filters
           </button>
@@ -71,7 +71,7 @@ const UserFilters: React.FC<Props> = ({
       </div>
 
       {/* Total users */}
-      <div className="flex items-center space-x-2 text-sm text-gray-500">
+      <div className="flex items-center space-x-2 text-sm text-gray-400">
         <Users className="w-4 h-4" />
         <span>{totalUsers} users total</span>
       </div>
