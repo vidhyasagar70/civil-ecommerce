@@ -4,6 +4,7 @@ import './AddProductModal.css'
 import type { Product } from "../../../api/types/productTypes";
 import Swal from "sweetalert2";
 import { Plus, X, Save, HelpCircle } from "lucide-react";
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 
 const categories = [
     { value: "design-tools", label: "Design Tools" },
@@ -46,6 +47,7 @@ interface AddProductModalProps {
 const AddProductModal: React.FC<AddProductModalProps> = ({
     open, onClose, onSave, product
 }) => {
+    const { colors } = useAdminTheme();
     const [newProduct, setNewProduct] = useState({
         name: "",
         version: "",
@@ -312,57 +314,117 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-75">
-            <div className="relative bg-gray-800 rounded-xl shadow-xl max-w-4xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh] modal-scroll-container">
+            <div
+                className="relative rounded-xl shadow-xl max-w-4xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh] modal-scroll-container transition-colors duration-200"
+                style={{ backgroundColor: colors.background.secondary }}
+            >
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-6 text-2xl font-bold text-gray-400 hover:text-white"
+                    className="absolute top-4 right-6 text-2xl font-bold transition-colors duration-200"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = colors.text.primary}
+                    onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
                     aria-label="Close modal"
                 >
                     &times;
                 </button>
 
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-white">{product ? 'Edit Product' : 'Add New Product'}</h1>
-                    <p className="text-gray-300 mt-1">Add a new software product to your catalog with advanced formatting options</p>
+                    <h1
+                        className="text-2xl font-bold"
+                        style={{ color: colors.text.primary }}
+                    >
+                        {product ? 'Edit Product' : 'Add New Product'}
+                    </h1>
+                    <p
+                        className="mt-1"
+                        style={{ color: colors.text.secondary }}
+                    >
+                        Add a new software product to your catalog with advanced formatting options
+                    </p>
                 </div>
 
                 <form onSubmit={handleAddProduct} className="space-y-8">
                     {/* Basic Information */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Basic Information</h2>
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            Basic Information
+                        </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Product Name</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Product Name
+                                </label>
                                 <input
                                     type="text"
                                     value={newProduct.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
                                     placeholder="e.g., AutoCAD 2025"
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.primary,
+                                        borderColor: colors.border.primary,
+                                        color: colors.text.primary
+                                    }}
                                     required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Version</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Version
+                                </label>
                                 <input
                                     type="text"
                                     value={newProduct.version}
                                     onChange={(e) => handleInputChange('version', e.target.value)}
                                     placeholder="e.g., 2025.1"
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.primary,
+                                        borderColor: colors.border.primary,
+                                        color: colors.text.primary
+                                    }}
                                     required
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-300">Short Description</label>
+                            <label
+                                className="block text-sm font-medium"
+                                style={{ color: colors.text.secondary }}
+                            >
+                                Short Description
+                            </label>
                             <textarea
                                 value={newProduct.shortDescription}
                                 onChange={(e) => handleInputChange('shortDescription', e.target.value)}
                                 placeholder="Brief product summary (1-2 sentences)..."
-                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 min-h-[80px]"
+                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 min-h-[80px] transition-colors duration-200"
+                                style={{
+                                    backgroundColor: colors.background.primary,
+                                    borderColor: colors.border.primary,
+                                    color: colors.text.primary
+                                }}
+                                onFocus={(e) => {
+                                    e.target.style.borderColor = colors.interactive.primary;
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = colors.border.primary;
+                                }}
                                 required
                             />
                         </div>
@@ -370,7 +432,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Description Section */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Description Section</h2>
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            Description Section
+                        </h2>
 
                         <div className="space-y-6">
                             <div className="space-y-2">
@@ -383,7 +453,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Overall Features</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Overall Features
+                                </label>
                                 <RichTextEditor
                                     value={newProduct.overallFeatures}
                                     onChange={(value) => handleInputChange('overallFeatures', value)}
@@ -392,7 +467,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">System Requirements</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    System Requirements
+                                </label>
                                 <RichTextEditor
                                     value={newProduct.requirements}
                                     onChange={(value) => handleInputChange('requirements', value)}
@@ -404,15 +484,39 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Category & Brand */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Category & Brand</h2>
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            Category & Brand
+                        </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Category</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Category
+                                </label>
                                 <select
                                     value={newProduct.category}
                                     onChange={(e) => handleInputChange('category', e.target.value)}
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.primary,
+                                        borderColor: colors.border.primary,
+                                        color: colors.text.primary
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = colors.interactive.primary;
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = colors.border.primary;
+                                    }}
                                 >
                                     {categories.map((category) => (
                                         <option key={category.value} value={category.value}>
@@ -422,11 +526,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Brand</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Brand
+                                </label>
                                 <select
                                     value={newProduct.brand}
                                     onChange={(e) => handleInputChange('brand', e.target.value)}
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.primary,
+                                        borderColor: colors.border.primary,
+                                        color: colors.text.primary
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = colors.interactive.primary;
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = colors.border.primary;
+                                    }}
                                 >
                                     {brands.map((brand) => (
                                         <option key={brand.value} value={brand.value}>
@@ -440,23 +560,64 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Pricing Options */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Pricing Options</h2>
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            Pricing Options
+                        </h2>
 
                         <div className="space-y-4">
-                            <p className="text-sm text-gray-400">Add different year-based pricing options</p>
+                            <p
+                                className="text-sm"
+                                style={{ color: colors.text.secondary }}
+                            >
+                                Add different year-based pricing options
+                            </p>
 
                             {/* Pricing Durations */}
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-gray-300">Pricing</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Pricing
+                                </label>
                                 {newProduct.subscriptionDurations.map((sub, index) => (
-                                    <div key={index} className="p-4 border border-gray-600 rounded-lg bg-gray-700">
+                                    <div
+                                        key={index}
+                                        className="p-4 border rounded-lg transition-colors duration-200"
+                                        style={{
+                                            borderColor: colors.border.primary,
+                                            backgroundColor: colors.background.tertiary
+                                        }}
+                                    >
                                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-1">Duration</label>
+                                                <label
+                                                    className="block text-sm font-medium mb-1"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    Duration
+                                                </label>
                                                 <select
                                                     value={sub.duration}
                                                     onChange={(e) => updateSubscriptionDuration(index, 'duration', e.target.value)}
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 >
                                                     <option value="1 Year">1 Year</option>
                                                     <option value="2 Year">2 Year</option>
@@ -466,7 +627,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-1">Price INR (₹)</label>
+                                                <label
+                                                    className="block text-sm font-medium mb-1"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    Price INR (₹)
+                                                </label>
                                                 <input
                                                     type="number"
                                                     value={sub.price}
@@ -474,11 +640,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                     placeholder="0.00"
                                                     step="0.01"
                                                     min="0"
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-1">Price USD ($)</label>
+                                                <label
+                                                    className="block text-sm font-medium mb-1"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    Price USD ($)
+                                                </label>
                                                 <input
                                                     type="number"
                                                     value={sub.priceUSD}
@@ -486,7 +668,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                     placeholder="0.00"
                                                     step="0.01"
                                                     min="0"
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -495,7 +688,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 type="button"
                                                 onClick={() => removeSubscriptionDuration(index)}
                                                 disabled={newProduct.subscriptionDurations.length === 1}
-                                                className="px-3 py-2 text-red-400 border border-red-600 rounded-lg hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                style={{
+                                                    color: colors.status.error,
+                                                    borderColor: colors.status.error
+                                                }}
                                             >
                                                 <X className="h-4 w-4" />
                                             </button>
@@ -505,7 +702,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 <button
                                     type="button"
                                     onClick={addSubscriptionDuration}
-                                    className="flex items-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
+                                    className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
+                                    style={{
+                                        color: colors.interactive.primary,
+                                        borderColor: colors.interactive.primary
+                                    }}
                                 >
                                     <Plus className="h-4 w-4" />
                                     Add Duration
@@ -519,16 +720,43 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                     id="hasLifetime"
                                     checked={newProduct.hasLifetime}
                                     onChange={(e) => setNewProduct(prev => ({ ...prev, hasLifetime: e.target.checked }))}
-                                    className="rounded border-gray-600 bg-gray-700 text-yellow-500 focus:ring-yellow-500"
+                                    className="rounded focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        borderColor: colors.border.primary,
+                                        backgroundColor: colors.background.primary,
+                                        color: colors.interactive.primary
+                                    }}
                                 />
-                                <label htmlFor="hasLifetime" className="text-sm font-medium text-gray-300">Offer Lifetime License</label>
+                                <label
+                                    htmlFor="hasLifetime"
+                                    className="text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Offer Lifetime License
+                                </label>
                             </div>
                             {newProduct.hasLifetime && (
-                                <div className="space-y-4 p-4 border border-gray-600 rounded-lg bg-gray-700">
-                                    <h4 className="text-sm font-medium text-gray-300">Lifetime Pricing</h4>
+                                <div
+                                    className="space-y-4 p-4 border rounded-lg transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.secondary,
+                                        borderColor: colors.border.primary
+                                    }}
+                                >
+                                    <h4
+                                        className="text-sm font-medium"
+                                        style={{ color: colors.text.secondary }}
+                                    >
+                                        Lifetime Pricing
+                                    </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-1">Lifetime Price INR (₹)</label>
+                                            <label
+                                                className="block text-sm font-medium mb-1"
+                                                style={{ color: colors.text.secondary }}
+                                            >
+                                                Lifetime Price INR (₹)
+                                            </label>
                                             <input
                                                 type="number"
                                                 value={newProduct.lifetimePrice}
@@ -536,11 +764,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 placeholder="0.00"
                                                 step="0.01"
                                                 min="0"
-                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = colors.interactive.primary;
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = colors.border.primary;
+                                                }}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-1">Lifetime Price USD ($)</label>
+                                            <label
+                                                className="block text-sm font-medium mb-1"
+                                                style={{ color: colors.text.secondary }}
+                                            >
+                                                Lifetime Price USD ($)
+                                            </label>
                                             <input
                                                 type="number"
                                                 value={newProduct.lifetimePriceUSD}
@@ -548,7 +792,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 placeholder="0.00"
                                                 step="0.01"
                                                 min="0"
-                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = colors.interactive.primary;
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = colors.border.primary;
+                                                }}
                                             />
                                         </div>
                                     </div>
@@ -562,17 +817,49 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                     id="hasMembership"
                                     checked={newProduct.hasMembership}
                                     onChange={(e) => setNewProduct(prev => ({ ...prev, hasMembership: e.target.checked }))}
-                                    className="rounded border-gray-600 bg-gray-700 text-yellow-500 focus:ring-yellow-500"
+                                    className="rounded focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        borderColor: colors.border.primary,
+                                        backgroundColor: colors.background.primary,
+                                        color: colors.interactive.primary
+                                    }}
                                 />
-                                <label htmlFor="hasMembership" className="text-sm font-medium text-gray-300">VIP/Premium Membership Option</label>
+                                <label
+                                    htmlFor="hasMembership"
+                                    className="text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    VIP/Premium Membership Option
+                                </label>
                             </div>
-                            <p className="text-sm text-gray-400">Premium membership with exclusive benefits and priority support</p>
+                            <p
+                                className="text-sm"
+                                style={{ color: colors.text.secondary }}
+                            >
+                                Premium membership with exclusive benefits and priority support
+                            </p>
                             {newProduct.hasMembership && (
-                                <div className="space-y-4 p-4 border border-gray-600 rounded-lg bg-gray-700">
-                                    <h4 className="text-sm font-medium text-gray-300">Membership Pricing</h4>
+                                <div
+                                    className="space-y-4 p-4 border rounded-lg transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.secondary,
+                                        borderColor: colors.border.primary
+                                    }}
+                                >
+                                    <h4
+                                        className="text-sm font-medium"
+                                        style={{ color: colors.text.secondary }}
+                                    >
+                                        Membership Pricing
+                                    </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-1">Membership Price INR (₹)</label>
+                                            <label
+                                                className="block text-sm font-medium mb-1"
+                                                style={{ color: colors.text.secondary }}
+                                            >
+                                                Membership Price INR (₹)
+                                            </label>
                                             <input
                                                 type="number"
                                                 value={newProduct.membershipPrice}
@@ -580,11 +867,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 placeholder="0.00"
                                                 step="0.01"
                                                 min="0"
-                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = colors.interactive.primary;
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = colors.border.primary;
+                                                }}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-1">Membership Price USD ($)</label>
+                                            <label
+                                                className="block text-sm font-medium mb-1"
+                                                style={{ color: colors.text.secondary }}
+                                            >
+                                                Membership Price USD ($)
+                                            </label>
                                             <input
                                                 type="number"
                                                 value={newProduct.membershipPriceUSD}
@@ -592,7 +895,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 placeholder="0.00"
                                                 step="0.01"
                                                 min="0"
-                                                className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = colors.interactive.primary;
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = colors.border.primary;
+                                                }}
                                             />
                                         </div>
                                     </div>
@@ -603,23 +917,61 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Subscription Plans */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Subscription Plans</h2>
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            Subscription Plans
+                        </h2>
 
                         <div className="space-y-4">
-                            <p className="text-sm text-gray-400">Add recurring subscription plans for your software</p>
+                            <p
+                                className="text-sm"
+                                style={{ color: colors.text.secondary }}
+                            >
+                                Add recurring subscription plans for your software
+                            </p>
 
                             {/* Subscription Durations */}
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-gray-300">Subscription Plans</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Subscription Plans
+                                </label>
                                 {newProduct.subscriptions.map((sub, index) => (
-                                    <div key={index} className="bg-gray-700 p-4 rounded-lg space-y-4">
+                                    <div
+                                        key={index}
+                                        className="p-4 rounded-lg space-y-4 transition-colors duration-200"
+                                        style={{ backgroundColor: colors.background.tertiary }}
+                                    >
                                         <div className="flex gap-4 items-center">
                                             <div className="flex-1">
-                                                <label className="block text-sm font-medium text-gray-300 mb-1">Duration</label>
+                                                <label
+                                                    className="block text-sm font-medium mb-1"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    Duration
+                                                </label>
                                                 <select
                                                     value={sub.duration}
                                                     onChange={(e) => updateSubscription(index, 'duration', e.target.value)}
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 >
                                                     <option value="Monthly">Monthly</option>
                                                     <option value="Quarterly">Quarterly</option>
@@ -632,14 +984,23 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 type="button"
                                                 onClick={() => removeSubscription(index)}
                                                 disabled={newProduct.subscriptions.length === 1}
-                                                className="px-3 py-2 text-red-400 border border-red-600 rounded-lg hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                style={{
+                                                    color: colors.status.error,
+                                                    borderColor: colors.status.error
+                                                }}
                                             >
                                                 <X className="h-4 w-4" />
                                             </button>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-1">INR (₹)</label>
+                                                <label
+                                                    className="block text-sm font-medium mb-1"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    INR (₹)
+                                                </label>
                                                 <input
                                                     type="number"
                                                     value={sub.price}
@@ -647,11 +1008,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                     placeholder="0.00"
                                                     step="0.01"
                                                     min="0"
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-1">USD ($)</label>
+                                                <label
+                                                    className="block text-sm font-medium mb-1"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    USD ($)
+                                                </label>
                                                 <input
                                                     type="number"
                                                     value={sub.priceUSD || ''}
@@ -659,7 +1036,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                     placeholder="0.00"
                                                     step="0.01"
                                                     min="0"
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -668,7 +1056,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 <button
                                     type="button"
                                     onClick={addSubscription}
-                                    className="flex items-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
+                                    className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
+                                    style={{
+                                        color: colors.interactive.primary,
+                                        borderColor: colors.interactive.primary
+                                    }}
                                 >
                                     <Plus className="h-4 w-4" />
                                     Add Subscription Plan
@@ -679,24 +1071,58 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                     {/* Media Information */}
                     <div className="space-y-6">
-                        <h2 className="text-xl font-semibold text-white border-b border-gray-600 pb-2">Media</h2>
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            Media
+                        </h2>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Main Product Image</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Main Product Image
+                                </label>
                                 <input
                                     type="url"
                                     value={newProduct.imageUrl}
                                     onChange={(e) => handleInputChange('imageUrl', e.target.value)}
                                     placeholder="https://example.com/image.jpg"
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.tertiary,
+                                        borderColor: colors.border.primary,
+                                        color: colors.text.primary
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = colors.interactive.primary;
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = colors.border.primary;
+                                    }}
                                     required
                                 />
-                                <p className="text-sm text-gray-400">Primary product image displayed in listings and product page</p>
+                                <p
+                                    className="text-sm"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Primary product image displayed in listings and product page
+                                </p>
                             </div>
 
                             <div className="space-y-4">
-                                <label className="block text-sm font-medium text-gray-300">Additional Images</label>
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Additional Images
+                                </label>
                                 {newProduct.additionalImages.map((image, index) => (
                                     <div key={index} className="flex gap-4 items-center">
                                         <div className="flex-1">
@@ -705,14 +1131,29 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                 value={image}
                                                 onChange={(e) => updateImageField('additionalImages', index, e.target.value)}
                                                 placeholder={`Image ${index + 1} URL - https://example.com/image${index + 1}.jpg`}
-                                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.tertiary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = colors.interactive.primary;
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = colors.border.primary;
+                                                }}
                                             />
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => removeImageField('additionalImages', index)}
                                             disabled={newProduct.additionalImages.length === 1}
-                                            className="px-3 py-2 text-red-400 border border-red-600 rounded-lg hover:bg-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                            style={{
+                                                color: colors.status.error,
+                                                borderColor: colors.status.error
+                                            }}
                                         >
                                             <X className="h-4 w-4" />
                                         </button>
@@ -731,26 +1172,68 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-300">Product Demo Video URL (Optional)</label>
+                                    <label
+                                        className="block text-sm font-medium"
+                                        style={{ color: colors.text.secondary }}
+                                    >
+                                        Product Demo Video URL (Optional)
+                                    </label>
                                     <input
                                         type="url"
                                         value={newProduct.videoUrl}
                                         onChange={(e) => handleInputChange('videoUrl', e.target.value)}
                                         placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                        style={{
+                                            backgroundColor: colors.background.primary,
+                                            borderColor: colors.border.primary,
+                                            color: colors.text.primary
+                                        }}
+                                        onFocus={(e) => {
+                                            e.target.style.borderColor = colors.interactive.primary;
+                                        }}
+                                        onBlur={(e) => {
+                                            e.target.style.borderColor = colors.border.primary;
+                                        }}
                                     />
-                                    <p className="text-sm text-gray-400">YouTube, Vimeo, or direct video link for product demonstration</p>
+                                    <p
+                                        className="text-sm"
+                                        style={{ color: colors.text.secondary }}
+                                    >
+                                        YouTube, Vimeo, or direct video link for product demonstration
+                                    </p>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-300">Activation Demo Video URL (Optional)</label>
+                                    <label
+                                        className="block text-sm font-medium"
+                                        style={{ color: colors.text.secondary }}
+                                    >
+                                        Activation Demo Video URL (Optional)
+                                    </label>
                                     <input
                                         type="url"
                                         value={newProduct.activationVideoUrl}
                                         onChange={(e) => handleInputChange('activationVideoUrl', e.target.value)}
                                         placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                        style={{
+                                            backgroundColor: colors.background.primary,
+                                            borderColor: colors.border.primary,
+                                            color: colors.text.primary
+                                        }}
+                                        onFocus={(e) => {
+                                            e.target.style.borderColor = colors.interactive.primary;
+                                        }}
+                                        onBlur={(e) => {
+                                            e.target.style.borderColor = colors.border.primary;
+                                        }}
                                     />
-                                    <p className="text-sm text-gray-400">YouTube, Vimeo, or direct video link for activation demonstration</p>
+                                    <p
+                                        className="text-sm"
+                                        style={{ color: colors.text.secondary }}
+                                    >
+                                        YouTube, Vimeo, or direct video link for activation demonstration
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -759,45 +1242,103 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     {/* FAQ Section */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-2">
-                            <HelpCircle className="h-5 w-5 text-yellow-400" />
-                            <h2 className="text-xl font-semibold text-white">Frequently Asked Questions</h2>
+                            <HelpCircle
+                                className="h-5 w-5"
+                                style={{ color: colors.interactive.primary }}
+                            />
+                            <h2
+                                className="text-xl font-semibold"
+                                style={{ color: colors.text.primary }}
+                            >
+                                Frequently Asked Questions
+                            </h2>
                         </div>
-                        <p className="text-sm text-gray-400">Add common questions and answers to help customers understand your product better.</p>
+                        <p
+                            className="text-sm"
+                            style={{ color: colors.text.secondary }}
+                        >
+                            Add common questions and answers to help customers understand your product better.
+                        </p>
 
                         {newProduct.faqs.length > 0 ? (
                             <div className="space-y-4">
                                 {newProduct.faqs.map((faq, index) => (
-                                    <div key={index} className="p-4 border border-gray-600 rounded-lg bg-gray-700">
+                                    <div
+                                        key={index}
+                                        className="p-4 border rounded-lg transition-colors duration-200"
+                                        style={{
+                                            backgroundColor: colors.background.secondary,
+                                            borderColor: colors.border.primary
+                                        }}
+                                    >
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <label className="text-sm font-medium text-gray-300">FAQ #{index + 1}</label>
+                                                <label
+                                                    className="text-sm font-medium"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    FAQ #{index + 1}
+                                                </label>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeFAQ(index)}
-                                                    className="p-1 text-red-400 hover:bg-red-900 rounded"
+                                                    className="p-1 rounded hover:opacity-80 transition-colors duration-200"
+                                                    style={{ color: colors.status.error }}
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </button>
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-gray-300">Question</label>
+                                                <label
+                                                    className="block text-sm font-medium"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    Question
+                                                </label>
                                                 <input
                                                     type="text"
                                                     value={faq.question}
                                                     onChange={(e) => updateFAQ(index, 'question', e.target.value)}
                                                     placeholder="Enter the question"
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 />
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-gray-300">Answer</label>
+                                                <label
+                                                    className="block text-sm font-medium"
+                                                    style={{ color: colors.text.secondary }}
+                                                >
+                                                    Answer
+                                                </label>
                                                 <textarea
                                                     value={faq.answer}
                                                     onChange={(e) => updateFAQ(index, 'answer', e.target.value)}
                                                     placeholder="Enter the answer"
-                                                    className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 min-h-[80px]"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200 min-h-[80px]"
+                                                    style={{
+                                                        backgroundColor: colors.background.primary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary
+                                                    }}
+                                                    onFocus={(e) => {
+                                                        e.target.style.borderColor = colors.interactive.primary;
+                                                    }}
+                                                    onBlur={(e) => {
+                                                        e.target.style.borderColor = colors.border.primary;
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -805,8 +1346,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-8 text-gray-400">
-                                <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <div
+                                className="text-center py-8"
+                                style={{ color: colors.text.secondary }}
+                            >
+                                <HelpCircle
+                                    className="h-12 w-12 mx-auto mb-4 opacity-50"
+                                    style={{ color: colors.text.secondary }}
+                                />
                                 <p>No FAQs added yet. Click "Add FAQ" to get started.</p>
                             </div>
                         )}
@@ -814,7 +1361,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <button
                             type="button"
                             onClick={addFAQ}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-yellow-400 border border-yellow-600 rounded-lg hover:bg-yellow-900"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
+                            style={{
+                                color: colors.interactive.primary,
+                                borderColor: colors.interactive.primary
+                            }}
                         >
                             <Plus className="h-4 w-4" />
                             Add FAQ
@@ -822,10 +1373,17 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     </div>
 
                     {/* Form Actions */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-600">
+                    <div
+                        className="flex flex-col sm:flex-row gap-4 pt-6 border-t transition-colors duration-200"
+                        style={{ borderColor: colors.border.primary }}
+                    >
                         <button
                             type="submit"
-                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+                            style={{
+                                backgroundColor: colors.interactive.primary,
+                                color: colors.text.inverse
+                            }}
                         >
                             <Save className="h-4 w-4" />
                             {product ? 'Update Product' : 'Add Product'}
@@ -833,7 +1391,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                            className="flex-1 px-6 py-3 border rounded-lg hover:opacity-80 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+                            style={{
+                                color: colors.text.secondary,
+                                borderColor: colors.border.primary,
+                                backgroundColor: 'transparent'
+                            }}
                         >
                             Cancel
                         </button>

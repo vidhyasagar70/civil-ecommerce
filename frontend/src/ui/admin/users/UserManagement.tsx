@@ -5,8 +5,10 @@ import Swal from "sweetalert2";
 import UserFilters from "./UserFilter";
 import UserTable from "./UserTable";
 import Pagination from "./Pagination";
+import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const UserManagement: React.FC = () => {
+  const { colors } = useAdminTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -82,8 +84,22 @@ const UserManagement: React.FC = () => {
         totalUsers={usersData?.total || 0}
       />
 
-      {isLoading && <div className="text-center py-8 text-white">Loading users...</div>}
-      {error && <div className="text-center py-8 text-red-400">Error loading users</div>}
+      {isLoading && (
+        <div
+          className="text-center py-8"
+          style={{ color: colors.text.primary }}
+        >
+          Loading users...
+        </div>
+      )}
+      {error && (
+        <div
+          className="text-center py-8"
+          style={{ color: colors.status.error }}
+        >
+          Error loading users
+        </div>
+      )}
 
       {!isLoading && !error && (
         <>
