@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Eye, Edit, Trash2, Building2 } from 'lucide-react';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 // Types
 interface Company {
@@ -18,46 +19,127 @@ const sampleCompanies: Company[] = [
 ];
 
 const Companies: React.FC = () => {
+  const { colors } = useAdminTheme();
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Companies</h2>
-        <button className="bg-yellow-500 text-black px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-yellow-600 font-medium">
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.text.primary }}
+        >
+          Companies
+        </h2>
+        <button
+          className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
+          style={{
+            backgroundColor: colors.interactive.primary,
+            color: colors.text.inverse
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primaryHover}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primary}
+        >
           <Plus className="w-4 h-4" />
           <span>Add Company</span>
         </button>
       </div>
 
-      <div className="bg-gray-800 rounded-xl shadow-xl border border-gray-700 overflow-hidden">
+      <div
+        className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
+        style={{
+          backgroundColor: colors.background.secondary,
+          borderColor: colors.border.primary
+        }}
+      >
         <table className="w-full">
-          <thead className="bg-gray-700 border-b border-gray-600">
+          <thead
+            className="border-b transition-colors duration-200"
+            style={{
+              backgroundColor: colors.background.tertiary,
+              borderBottomColor: colors.border.primary
+            }}
+          >
             <tr>
-              <th className="text-left py-3 px-4 font-medium text-white">Company Name</th>
-              <th className="text-left py-3 px-4 font-medium text-white">Products</th>
-              <th className="text-left py-3 px-4 font-medium text-white">Actions</th>
+              <th
+                className="text-left py-3 px-4 font-medium"
+                style={{ color: colors.text.primary }}
+              >
+                Company Name
+              </th>
+              <th
+                className="text-left py-3 px-4 font-medium"
+                style={{ color: colors.text.primary }}
+              >
+                Products
+              </th>
+              <th
+                className="text-left py-3 px-4 font-medium"
+                style={{ color: colors.text.primary }}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
+          <tbody
+            className="divide-y transition-colors duration-200"
+            style={{ borderColor: colors.border.secondary }}
+          >
             {sampleCompanies.map((company) => (
-              <tr key={company.id} className="hover:bg-gray-700">
+              <tr
+                key={company.id}
+                className="transition-colors duration-200"
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.accent}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
-                      <Building2 className="w-5 h-5 text-black" />
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+                      style={{
+                        backgroundColor: colors.interactive.primary,
+                        color: colors.text.inverse
+                      }}
+                    >
+                      <Building2 className="w-5 h-5" />
                     </div>
-                    <div className="font-medium text-white">{company.name}</div>
+                    <div
+                      className="font-medium"
+                      style={{ color: colors.text.primary }}
+                    >
+                      {company.name}
+                    </div>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-white">{company.products}</td>
+                <td
+                  className="py-4 px-4"
+                  style={{ color: colors.text.primary }}
+                >
+                  {company.products}
+                </td>
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-2">
-                    <button className="p-1 text-gray-400 hover:text-yellow-400">
+                    <button
+                      className="p-1 transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = colors.interactive.primary}
+                      onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                    >
                       <Eye className="w-4 h-4" />
                     </button>
-                    <button className="p-1 text-gray-400 hover:text-green-400">
+                    <button
+                      className="p-1 transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = colors.status.success}
+                      onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                    >
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="p-1 text-gray-400 hover:text-red-400">
+                    <button
+                      className="p-1 transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = colors.status.error}
+                      onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
