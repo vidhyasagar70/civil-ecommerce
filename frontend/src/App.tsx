@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CartProvider } from './contexts/CartContext';
+import { AdminThemeProvider } from './contexts/AdminThemeContext';
 import Header from './components/Header/Header';
 import Products from './ui/admin/products/Products';
 import AdminDashboard from './ui/admin/AdminDashboard';
@@ -201,11 +202,13 @@ function AppLayout() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <Router>
-          <AppLayout />
-        </Router>
-      </CartProvider>
+      <AdminThemeProvider>
+        <CartProvider>
+          <Router>
+            <AppLayout />
+          </Router>
+        </CartProvider>
+      </AdminThemeProvider>
     </QueryClientProvider>
   );
 }

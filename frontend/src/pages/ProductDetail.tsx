@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useProductDetail } from '../api/productApi';
 import { useCartContext } from '../contexts/CartContext';
 import { useUser } from '../api/userQueries';
+import { useAdminTheme } from '../contexts/AdminThemeContext';
 import Swal from 'sweetalert2';
 
 const ProductDetail: React.FC = () => {
@@ -13,9 +14,24 @@ const ProductDetail: React.FC = () => {
   const { addItem, isItemInCart, getItemQuantity } = useCartContext();
   const { data: user } = useUser();
   const navigate = useNavigate();
+  const { colors } = useAdminTheme();
 
-  if (isLoading) return <div className="text-center py-20">Loading...</div>;
-  if (!product) return <div className="text-center py-20">Product not found.</div>;
+  if (isLoading) return (
+    <div
+      className="text-center py-20 transition-colors duration-200"
+      style={{ color: colors.text.primary }}
+    >
+      Loading...
+    </div>
+  );
+  if (!product) return (
+    <div
+      className="text-center py-20 transition-colors duration-200"
+      style={{ color: colors.text.primary }}
+    >
+      Product not found.
+    </div>
+  );
 
   // License options for display/switching
   const licenseOptions = [
@@ -106,12 +122,18 @@ const ProductDetail: React.FC = () => {
   const isInCart = product ? isItemInCart(product._id!, selectedLicense) : false;
   const cartQuantity = product ? getItemQuantity(product._id!, selectedLicense) : 0;
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div
+      className="max-w-7xl mx-auto px-4 py-8 transition-colors duration-200"
+      style={{ backgroundColor: colors.background.primary }}
+    >
       {/* Top Section: Image + Info */}
       <div className="flex flex-col md:flex-row gap-8">
         {/* Product Gallery */}
         <div className="md:w-2/5 flex flex-col items-center">
-          <div className="bg-gray-100 rounded-2xl overflow-hidden w-full aspect-square mb-4 flex items-center justify-center">
+          <div
+            className="rounded-2xl overflow-hidden w-full aspect-square mb-4 flex items-center justify-center transition-colors duration-200"
+            style={{ backgroundColor: colors.background.secondary }}
+          >
             <img
               src={currentMainImage}
               className="w-full h-full object-contain"
@@ -123,7 +145,11 @@ const ProductDetail: React.FC = () => {
             {images.map((img, idx) => (
               <div
                 key={idx}
-                className={`w-20 h-20 rounded-xl overflow-hidden bg-gray-100 cursor-pointer border ${img === currentMainImage ? 'border-blue-400' : 'border-transparent'}`}
+                className={`w-20 h-20 rounded-xl overflow-hidden cursor-pointer border transition-all duration-200`}
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: img === currentMainImage ? colors.interactive.primary : 'transparent'
+                }}
                 onClick={() => setMainImage(img)}
               >
                 <img src={img} className="object-cover w-full h-full" alt={`thumb-${idx}`} />
@@ -136,40 +162,116 @@ const ProductDetail: React.FC = () => {
         <div className="md:w-3/5 flex flex-col gap-5">
           {/* Badges and Title */}
           <div className="flex gap-2 mb-1">
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-lg">{product.category}</span>
-            <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-lg">{product.company}</span>
+            <span
+              className="text-xs px-2 py-1 rounded-lg transition-colors duration-200"
+              style={{
+                backgroundColor: `${colors.interactive.primary}20`,
+                color: colors.interactive.primary
+              }}
+            >
+              {product.category}
+            </span>
+            <span
+              className="text-xs px-2 py-1 rounded-lg transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.secondary,
+                color: colors.text.secondary
+              }}
+            >
+              {product.company}
+            </span>
           </div>
-          <h1 className="text-3xl font-extrabold mb-2">{product.name}</h1>
-          <div className="text-gray-600 mb-2 text-base">{product.description}</div>
+          <h1
+            className="text-3xl font-extrabold mb-2 transition-colors duration-200"
+            style={{ color: colors.text.primary }}
+          >
+            {product.name}
+          </h1>
+          <div
+            className="mb-2 text-base transition-colors duration-200"
+            style={{ color: colors.text.secondary }}
+          >
+            {product.description}
+          </div>
 
           {/* Rating, reviews, special tags */}
           <div className="flex gap-6 items-center text-base mb-2">
             <span className="flex items-center gap-1 text-yellow-400">
               {'★'.repeat(Math.floor(product.rating || 4))}
-              <span className="text-gray-600 ml-1">{(product.rating || 4.0).toFixed(1)}</span>
-              <span className="text-gray-500 ml-1">({product.ratingCount || 0} reviews)</span>
+              <span
+                className="ml-1 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
+                {(product.rating || 4.0).toFixed(1)}
+              </span>
+              <span
+                className="ml-1 transition-colors duration-200"
+                style={{ color: colors.text.accent }}
+              >
+                ({product.ratingCount || 0} reviews)
+              </span>
             </span>
-            <span className="text-green-700 font-semibold">Instant Download</span>
-            <span className="text-blue-700 font-semibold">Genuine License</span>
+            <span
+              className="font-semibold transition-colors duration-200"
+              style={{ color: colors.status.success }}
+            >
+              Instant Download
+            </span>
+            <span
+              className="font-semibold transition-colors duration-200"
+              style={{ color: colors.interactive.primary }}
+            >
+              Genuine License
+            </span>
           </div>
 
           {/* License Options Selector */}
           <div>
-            <h2 className="font-bold mb-1">Choose License Duration</h2>
+            <h2
+              className="font-bold mb-1 transition-colors duration-200"
+              style={{ color: colors.text.primary }}
+            >
+              Choose License Duration
+            </h2>
             <div className="flex gap-2">
               {licenseOptions.map(opt => (
                 <button
                   key={opt.key}
-                  className={`flex-1 px-4 py-4 rounded-lg border ${opt.style} bg-white transition cursor-pointer`}
+                  className="flex-1 px-4 py-4 rounded-lg border transition-all duration-200 cursor-pointer hover:scale-[1.02]"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: selectedLicense === opt.key ? colors.interactive.primary : colors.border.primary,
+                    ...(selectedLicense === opt.key && {
+                      boxShadow: `0 0 0 2px ${colors.interactive.primary}40`
+                    })
+                  }}
                   onClick={() => setSelectedLicense(opt.key as typeof selectedLicense)}
                 >
-                  <div className="font-semibold text-blue-700 text-lg">{opt.label}</div>
-                  <div className="text-2xl font-bold text-gray-900 my-1">
+                  <div
+                    className="font-semibold text-lg transition-colors duration-200"
+                    style={{ color: colors.interactive.primary }}
+                  >
+                    {opt.label}
+                  </div>
+                  <div
+                    className="text-2xl font-bold my-1 transition-colors duration-200"
+                    style={{ color: colors.text.primary }}
+                  >
                     ₹{opt.price?.toLocaleString() ?? "0"}
                   </div>
-                  <div className={`text-xs mt-1 ${opt.subtitle === 'Best Value' ? 'text-green-700 font-bold' : 'text-blue-600'}`}>{opt.subtitle}</div>
+                  <div
+                    className="text-xs mt-1 font-bold transition-colors duration-200"
+                    style={{
+                      color: opt.subtitle === 'Best Value' ? colors.status.success : colors.interactive.primary
+                    }}
+                  >
+                    {opt.subtitle}
+                  </div>
                   {opt.oldPrice && (
-                    <div className="text-xs text-green-600 font-semibold mt-0.5">
+                    <div
+                      className="text-xs font-semibold mt-0.5 transition-colors duration-200"
+                      style={{ color: colors.status.success }}
+                    >
                       Save {opt.savings}
                     </div>
                   )}
@@ -179,19 +281,36 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {/* Price Block */}
-          <div className="bg-blue-50 rounded-xl px-6 py-5 flex items-center justify-between mb-2">
+          <div
+            className="rounded-xl px-6 py-5 flex items-center justify-between mb-2 transition-colors duration-200"
+            style={{ backgroundColor: `${colors.interactive.primary}10` }}
+          >
             <div>
-              <div className="text-blue-700 font-extrabold text-3xl">
+              <div
+                className="font-extrabold text-3xl transition-colors duration-200"
+                style={{ color: colors.interactive.primary }}
+              >
                 ₹{selectedLicenseObj.price?.toLocaleString()}
               </div>
-              <div className="text-gray-500 text-xs">
+              <div
+                className="text-xs transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
                 {selectedLicenseObj.label} license • GST included
               </div>
             </div>
             {selectedLicenseObj.oldPrice && (
               <div className="flex flex-col items-end">
-                <span className="line-through text-gray-400 text-sm">₹{selectedLicenseObj.oldPrice?.toLocaleString()}</span>
-                <span className="text-green-500 text-xs">
+                <span
+                  className="line-through text-sm transition-colors duration-200"
+                  style={{ color: colors.text.accent }}
+                >
+                  ₹{selectedLicenseObj.oldPrice?.toLocaleString()}
+                </span>
+                <span
+                  className="text-xs transition-colors duration-200"
+                  style={{ color: colors.status.success }}
+                >
                   Save {selectedLicenseObj.savings}
                 </span>
               </div>
@@ -213,8 +332,8 @@ const ProductDetail: React.FC = () => {
             <button
               onClick={handleAddToCart}
               className={`w-full font-bold rounded-xl py-4 text-lg transition ${isInCart
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
                 }`}
             >
               {isInCart ? `In Cart (${cartQuantity})` : 'Add to Cart'}

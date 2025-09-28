@@ -5,12 +5,18 @@ import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
 import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
+import { useAdminTheme } from "../contexts/AdminThemeContext";
 
 const HomePage: React.FC = () => {
+  const { colors } = useAdminTheme();
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div
+      className="flex flex-col min-h-screen transition-colors duration-200"
+      style={{ backgroundColor: colors.background.primary }}
+    >
       {/* Header */}
-    
+
 
       {/* Main Content */}
       <main className="flex-grow">
@@ -39,7 +45,7 @@ const HomePage: React.FC = () => {
         </section>
       </main>
 
-     
+
     </div>
   );
 };
