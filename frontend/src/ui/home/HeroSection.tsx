@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../../components/Button/FormButton";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const features = [
   {
@@ -51,24 +52,32 @@ const paymentMethods = [
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const { colors } = useAdminTheme();
 
   return (
-    <section className="py-14 px-4 sm:py-20 sm:px-6 bg-gradient-to-tr from-blue-50 via-violet-50 to-white">
+    <section
+      className="py-14 px-4 sm:py-20 sm:px-6 transition-colors duration-200"
+      style={{
+        background: `linear-gradient(to top right, ${colors.background.secondary}, ${colors.background.primary})`
+      }}
+    >
       <div className="max-w-4xl mx-auto flex flex-col items-center">
 
         {/* Heading */}
         <h1
-          className="text-4xl sm:text-5xl font-serif font-bold mb-6 tracking-wide 
-                     bg-gradient-to-r from-violet-800 via-indigo-700 to-blue-700 
-                     bg-clip-text text-transparent leading-snug text-center"
+          className="text-4xl sm:text-5xl font-serif font-bold mb-6 tracking-wide leading-snug text-center transition-colors duration-200"
+          style={{ color: colors.text.primary }}
         >
           Genuine Civil <br />
           Engineering Software
         </h1>
 
         {/* Subtext */}
-        <p className="mb-12 text-lg sm:text-xl text-gray-700 font-serif leading-relaxed text-center max-w-2xl">
-          Get authentic AutoCAD, Revit, Lumion, Tekla and other professional software licenses 
+        <p
+          className="mb-12 text-lg sm:text-xl font-serif leading-relaxed text-center max-w-2xl transition-colors duration-200"
+          style={{ color: colors.text.secondary }}
+        >
+          Get authentic AutoCAD, Revit, Lumion, Tekla and other professional software licenses
           with instant delivery and lifetime support.
         </p>
 
@@ -88,13 +97,29 @@ const HeroSection: React.FC = () => {
           {features.map((f) => (
             <div
               key={f.label}
-              className="flex flex-col items-center bg-white rounded-2xl py-7 px-6 shadow-md border border-gray-100 transition transform duration-200 hover:shadow-xl hover:-translate-y-1 hover:border-violet-400"
+              className="flex flex-col items-center rounded-2xl py-7 px-6 shadow-md border transition-all duration-200 hover:shadow-xl hover:-translate-y-1"
+              style={{
+                backgroundColor: colors.background.primary,
+                borderColor: colors.border.primary
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = colors.interactive.primary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = colors.border.primary;
+              }}
             >
               <div className="mb-3">{f.icon}</div>
-              <div className="text-2xl font-extrabold text-gray-800 mb-0.5 font-sans">
+              <div
+                className="text-2xl font-extrabold mb-0.5 font-sans transition-colors duration-200"
+                style={{ color: colors.text.primary }}
+              >
                 {f.value}
               </div>
-              <div className="text-gray-600 text-base font-medium font-sans text-center">
+              <div
+                className="text-base font-medium font-sans text-center transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
                 {f.label}
               </div>
             </div>
@@ -102,7 +127,10 @@ const HeroSection: React.FC = () => {
         </div>
 
         {/* Payment Info */}
-        <div className="flex flex-wrap gap-x-6 gap-y-2 mt-12 justify-center text-sm text-gray-500 font-medium font-sans">
+        <div
+          className="flex flex-wrap gap-x-6 gap-y-2 mt-12 justify-center text-sm font-medium font-sans transition-colors duration-200"
+          style={{ color: colors.text.secondary }}
+        >
           {paymentMethods.map((method) => (
             <span key={method.label} className="flex items-center gap-2">
               {method.icon}
