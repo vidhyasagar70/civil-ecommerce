@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Phone, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import DesktopNavigation from './DesktopNavigation';
 import AuthDropdown from './AuthDropdown';
@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { clearAuth, isAdmin } from '../../utils/auth';
 import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
 import { useCartContext } from '../../contexts/CartContext';
+import AdminThemeToggle from '../ThemeToggle/AdminThemeToggle';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 import logo from '../../assets/logo.png';
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,6 +26,7 @@ const Header: React.FC = () => {
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
   const { getItemCount } = useCartContext();
+  const { colors } = useAdminTheme();
 
 
 
@@ -184,22 +187,47 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 w-full">
+    <header 
+      className="shadow-sm border-b w-full transition-colors duration-200"
+      style={{ 
+        backgroundColor: colors.background.primary,
+        borderColor: colors.border.primary 
+      }}
+    >
       {/* Top legal bar */}
-      <div className="bg-gray-50 border-b border-gray-200 hidden sm:block">
+      <div 
+        className="border-b hidden sm:block transition-colors duration-200"
+        style={{ 
+          backgroundColor: colors.background.secondary,
+          borderColor: colors.border.primary 
+        }}
+      >
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex justify-start py-1 sm:py-2">
-            <div className="flex flex-wrap gap-2 sm:space-x-4 text-xs sm:text-sm text-gray-600">
+            <div 
+              className="flex flex-wrap gap-2 sm:space-x-4 text-xs sm:text-sm transition-colors duration-200"
+              style={{ color: colors.text.secondary }}
+            >
               {headerConfig.legal.map((link, index) => (
                 <React.Fragment key={link.href}>
                   <button
                     onClick={() => handleNavigation(link.href)}
-                    className="hover:text-blue-600 transition-colors duration-200 whitespace-nowrap"
+                    className="hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLElement).style.color = colors.interactive.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLElement).style.color = colors.text.secondary;
+                    }}
                   >
                     {link.label}
                   </button>
                   {index < headerConfig.legal.length - 1 && (
-                    <span className="text-gray-400 hidden sm:inline">|</span>
+                    <span 
+                      className="hidden sm:inline"
+                      style={{ color: colors.text.secondary }}
+                    >|</span>
                   )}
                 </React.Fragment>
               ))}
@@ -259,11 +287,26 @@ const Header: React.FC = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={headerConfig.search.placeholder}
-                  className="w-full pl-3 pr-10 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-3 pr-10 py-1.5 sm:py-2 text-sm border rounded-lg focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = colors.interactive.primary;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = colors.border.primary;
+                  }}
                 />
                 <button
                   onClick={handleSearch}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1.5 rounded-md hover:opacity-80 transition-all duration-200"
+                  style={{
+                    backgroundColor: colors.interactive.primary,
+                    color: colors.text.inverse
+                  }}
                 >
                   <Search className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
@@ -273,34 +316,22 @@ const Header: React.FC = () => {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
-            {/* Contact info - Desktop */}
-            <div className="hidden xl:flex items-center space-x-2 text-gray-700">
-              <Phone className="w-4 h-4" />
-              <span className="text-sm whitespace-nowrap">Need help? Call us:</span>
-              <a
-                href={headerConfig.contact?.phoneHref || '#'}
-                className="font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap"
-              >
-                {headerConfig.contact?.phone || 'Contact Us'}
-              </a>
-            </div>
-
-            <div className="hidden lg:flex xl:hidden items-center space-x-2 text-gray-700">
-              <Phone className="w-4 h-4" />
-              <a
-                href={headerConfig.contact?.phoneHref || '#'}
-                className="font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
-              >
-                {headerConfig.contact?.phone || 'Contact'}
-              </a>
-            </div>
+            {/* Admin Theme Toggle - Shows when user is admin */}
+            {isAdmin() && <AdminThemeToggle />}
 
             {/* User dropdown or Auth dropdown */}
             {user ? (
               <div className="hidden sm:block relative">
                 <button
                   onClick={toggleUserDropdown}
-                  className="flex items-center space-x-1 lg:space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 px-1 lg:px-2"
+                  className="flex items-center space-x-1 lg:space-x-2 hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                  }}
                 >
                   <User className="w-4 h-4 lg:w-5 lg:h-5" />
                   <span className="text-sm lg:text-base whitespace-nowrap">
@@ -313,11 +344,26 @@ const Header: React.FC = () => {
 
                 {/* User Dropdown */}
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
+                  <div 
+                    className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
+                    style={{
+                      backgroundColor: colors.background.primary,
+                      borderColor: colors.border.primary
+                    }}
+                  >
                     {isAdmin(user) && (
                       <button
                         onClick={() => handleNavigation('/admin-dashboard')}
-                        className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                        className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
+                        style={{ color: colors.text.secondary }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                        }}
                       >
                         <Settings className="w-4 h-4" />
                         <span>Admin Dashboard</span>
@@ -325,14 +371,32 @@ const Header: React.FC = () => {
                     )}
                     <button
                       onClick={() => handleNavigation('/profile')}
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                      }}
                     >
                       <User className="w-4 h-4" />
                       <span>Profile</span>
                     </button>
                     <button
                       onClick={() => handleNavigation('/logout')}
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color = colors.status.error;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                      }}
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Logout</span>
@@ -344,7 +408,14 @@ const Header: React.FC = () => {
               <div className="hidden sm:block relative">
                 <button
                   onClick={toggleAuthDropdown}
-                  className="flex items-center space-x-1 lg:space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 px-1 lg:px-2"
+                  className="flex items-center space-x-1 lg:space-x-2 hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                  }}
                 >
                   <User className="w-4 h-4 lg:w-5 lg:h-5" />
                   <span className="text-sm lg:text-base whitespace-nowrap">Sign In</span>
@@ -363,12 +434,25 @@ const Header: React.FC = () => {
             {/* Cart */}
             <button
               onClick={() => handleNavigation('/cart')}
-              className="relative flex items-center space-x-1 lg:space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 px-1 lg:px-2"
+              className="relative flex items-center space-x-1 lg:space-x-2 hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
+              style={{ color: colors.text.secondary }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+              }}
             >
               <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
               <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">My Cart</span>
               {getItemCount() > 0 && (
-                <span className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 bg-blue-600 text-white text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center">
+                <span 
+                  className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center"
+                  style={{
+                    backgroundColor: colors.interactive.primary,
+                    color: colors.text.inverse
+                  }}
+                >
                   {getItemCount()}
                 </span>
               )}
