@@ -1,5 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const reviews = [
   {
@@ -20,17 +21,30 @@ const reviews = [
     role: "Architect at DLF",
     image: "https://randomuser.me/api/portraits/men/76.jpg",
   },
-  
+
 ];
 
 const Reviews: React.FC = () => {
+  const { colors } = useAdminTheme();
+
   return (
-    <section className="w-full py-16 bg-gradient-to-r from-indigo-50 to-violet-50">
+    <section
+      className="w-full py-16 transition-colors duration-200"
+      style={{
+        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+      }}
+    >
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        <h2
+          className="text-3xl md:text-4xl font-bold transition-colors duration-200"
+          style={{ color: colors.text.primary }}
+        >
           What Our Customers Say
         </h2>
-        <p className="text-gray-600 mt-2 text-lg">
+        <p
+          className="mt-2 text-lg transition-colors duration-200"
+          style={{ color: colors.text.secondary }}
+        >
           Join thousands of satisfied customers who trust our software solutions
         </p>
       </div>
@@ -40,7 +54,8 @@ const Reviews: React.FC = () => {
         {reviews.map((review, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg"
+            className="rounded-2xl shadow-md p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
+            style={{ backgroundColor: colors.background.primary }}
           >
             {/* Stars */}
             <div className="flex justify-center mb-4">
@@ -53,18 +68,34 @@ const Reviews: React.FC = () => {
             </div>
 
             {/* Review text */}
-            <p className="text-gray-700 italic mb-6">"{review.text}"</p>
+            <p
+              className="italic mb-6 transition-colors duration-200"
+              style={{ color: colors.text.secondary }}
+            >
+              "{review.text}"
+            </p>
 
             {/* Profile */}
             <div className="flex items-center space-x-4">
               <img
                 src={review.image}
                 alt={review.name}
-                className="w-12 h-12 rounded-full border-2 border-violet-500"
+                className="w-12 h-12 rounded-full border-2 transition-colors duration-200"
+                style={{ borderColor: colors.interactive.primary }}
               />
               <div>
-                <h4 className="font-semibold text-gray-900">{review.name}</h4>
-                <p className="text-sm text-gray-600">{review.role}</p>
+                <h4
+                  className="font-semibold transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
+                  {review.name}
+                </h4>
+                <p
+                  className="text-sm transition-colors duration-200"
+                  style={{ color: colors.text.secondary }}
+                >
+                  {review.role}
+                </p>
               </div>
             </div>
           </div>

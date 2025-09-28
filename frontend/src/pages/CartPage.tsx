@@ -2,10 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../contexts/CartContext';
 import { CartItem, CartSummary, CartEmpty } from '../ui/Cart';
+import { useAdminTheme } from '../contexts/AdminThemeContext';
 import Swal from 'sweetalert2';
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, summary, isLoading, removeItem, updateQuantity, clearCart } = useCartContext();
+  const { colors } = useAdminTheme();
 
   const handleCheckout = () => {
     // Navigate to checkout page (to be implemented)
@@ -54,11 +56,22 @@ const CartPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div
+        className="min-h-screen transition-colors duration-200"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading your cart...</p>
+            <div
+              className="inline-block animate-spin rounded-full h-8 w-8 border-b-2"
+              style={{ borderColor: colors.interactive.primary }}
+            ></div>
+            <p
+              className="mt-4 transition-colors duration-200"
+              style={{ color: colors.text.secondary }}
+            >
+              Loading your cart...
+            </p>
           </div>
         </div>
       </div>
@@ -66,14 +79,25 @@ const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen transition-colors duration-200"
+      style={{ backgroundColor: colors.background.secondary }}
+    >
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-              <p className="text-gray-600 mt-1">
+              <h1
+                className="text-3xl font-bold transition-colors duration-200"
+                style={{ color: colors.text.primary }}
+              >
+                Shopping Cart
+              </h1>
+              <p
+                className="mt-1 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
                 {items.length > 0
                   ? `${summary.itemCount} item${summary.itemCount !== 1 ? 's' : ''} in your cart`
                   : 'Your cart is empty'
@@ -84,7 +108,8 @@ const CartPage: React.FC = () => {
             {items.length > 0 && (
               <button
                 onClick={handleClearCart}
-                className="text-red-600 hover:text-red-700 font-medium text-sm transition-colors"
+                className="font-medium text-sm transition-all duration-200 hover:scale-105"
+                style={{ color: colors.status.error }}
               >
                 Clear Cart
               </button>
@@ -98,8 +123,17 @@ const CartPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              <div
+                className="rounded-xl border p-6 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary
+                }}
+              >
+                <h2
+                  className="text-xl font-semibold mb-6 transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
                   Cart Items ({items.length})
                 </h2>
 
@@ -116,50 +150,116 @@ const CartPage: React.FC = () => {
               </div>
 
               {/* Additional Cart Features */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div
+                className="rounded-xl border p-6 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary
+                }}
+              >
+                <h3
+                  className="text-lg font-semibold mb-4 transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
                   Cart Benefits
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: colors.status.success + '20' }}
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          style={{ color: colors.status.success }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900">Instant Download</h4>
-                      <p className="text-xs text-gray-500">Get your software immediately</p>
+                      <h4
+                        className="text-sm font-medium transition-colors duration-200"
+                        style={{ color: colors.text.primary }}
+                      >
+                        Instant Download
+                      </h4>
+                      <p
+                        className="text-xs transition-colors duration-200"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Get your software immediately
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: colors.interactive.primary + '20' }}
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          style={{ color: colors.interactive.primary }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900">Genuine License</h4>
-                      <p className="text-xs text-gray-500">100% authentic software</p>
+                      <h4
+                        className="text-sm font-medium transition-colors duration-200"
+                        style={{ color: colors.text.primary }}
+                      >
+                        Genuine License
+                      </h4>
+                      <p
+                        className="text-xs transition-colors duration-200"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        100% authentic software
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: colors.status.warning + '20' }}
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          style={{ color: colors.status.warning }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z" />
                         </svg>
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900">24/7 Support</h4>
-                      <p className="text-xs text-gray-500">Expert help when you need it</p>
+                      <h4
+                        className="text-sm font-medium transition-colors duration-200"
+                        style={{ color: colors.text.primary }}
+                      >
+                        24/7 Support
+                      </h4>
+                      <p
+                        className="text-xs transition-colors duration-200"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Expert help when you need it
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -181,17 +281,36 @@ const CartPage: React.FC = () => {
         {/* Recently Viewed or Recommendations */}
         {items.length > 0 && (
           <div className="mt-12">
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div
+              className="rounded-xl border p-6 transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.primary,
+                borderColor: colors.border.primary
+              }}
+            >
+              <h3
+                className="text-lg font-semibold mb-4 transition-colors duration-200"
+                style={{ color: colors.text.primary }}
+              >
                 You might also like
               </h3>
               <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">
+                <p
+                  className="mb-4 transition-colors duration-200"
+                  style={{ color: colors.text.secondary }}
+                >
                   Recommendations will be shown here based on your cart items
                 </p>
                 <button
                   onClick={handleContinueShopping}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="font-medium transition-colors duration-200"
+                  style={{ color: colors.interactive.primary }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = colors.interactive.primaryHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = colors.interactive.primary;
+                  }}
                 >
                   Browse more software →
                 </button>

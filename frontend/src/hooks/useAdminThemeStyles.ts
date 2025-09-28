@@ -127,5 +127,6 @@ export const getThemeAwareClassName = (baseClass: string, theme: 'light' | 'dark
 };
 
 export const combineStyles = (...styles: (CSSProperties | undefined)[]): CSSProperties => {
-    return styles.reduce((combined, style) => ({ ...combined, ...(style || {}) }), {} as CSSProperties);
+    return styles.filter((style): style is CSSProperties => style !== undefined)
+                 .reduce((combined, style) => ({ ...combined, ...style }), {} as CSSProperties);
 };

@@ -16,8 +16,7 @@ import Companies from './Companies';
 import Orders from './Orders';
 import Settings from './Settings';
 import UserManagement from './users/UserManagement';
-import { AdminThemeProvider, useAdminTheme } from '../../contexts/AdminThemeContext';
-import AdminThemeToggle from '../../components/ThemeToggle/AdminThemeToggle';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 type MenuType = 'dashboard' | 'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings';
 
@@ -86,7 +85,6 @@ const AdminDashboardContent: React.FC = () => {
                 Manage your e-commerce platform
               </p>
             </div>
-            <AdminThemeToggle />
           </div>
         </div>
 
@@ -134,11 +132,7 @@ const AdminDashboardContent: React.FC = () => {
 };
 
 const AdminDashboard: React.FC = () => {
-  return (
-    <AdminThemeProvider>
-      <AdminDashboardContent />
-    </AdminThemeProvider>
-  );
+  return <AdminDashboardContent />;
 };
 
 export default AdminDashboard;
