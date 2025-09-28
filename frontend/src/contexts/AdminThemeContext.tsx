@@ -44,7 +44,7 @@ export interface ThemeColors {
 
 export const lightTheme: ThemeColors = {
     background: {
-        primary: '#ffffff',     // Pure white main background
+        primary: '#ffffffff',     // Pure white main background
         secondary: '#f9fafb',   // Very light gray for cards
         tertiary: '#f3f4f6',    // Light gray for headers
         accent: '#e5e7eb',      // Gray for accents/hover states
@@ -67,10 +67,10 @@ export const lightTheme: ThemeColors = {
         info: '#1d4ed8',        // Darker blue
     },
     interactive: {
-        primary: '#2563eb',     // Darker blue for buttons
-        primaryHover: '#1d4ed8',
-        secondary: '#4b5563',   // Darker secondary
-        secondaryHover: '#374151',
+        primary: '#fbbf24',
+        primaryHover: '#f59e0b',
+        secondary: '#6b7280',
+        secondaryHover: '#9ca3af',
     },
 };
 
