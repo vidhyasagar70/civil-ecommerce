@@ -11,9 +11,9 @@ const CartPage: React.FC = () => {
 
   const handleCheckout = () => {
     // Navigate to checkout page (to be implemented)
-    console.log('Proceeding to checkout...', { items, summary });
-    // For now, just show an alert
-    alert('Checkout functionality will be implemented soon!');
+   navigate('/checkout', {
+    state: { items, summary }
+  });
   };
 
   const handleContinueShopping = () => {
