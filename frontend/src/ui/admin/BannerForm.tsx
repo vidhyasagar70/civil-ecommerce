@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, X, Monitor, Smartphone } from 'lucide-react';
-import type { Banner } from '../../types/Banner';
+import { Eye, X } from 'lucide-react';
+
+interface Banner {
+  id: string;
+  title: string;
+  description: string;
+  ctaButtonText: string;
+  startDate: string;
+  endDate: string;
+  position: string;
+  bannerType: string;
+  priority: number;
+  status: string;
+}
 
 interface BannerFormProps {
   editingBanner?: Banner | null;
@@ -12,9 +24,6 @@ const BannerForm: React.FC<BannerFormProps> = ({ editingBanner, onSubmit, onCanc
   const [formData, setFormData] = useState<Partial<Banner>>({
     title: '',
     description: '',
-    desktopImageUrl: '',
-    mobileImageUrl: '',
-    linkUrl: '',
     ctaButtonText: 'Shop Now',
     startDate: '',
     endDate: '',
@@ -36,9 +45,6 @@ const BannerForm: React.FC<BannerFormProps> = ({ editingBanner, onSubmit, onCanc
     setFormData({
       title: '',
       description: '',
-      desktopImageUrl: '',
-      mobileImageUrl: '',
-      linkUrl: '',
       ctaButtonText: 'Shop Now',
       startDate: '',
       endDate: '',
@@ -109,46 +115,6 @@ const BannerForm: React.FC<BannerFormProps> = ({ editingBanner, onSubmit, onCanc
                     placeholder="Enter banner description (optional)"
                     rows={3}
                     className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Desktop Image URL
-                  </label>
-                  <input
-                    type="url"
-                    name="desktopImageUrl"
-                    value={formData.desktopImageUrl || ''}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/desktop-banner.jpg"
-                    className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Mobile Image URL
-                  </label>
-                  <input
-                    type="url"
-                    name="mobileImageUrl"
-                    value={formData.mobileImageUrl || ''}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/mobile-banner.jpg"
-                    className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Link URL</label>
-                  <input
-                    type="url"
-                    name="linkUrl"
-                    value={formData.linkUrl || ''}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/landing-page"
-                    className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
                   />
                 </div>
 
@@ -258,60 +224,25 @@ const BannerForm: React.FC<BannerFormProps> = ({ editingBanner, onSubmit, onCanc
                 <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
                     <Eye size={20} />
-                    Live Preview
+                    Banner Preview
                   </h3>
                   
-                  {/* Desktop Preview */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Monitor size={16} className="text-gray-600" />
-                      <span className="text-sm font-medium text-gray-600">Desktop View</span>
-                    </div>
-                    <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-100">
-                      {formData.desktopImageUrl ? (
-                        <img 
-                          src={formData.desktopImageUrl} 
-                          alt="Desktop preview" 
-                          className="w-full h-32 object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMzUgNzVMMTUwIDkwTDE2NSA3NUwxODAgOTBMMTk1IDc1IiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxjaXJjbGUgY3g9IjEyMCIgY3k9IjYwIiByPSI4IiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8L3N2Zz4K';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-32 flex items-center justify-center text-gray-400">
-                          <div className="text-center">
-                            <Monitor size={32} className="mx-auto mb-2" />
-                            <p className="text-sm">Desktop Image Preview</p>
-                          </div>
-                        </div>
+                  {/* Banner Preview Card */}
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white mb-6">
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-bold">
+                        {formData.title || 'Banner Title'}
+                      </h4>
+                      {formData.description && (
+                        <p className="text-blue-100">
+                          {formData.description}
+                        </p>
                       )}
-                    </div>
-                  </div>
-
-                  {/* Mobile Preview */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Smartphone size={16} className="text-gray-600" />
-                      <span className="text-sm font-medium text-gray-600">Mobile View</span>
-                    </div>
-                    <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-100 max-w-xs mx-auto">
-                      {formData.mobileImageUrl ? (
-                        <img 
-                          src={formData.mobileImageUrl} 
-                          alt="Mobile preview" 
-                          className="w-full h-40 object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDIwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NSAxNTBMMTAwIDE2NUwxMTUgMTUwTDEzMCAxNjVMMTQ1IDE1MCIgc3Ryb2tlPSIjOUNBM0FGIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSI3MCIgY3k9IjEzNSIgcj0iOCIgc3Ryb2tlPSIjOUNBM0FGIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KPC9zdmc+Cg==';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-40 flex items-center justify-center text-gray-400">
-                          <div className="text-center">
-                            <Smartphone size={32} className="mx-auto mb-2" />
-                            <p className="text-sm">Mobile Image Preview</p>
-                          </div>
-                        </div>
-                      )}
+                      <div className="flex justify-start">
+                        <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                          {formData.ctaButtonText || 'Shop Now'}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -356,12 +287,6 @@ const BannerForm: React.FC<BannerFormProps> = ({ editingBanner, onSubmit, onCanc
                           }
                         </span>
                       </div>
-                      {formData.linkUrl && (
-                        <div className="flex">
-                          <span className="font-medium w-20">Link:</span>
-                          <span className="text-blue-600 break-all">{formData.linkUrl}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>

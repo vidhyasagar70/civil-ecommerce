@@ -11,7 +11,8 @@ import authRoutes from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
 import userRoutes from "./routes/userRoutes";
 import emailService from "./services/emailService";
-import contactRoutes from "./routes/contactRoutes"
+import contactRoutes from "./routes/contactRoutes";
+import bannerRoutes from "./routes/bannerRoutes";
 import "./config/passport"; 
 
 const app = express();
@@ -44,7 +45,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/cart", cartRoutes);
 app.use('/api/contact', contactRoutes);
-
+app.use("/api/banners", bannerRoutes);
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
 const PORT = process.env.PORT || 5000;

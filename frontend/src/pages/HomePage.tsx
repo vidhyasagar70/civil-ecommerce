@@ -6,7 +6,7 @@ import MarqueeBanner from "../ui/home/MarqueeBanner";
 import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-
+import BannerDisplay from "../ui/admin/banner/BannerDisplay";
 const HomePage: React.FC = () => {
   const { colors } = useAdminTheme();
 
@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
     >
       {/* Header */}
 
-
+    <BannerDisplay position="home" />
       {/* Main Content */}
       <main className="flex-grow">
         <section className="px-4 sm:px-6 lg:px-8">
