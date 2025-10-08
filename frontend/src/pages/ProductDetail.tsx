@@ -82,6 +82,10 @@ const ProductDetail: React.FC = () => {
   const { data: user } = useUser();
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
+  const [banners, setBanners] = useState<any[]>([]);
+const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+const [bannersLoading, setBannersLoading] = useState(true);
+const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
 
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
@@ -205,12 +209,50 @@ const ProductDetail: React.FC = () => {
   const membershipOptions = pricingOptions.filter(opt => opt.type === 'membership');
   const adminSubscriptionOptions = getAdminSubscriptionPlans();
 
-  // Set default selection to first available option
-  React.useEffect(() => {
-    if (pricingOptions.length > 0 && !selectedOption) {
-      setSelectedLicense(pricingOptions[0].id);
+
+React.useEffect(() => {
+  if (pricingOptions.length > 0 && !selectedOption) {
+    setSelectedLicense(pricingOptions[0].id);
+  }
+}, [pricingOptions, selectedOption]);
+
+
+
+
+// Fetch product page banners
+React.useEffect(() => {
+  const fetchProductBanners = async () => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      console.log('Fetching banners from:', `${API_BASE_URL}/banners/active/product`);
+      
+      const response = await fetch(`${API_BASE_URL}/banners/active/product`);
+      console.log('Response status:', response.status);
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Banner result:', result);
+        
+        if (result.success && result.data) {
+          console.log('Banners found:', result.data);
+          setBanners(result.data);
+        } else {
+          console.log('No banners in result');
+        }
+      } else {
+        console.log('Response not OK:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching product banners:', error);
+    } finally {
+      console.log('Setting bannersLoading to false');
+      setBannersLoading(false);
     }
-  }, [pricingOptions, selectedOption]);
+  };
+
+  fetchProductBanners();
+}, []);
+
 
   // Early returns after all hooks are defined to avoid hook order violations
   if (isLoading) return (
@@ -322,6 +364,95 @@ const ProductDetail: React.FC = () => {
           <span style={{ color: colors.interactive.primary }}>{product.name}</span>
         </div>
       </div>
+{/* ADD BANNER COMPONENT HERE - AFTER BREADCRUMB, BEFORE MAIN CONTENT */}
+     {/* Product Page Banner */}
+{!bannersLoading && banners.length > 0 && !isBannerClosed && (
+  <div className="max-w-7xl mx-auto px-4 mb-6">
+    <div
+      className="rounded-2xl p-6 lg:p-8 shadow-lg transition-all duration-500 relative overflow-hidden"
+      style={{
+        backgroundColor: banners[currentBannerIndex].backgroundColor || '#3B82F6',
+        color: banners[currentBannerIndex].textColor || '#FFFFFF',
+      }}
+    >
+      {/* Close Button - ADD THIS */}
+      <button
+        onClick={() => setIsBannerClosed(true)}
+        className="absolute top-4 left-4 bg-white bg-opacity-30 hover:bg-opacity-50 backdrop-blur-sm p-2 rounded-full transition-all duration-200 z-20 group"
+        aria-label="Close banner"
+      >
+        <LucideIcons.X className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200" />
+      </button>
+
+      {/* Banner Type Badge */}
+      <div className="absolute top-4 right-4">
+        <span className="bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold uppercase">
+          {banners[currentBannerIndex].bannerType}
+        </span>
+      </div>
+
+      {/* Rest of your banner code stays the same */}
+      <div className="max-w-3xl relative z-10">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-3 leading-tight">
+          {banners[currentBannerIndex].title}
+        </h2>
+        
+        {banners[currentBannerIndex].description && (
+          <p className="text-base lg:text-lg mb-4 opacity-90">
+            {banners[currentBannerIndex].description}
+          </p>
+        )}
+
+        <button
+          onClick={() => {
+            const link = banners[currentBannerIndex].ctaButtonLink;
+            if (link) {
+              if (link.startsWith('http')) {
+                window.open(link, '_blank');
+              } else {
+                navigate(link);
+              }
+            }
+          }}
+          className="bg-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+          style={{ color: banners[currentBannerIndex].backgroundColor || '#3B82F6' }}
+        >
+          {banners[currentBannerIndex].ctaButtonText}
+        </button>
+      </div>
+
+      {banners.length > 1 && (
+        <>
+          <button
+            onClick={() => setCurrentBannerIndex((prev) => prev === 0 ? banners.length - 1 : prev - 1)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 backdrop-blur-sm p-2 rounded-full transition-all duration-200 z-10"
+          >
+            <LucideIcons.ChevronLeft className="h-5 w-5" />
+          </button>
+          
+          <button
+            onClick={() => setCurrentBannerIndex((prev) => (prev + 1) % banners.length)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 backdrop-blur-sm p-2 rounded-full transition-all duration-200 z-10"
+          >
+            <LucideIcons.ChevronRight className="h-5 w-5" />
+          </button>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {banners.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentBannerIndex(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === currentBannerIndex ? 'w-8 bg-white' : 'w-2 bg-white bg-opacity-50 hover:bg-opacity-75'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+)}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 pb-8">

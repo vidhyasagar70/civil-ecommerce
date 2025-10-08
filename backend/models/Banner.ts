@@ -30,7 +30,7 @@ const BannerSchema = new Schema<IBanner>(
     },
     ctaButtonText: {
       type: String,
-      required: true,
+      // required: true,
       default: 'Shop Now',
     },
     ctaButtonLink: {
@@ -49,6 +49,7 @@ const BannerSchema = new Schema<IBanner>(
       type: String,
       enum: ['Home Page Only', 'Product Page', 'Both'],
       default: 'Home Page Only',
+      required:true,
     },
     bannerType: {
       type: String,
