@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Eye, Edit, Trash2, Plus, X, ExternalLink, Globe, Monitor } from 'lucide-react';
+import { Calendar, Eye, Edit, Trash2, Plus, X, ExternalLink } from 'lucide-react';
 
 interface Banner {
   _id?: string;
@@ -52,11 +52,18 @@ const BannerManagement: React.FC = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      const data = await response.json();
-      setBanners(data);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch banners');
+      }
+      
+      const result = await response.json();
+      // Fix: Handle the wrapped response structure
+      setBanners(result.success ? result.data : []);
     } catch (error) {
       console.error('Error fetching banners:', error);
       alert('Error fetching banners');
+      setBanners([]);
     } finally {
       setLoading(false);
     }
@@ -106,20 +113,29 @@ const BannerManagement: React.FC = () => {
         body: JSON.stringify(formData)
       });
 
-      if (response.ok) {
-        await fetchBanners();
-        setShowCreateForm(false);
-        resetForm();
-        alert(editingBanner ? 'Banner updated successfully' : 'Banner created successfully');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to save banner');
       }
+
+      await fetchBanners();
+      setShowCreateForm(false);
+      resetForm();
+      alert(editingBanner ? 'Banner updated successfully' : 'Banner created successfully');
     } catch (error) {
       console.error('Error saving banner:', error);
-      alert('Error saving banner');
+      alert(error instanceof Error ? error.message : 'Error saving banner');
     }
   };
 
   const handleEdit = (banner: Banner) => {
-    setFormData(banner);
+    // Fix: Convert dates to YYYY-MM-DD format for date inputs
+    const formattedBanner = {
+      ...banner,
+      startDate: banner.startDate ? new Date(banner.startDate).toISOString().split('T')[0] : '',
+      endDate: banner.endDate ? new Date(banner.endDate).toISOString().split('T')[0] : '',
+    };
+    setFormData(formattedBanner);
     setEditingBanner(banner);
     setShowCreateForm(true);
   };
@@ -136,14 +152,24 @@ const BannerManagement: React.FC = () => {
         }
       });
 
-      if (response.ok) {
-        await fetchBanners();
-        alert('Banner deleted successfully');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete banner');
       }
+
+      await fetchBanners();
+      alert('Banner deleted successfully');
     } catch (error) {
       console.error('Error deleting banner:', error);
-      alert('Error deleting banner');
+      alert(error instanceof Error ? error.message : 'Error deleting banner');
     }
+  };
+
+  // Fix: Format dates for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Not set';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   const getBannerTypeColor = (type: string) => {
@@ -196,11 +222,11 @@ const BannerManagement: React.FC = () => {
                       <input type="text" name="ctaButtonText" value={formData.ctaButtonText || ''} onChange={handleInputChange}
                         className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none" />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-semibold mb-2">CTA Link</label>
                       <input type="text" name="ctaButtonLink" value={formData.ctaButtonLink || ''} onChange={handleInputChange}
                         placeholder="/products" className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none" />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -255,7 +281,7 @@ const BannerManagement: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold mb-2">Background Color</label>
                       <input type="color" name="backgroundColor" value={formData.backgroundColor || '#3B82F6'} onChange={handleInputChange}
@@ -266,7 +292,7 @@ const BannerManagement: React.FC = () => {
                       <input type="color" name="textColor" value={formData.textColor || '#FFFFFF'} onChange={handleInputChange}
                         className="w-full h-12 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div>
@@ -343,7 +369,7 @@ const BannerManagement: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <Calendar size={16} className="text-gray-500" />
                             <span className="font-medium">Duration:</span>
-                            <span className="text-gray-600">{banner.startDate} - {banner.endDate}</span>
+                            <span className="text-gray-600">{formatDate(banner.startDate)} - {formatDate(banner.endDate)}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <ExternalLink size={16} className="text-gray-500" />
