@@ -14,7 +14,7 @@ import emailService from "./services/emailService";
 import contactRoutes from "./routes/contactRoutes";
 import bannerRoutes from "./routes/bannerRoutes";
 import "./config/passport"; 
-
+import couponRoutes from './routes/couponRoutes'
 const app = express();
 
 app.use(
@@ -46,6 +46,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/cart", cartRoutes);
 app.use('/api/contact', contactRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use('/api/coupons', couponRoutes);
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
 const PORT = process.env.PORT || 5000;
