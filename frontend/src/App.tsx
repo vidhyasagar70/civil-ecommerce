@@ -25,6 +25,7 @@ import ReturnPolicy from './ui/policy/ReturnPolicy';
 import TermsAndConditions from './ui/policy/TermsAndConditions';
 import ShippingPolicy from './ui/policy/ShippingPolicy';
 import ContactPage from './pages/ContactPage';
+import CheckoutPage from "./pages/CheckoutPage";
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -175,6 +176,15 @@ function AppLayout() {
           element={
             <AuthGuard>
               <CartPage />
+            </AuthGuard>
+          }
+        />
+
+         <Route
+          path="/checkout"
+          element={
+            <AuthGuard>
+             <CheckoutPage />
             </AuthGuard>
           }
         />
