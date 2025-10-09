@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Search, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import DesktopNavigation from './DesktopNavigation';
@@ -6,6 +6,9 @@ import AuthDropdown from './AuthDropdown';
 import MobileMenu from './MobileMenu';
 import AdminDashboard from '../../ui/admin/AdminDashboard';
 import FormSelect from '../Select/FormSelect';
+import AutodeskDropdown from './AutodeskDropdown';
+import MicrosoftDropdown from './MicrosoftDropdown';
+import AdobeDropdown from './AdobeDropdown';
 import { useCategories, useCompanies } from '../../api/productApi';
 import { useNavigate } from 'react-router-dom';
 import { clearAuth, isAdmin } from '../../utils/auth';
@@ -14,21 +17,28 @@ import { useCartContext } from '../../contexts/CartContext';
 import AdminThemeToggle from '../ThemeToggle/AdminThemeToggle';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 import logo from '../../assets/logo.png';
+
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isAutodeskDropdownOpen, setIsAutodeskDropdownOpen] = useState(false);
+  const [isMicrosoftDropdownOpen, setIsMicrosoftDropdownOpen] = useState(false);
+  const [isAdobeDropdownOpen, setIsAdobeDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
+  
+  const autodeskButtonRef = useRef<HTMLButtonElement>(null);
+  const microsoftButtonRef = useRef<HTMLButtonElement>(null);
+  const adobeButtonRef = useRef<HTMLButtonElement>(null);
+  
   const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
   const { getItemCount } = useCartContext();
   const { colors } = useAdminTheme();
-
-
 
   const { data: categories = [] } = useCategories();
   const { data: companies = [] } = useCompanies();
@@ -74,6 +84,18 @@ const Header: React.FC = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
   const toggleUserDropdown = () => setIsUserDropdownOpen(!isUserDropdownOpen);
+  const toggleAutodeskDropdown = () => {
+    console.log('Toggle Autodesk');
+    setIsAutodeskDropdownOpen(!isAutodeskDropdownOpen);
+  };
+  const toggleMicrosoftDropdown = () => {
+    console.log('Toggle Microsoft');
+    setIsMicrosoftDropdownOpen(!isMicrosoftDropdownOpen);
+  };
+  const toggleAdobeDropdown = () => {
+    console.log('Toggle Adobe');
+    setIsAdobeDropdownOpen(!isAdobeDropdownOpen);
+  };
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -101,7 +123,11 @@ const Header: React.FC = () => {
     setIsMenuOpen(false);
     setIsAuthDropdownOpen(false);
     setIsUserDropdownOpen(false);
+    setIsAutodeskDropdownOpen(false);
+    setIsMicrosoftDropdownOpen(false);
+    setIsAdobeDropdownOpen(false);
   };
+  
   const logoutMutation = useLogout();
 
   const handleLogout = () => {
@@ -113,7 +139,6 @@ const Header: React.FC = () => {
         window.location.reload();
       },
       onError: () => {
-        // Fallback if mutation fails
         clearAuth();
         invalidateUser();
         navigate('/');
@@ -122,11 +147,15 @@ const Header: React.FC = () => {
     });
   };
 
+  // Debug logs
+  console.log('Autodesk Dropdown Open:', isAutodeskDropdownOpen);
+  console.log('Microsoft Dropdown Open:', isMicrosoftDropdownOpen);
+  console.log('Adobe Dropdown Open:', isAdobeDropdownOpen);
+
   if (showAdminDashboard) {
     return (
       <div>
         <header className="bg-white shadow-sm border-b border-gray-200 w-full">
-          {/* Admin header content */}
           <div className="bg-gray-50 border-b border-gray-200 hidden sm:block">
             <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
               <div className="flex justify-start py-1 sm:py-2">
@@ -188,7 +217,7 @@ const Header: React.FC = () => {
 
   return (
     <header 
-      className="shadow-sm border-b w-full transition-colors duration-200"
+      className="shadow-sm border-b w-full transition-colors duration-200 relative"
       style={{ 
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary 
@@ -262,7 +291,7 @@ const Header: React.FC = () => {
                   options={categoryOptions}
                   value={selectedCategory}
                   onChange={handleCategoryChange}
-                  className="text-sm"
+                  className="text-sm border-0"
                 />
               </div>
               <div className="min-w-[140px] max-w-[180px]">
@@ -270,13 +299,21 @@ const Header: React.FC = () => {
                   options={companyOptions}
                   value={selectedCompany}
                   onChange={handleCompanyChange}
-                  className="text-sm"
+                  className="text-sm border-0"
                 />
               </div>
             </div>
 
             {/* Desktop Navigation */}
-            <DesktopNavigation onNavigate={handleNavigation} />
+            <DesktopNavigation 
+              onNavigate={handleNavigation}
+              autodeskButtonRef={autodeskButtonRef}
+              onAutodeskClick={toggleAutodeskDropdown}
+              microsoftButtonRef={microsoftButtonRef}
+              onMicrosoftClick={toggleMicrosoftDropdown}
+              adobeButtonRef={adobeButtonRef}
+              onAdobeClick={toggleAdobeDropdown}
+            />
 
             {/* Search Bar - Desktop */}
             <div className="hidden md:flex flex-1 max-w-xs lg:max-w-md xl:max-w-lg ml-4">
@@ -489,13 +526,46 @@ const Header: React.FC = () => {
       />
 
       {/* Overlay to close dropdowns */}
-      {(isAuthDropdownOpen || isUserDropdownOpen) && (
+      {(isAuthDropdownOpen || isUserDropdownOpen || isAutodeskDropdownOpen || isMicrosoftDropdownOpen || isAdobeDropdownOpen) && (
         <div
           className="fixed inset-0 z-40"
           onClick={() => {
             setIsAuthDropdownOpen(false);
             setIsUserDropdownOpen(false);
+            setIsAutodeskDropdownOpen(false);
+            setIsMicrosoftDropdownOpen(false);
+            setIsAdobeDropdownOpen(false);
           }}
+        />
+      )}
+
+      {/* Autodesk Dropdown */}
+      {isAutodeskDropdownOpen && (
+        <AutodeskDropdown
+          isOpen={isAutodeskDropdownOpen}
+          onClose={() => setIsAutodeskDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={autodeskButtonRef}
+        />
+      )}
+
+      {/* Microsoft Dropdown */}
+      {isMicrosoftDropdownOpen && (
+        <MicrosoftDropdown
+          isOpen={isMicrosoftDropdownOpen}
+          onClose={() => setIsMicrosoftDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={microsoftButtonRef}
+        />
+      )}
+
+      {/* Adobe Dropdown */}
+      {isAdobeDropdownOpen && (
+        <AdobeDropdown
+          isOpen={isAdobeDropdownOpen}
+          onClose={() => setIsAdobeDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={adobeButtonRef}
         />
       )}
     </header>
