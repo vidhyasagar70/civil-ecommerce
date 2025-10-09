@@ -49,7 +49,7 @@ const CheckoutPage: React.FC = () => {
   const [showCoupon, setShowCoupon] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
-  // const [showLogin, setShowLogin] = useState(false);
+  
 
   const normalizePrice = (price: any) =>
     parseFloat(String(price || 0).replace(/[^0-9.]/g, "")) || 0;
@@ -96,22 +96,7 @@ const CheckoutPage: React.FC = () => {
       </h1>
 
       <div className="max-w-7xl mx-auto flex flex-col space-y-8">
-        {/* Returning Customer */}
-        <div className="text-sm flex flex-col gap-2">
-          <div className="flex items-center gap-2" style={{ color: colors.text.primary }}>
-            <span>Returning customer?</span>
-            <button
-              type="button"
-              className="underline font-medium"
-              style={{ color: colors.interactive.primary }}
-              // onClick={() => setShowLogin(prev => !prev)}
-            >
-              Click here to login
-            </button>
-          </div>
-          {/* {showLogin && <SigninPage />} */}
-        </div>
-
+      
         {/* Coupon Section */}
         <div className="text-sm flex flex-col gap-2">
           <div className="flex items-center gap-2" style={{ color: colors.text.primary }}>
