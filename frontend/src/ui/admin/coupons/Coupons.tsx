@@ -238,8 +238,12 @@ const Coupons: React.FC = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <span 
-                          className="font-mono font-semibold px-3 py-1 rounded-full text-sm"
-                          style={{ backgroundColor: colors.background.tertiary, color: colors.text.inverse }}
+                          className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
+                          style={{ 
+                            backgroundColor: colors.interactive.primary + '20', 
+                            color: colors.interactive.primary,
+                            borderColor: colors.interactive.primary + '40'
+                          }}
                         >
                           {coupon.code}
                         </span>
