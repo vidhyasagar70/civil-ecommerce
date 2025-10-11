@@ -16,7 +16,7 @@ interface Coupon {
   updatedAt?: string;
 }
 
-const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 
 const Coupons: React.FC = () => {
@@ -33,7 +33,7 @@ const Coupons: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${apiBase}/coupons`);
+      const res = await fetch(`${apiBase}/api/coupons`);
       if (!res.ok) throw new Error('Failed to fetch coupons');
       const data = await res.json();
       setCoupons(data);
@@ -47,7 +47,7 @@ const Coupons: React.FC = () => {
   const handleAddCoupon = async (coupon: Coupon) => {
     try {
       const method = editingCoupon ? 'PUT' : 'POST';
-      const url = editingCoupon ? `${apiBase}/coupons/${editingCoupon.id}` : `${apiBase}/coupons`;
+      const url = editingCoupon ? `${apiBase}/api/coupons/${editingCoupon.id}` : `${apiBase}/api/coupons`;
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -79,7 +79,7 @@ const Coupons: React.FC = () => {
   const handleDelete = async (coupon: Coupon) => {
     if (!window.confirm(`Are you sure you want to delete coupon "${coupon.code}"?`)) return;
     try {
-      const res = await fetch(`${apiBase}/coupons/${coupon.id}`, { method: 'DELETE' });
+      const res = await fetch(`${apiBase}/api/coupons/${coupon.id}`, { method: 'DELETE' });
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.message);
