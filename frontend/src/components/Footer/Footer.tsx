@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
     FaFacebookF,
     FaPinterestP,
@@ -10,15 +11,33 @@ import {
     FaClock,
     FaEnvelope,
 } from "react-icons/fa";
+import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import logo from "../../assets/logo.png";
 
 const Footer = () => {
     const { colors } = useAdminTheme();
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 300);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    };
 
     return (
         <footer
-            className="font-light transition-colors duration-200"
+            className="font-light transition-colors duration-200 relative"
             style={{
                 backgroundColor: colors.background.primary,
                 color: colors.text.primary
@@ -49,7 +68,7 @@ const Footer = () => {
                     </div>
                 ))}
             </div>
-            {/* ===== Hero Section (keep as it is) ===== */}
+
             <div
                 className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 py-12 px-6 border-b transition-colors duration-200"
                 style={{ borderColor: colors.border.primary }}
@@ -62,7 +81,6 @@ const Footer = () => {
                             alt="Civil Digital Store Logo"
                             className="h-10 w-auto object-contain"
                         />
-                       
                     </div>
                     <p
                         className="text-sm leading-relaxed transition-colors duration-200"
@@ -73,7 +91,6 @@ const Footer = () => {
                         educational materials. A valuable platform for professionals and
                         students alike.
                     </p>
-
                 </div>
 
                 {/* Our Services */}
@@ -205,8 +222,6 @@ const Footer = () => {
                     </ul>
                 </div>
 
-
-
                 {/* Software */}
                 <div>
                     <h3
@@ -308,6 +323,7 @@ const Footer = () => {
                         </li>
                     </ul>
                 </div>
+
                 <div>
                     <h3
                         className="font-semibold mb-4 tracking-wide transition-colors duration-200"
@@ -336,7 +352,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* ===== Contact + Social Icons (replaced payment row) ===== */}
+            {/* Contact + Social Icons */}
             <div
                 className="max-w-7xl mx-auto px-6 py-6 border-t flex flex-col md:flex-row justify-between items-center gap-6 transition-colors duration-200"
                 style={{ borderColor: colors.border.primary }}
@@ -364,7 +380,7 @@ const Footer = () => {
                     </p>
                 </div>
 
-                {/* Social Icons instead of Payments */}
+                {/* Social Icons */}
                 <div className="flex space-x-3">
                     {[
                         {
@@ -440,6 +456,21 @@ const Footer = () => {
                 </span>.
                 All rights reserved.
             </div>
+
+            {/* Scroll to Top Button */}
+            {showScrollTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
+                    style={{
+                        backgroundColor: colors.interactive.primary,
+                        color: colors.background.primary
+                    }}
+                    aria-label="Scroll to top"
+                >
+                    <ArrowUp className="w-6 h-6" />
+                </button>
+            )}
         </footer>
     );
 };
