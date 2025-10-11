@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import RichTextEditor from '../../../components/RichTextEditor/RichTextEditor';
+import IconPicker from '../../../components/IconPicker/IconPicker';
 import './AddProductModal.css'
 import type { Product } from "../../../api/types/productTypes";
 import Swal from "sweetalert2";
@@ -52,9 +52,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         name: "",
         version: "",
         shortDescription: "",
-        description: "",
-        overallFeatures: "",
-        requirements: "",
         category: categories[0].value,
         brand: brands[0].value,
         subscriptionDurations: [{ duration: "1 Year", price: "" }] as SubscriptionDuration[],
@@ -74,19 +71,19 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         status: "active",
         isBestSeller: false,
         faqs: [] as FAQ[],
+        keyFeatures: [] as { icon: string; title: string; description: string; }[],
+        systemRequirements: [] as { icon: string; title: string; description: string; }[],
     });
 
     useEffect(() => {
         if (open) {
             if (product) {
                 // Editing existing product - map all fields properly
+                console.log('Loading product data:', product);
                 setNewProduct({
                     name: product.name || "",
                     version: product.version || "",
                     shortDescription: product.shortDescription || "",
-                    description: product.description || "",
-                    overallFeatures: product.overallFeatures || "",
-                    requirements: product.requirements || "",
                     category: product.category || categories[0].value,
                     brand: product.brand || product.company || brands[0].value,
                     subscriptionDurations: product.subscriptionDurations && product.subscriptionDurations.length > 0
@@ -100,7 +97,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             { duration: "1 Year", price: product.price1?.toString() || "", priceINR: product.price1INR?.toString() || "", priceUSD: product.price1USD?.toString() || "" },
                             ...(product.price3 ? [{ duration: "3 Year", price: product.price3.toString(), priceINR: product.price3INR?.toString() || "", priceUSD: product.price3USD?.toString() || "" }] : [])
                         ],
-                    subscriptions: [{ duration: "Monthly", price: "", priceINR: "", priceUSD: "" }],
+                    subscriptions: product.subscriptions && product.subscriptions.length > 0
+                        ? product.subscriptions.map(sub => ({
+                            duration: sub.duration,
+                            price: sub.price?.toString() || "",
+                            priceINR: sub.priceINR?.toString() || "",
+                            priceUSD: sub.priceUSD?.toString() || ""
+                        }))
+                        : [{ duration: "Monthly", price: "", priceINR: "", priceUSD: "" }],
                     hasLifetime: product.hasLifetime || !!product.priceLifetime || !!product.lifetimePrice,
                     lifetimePrice: product.lifetimePrice?.toString() || product.priceLifetime?.toString() || "",
                     lifetimePriceINR: product.lifetimePriceINR?.toString() || product.priceLifetimeINR?.toString() || "",
@@ -116,6 +120,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     status: product.status || "active",
                     isBestSeller: product.isBestSeller || false,
                     faqs: product.faqs || [],
+                    keyFeatures: product.keyFeatures || [],
+                    systemRequirements: product.systemRequirements || [],
                 });
             } else {
                 // Reset for new product
@@ -123,9 +129,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     name: "",
                     version: "",
                     shortDescription: "",
-                    description: "",
-                    overallFeatures: "",
-                    requirements: "",
                     category: categories[0].value,
                     brand: brands[0].value,
                     subscriptionDurations: [{ duration: "1 Year", price: "", priceINR: "", priceUSD: "" }],
@@ -145,6 +148,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     status: "active",
                     isBestSeller: false,
                     faqs: [],
+                    keyFeatures: [],
+                    systemRequirements: [],
                 });
             }
         }
@@ -224,6 +229,54 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         }));
     };
 
+    // Feature management functions
+    const addFeature = () => {
+        setNewProduct(prev => ({
+            ...prev,
+            keyFeatures: [...prev.keyFeatures, { icon: "", title: "", description: "" }]
+        }));
+    };
+
+    const removeFeature = (index: number) => {
+        setNewProduct(prev => ({
+            ...prev,
+            keyFeatures: prev.keyFeatures.filter((_, i) => i !== index)
+        }));
+    };
+
+    const updateFeature = (index: number, field: 'icon' | 'title' | 'description', value: string) => {
+        setNewProduct(prev => ({
+            ...prev,
+            keyFeatures: prev.keyFeatures.map((feature, i) =>
+                i === index ? { ...feature, [field]: value } : feature
+            )
+        }));
+    };
+
+    // Requirement management functions
+    const addRequirement = () => {
+        setNewProduct(prev => ({
+            ...prev,
+            systemRequirements: [...prev.systemRequirements, { icon: "", title: "", description: "" }]
+        }));
+    };
+
+    const removeRequirement = (index: number) => {
+        setNewProduct(prev => ({
+            ...prev,
+            systemRequirements: prev.systemRequirements.filter((_, i) => i !== index)
+        }));
+    };
+
+    const updateRequirement = (index: number, field: 'icon' | 'title' | 'description', value: string) => {
+        setNewProduct(prev => ({
+            ...prev,
+            systemRequirements: prev.systemRequirements.map((requirement, i) =>
+                i === index ? { ...requirement, [field]: value } : requirement
+            )
+        }));
+    };
+
     // Subscription management functions (separate from pricing)
     const updateSubscription = (index: number, field: 'duration' | 'price' | 'priceINR' | 'priceUSD', value: string) => {
         setNewProduct(prev => ({
@@ -272,28 +325,79 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         if (result.isConfirmed) {
             // Transform new product structure to match current backend expectations
             const productData = {
+                // Basic Information
                 name: newProduct.name,
                 version: newProduct.version,
-                description: newProduct.description,
+                shortDescription: newProduct.shortDescription,
                 category: newProduct.category,
-                company: newProduct.brand,
+
+                // Brand/Company (backward compatibility)
+                company: newProduct.brand, // For backward compatibility
+                brand: newProduct.brand, // New field
+
+                // Legacy pricing structure (for backward compatibility)
                 price1: newProduct.subscriptionDurations[0]?.price ? Number(newProduct.subscriptionDurations[0].price) : 0,
                 price3: newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : undefined,
                 priceLifetime: newProduct.hasLifetime && newProduct.lifetimePrice ? Number(newProduct.lifetimePrice) : undefined,
-                image: newProduct.imageUrl,
+
+                // Dual currency pricing
+                price1INR: newProduct.subscriptionDurations[0]?.priceINR ? Number(newProduct.subscriptionDurations[0].priceINR) : undefined,
+                price1USD: newProduct.subscriptionDurations[0]?.priceUSD ? Number(newProduct.subscriptionDurations[0].priceUSD) : undefined,
+                price3INR: newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : undefined,
+                price3USD: newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : undefined,
+                priceLifetimeINR: newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : undefined,
+                priceLifetimeUSD: newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : undefined,
+
+                // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
+                subscriptionDurations: newProduct.subscriptionDurations.map(sub => ({
+                    duration: sub.duration,
+                    price: sub.price ? Number(sub.price) : 0,
+                    priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
+                    priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+                })).filter(sub => sub.price > 0 || (sub.priceINR && sub.priceINR > 0) || (sub.priceUSD && sub.priceUSD > 0)),
+
+                // Keep subscriptions separate (for future use, not displayed in pricing)
+                subscriptions: newProduct.subscriptions.map(sub => ({
+                    duration: sub.duration,
+                    price: sub.price ? Number(sub.price) : 0,
+                    priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
+                    priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+                })).filter(sub => sub.price > 0 || (sub.priceINR && sub.priceINR > 0) || (sub.priceUSD && sub.priceUSD > 0)),
+
+                // Lifetime pricing
+                hasLifetime: newProduct.hasLifetime,
+                lifetimePrice: newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : (newProduct.lifetimePrice ? Number(newProduct.lifetimePrice) : undefined), // Backward compatibility fallback
+                lifetimePriceINR: newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : undefined,
+                lifetimePriceUSD: newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : undefined,
+
+                // Membership pricing
+                hasMembership: newProduct.hasMembership,
+                membershipPrice: newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : (newProduct.hasMembership && newProduct.membershipPrice ? Number(newProduct.membershipPrice) : undefined), // Backward compatibility fallback
+                membershipPriceINR: newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : undefined,
+                membershipPriceUSD: newProduct.hasMembership && newProduct.membershipPriceUSD ? Number(newProduct.membershipPriceUSD) : undefined,
+
+                // Images
+                image: newProduct.imageUrl, // For backward compatibility
+                imageUrl: newProduct.imageUrl, // New field
                 additionalImages: newProduct.additionalImages.filter(img => img.trim() !== ""),
-                // Store additional fields as metadata (will be properly supported when backend is updated)
-                shortDescription: newProduct.shortDescription,
-                overallFeatures: newProduct.overallFeatures,
-                requirements: newProduct.requirements,
-                membershipPrice: newProduct.hasMembership && newProduct.membershipPrice ? Number(newProduct.membershipPrice) : undefined,
+
+                // Videos
                 videoUrl: newProduct.videoUrl,
                 activationVideoUrl: newProduct.activationVideoUrl,
+
+                // Status and flags
                 status: newProduct.status,
                 isBestSeller: newProduct.isBestSeller,
+
+                // FAQs
                 faqs: newProduct.faqs,
+
+                // Structured Features and Requirements
+                keyFeatures: newProduct.keyFeatures,
+                systemRequirements: newProduct.systemRequirements,
             };
 
+            console.log('Saving product data:', productData);
             onSave(productData);
 
             // Show success message
@@ -430,7 +534,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Description Section */}
+
+
+                    {/* Structured Features */}
                     <div className="space-y-6">
                         <h2
                             className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
@@ -439,46 +545,206 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 borderBottomColor: colors.border.primary
                             }}
                         >
-                            Description Section
+                            Key Features (Structured)
                         </h2>
 
-                        <div className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Overall View</label>
-                                <RichTextEditor
-                                    value={newProduct.description}
-                                    onChange={(value) => handleInputChange('description', value)}
-                                    placeholder="Detailed product overview with rich formatting..."
-                                />
-                            </div>
+                        <div className="space-y-4">
+                            {newProduct.keyFeatures.map((feature, index) => (
+                                <div key={index} className="border rounded-lg p-4 space-y-3"
+                                    style={{
+                                        borderColor: colors.border.primary,
+                                        backgroundColor: colors.background.primary
+                                    }}>
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-medium" style={{ color: colors.text.primary }}>
+                                            Feature {index + 1}
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeFeature(index)}
+                                            className="text-red-400 hover:text-red-300 transition-colors"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
 
-                            <div className="space-y-2">
-                                <label
-                                    className="block text-sm font-medium"
-                                    style={{ color: colors.text.secondary }}
-                                >
-                                    Overall Features
-                                </label>
-                                <RichTextEditor
-                                    value={newProduct.overallFeatures}
-                                    onChange={(value) => handleInputChange('overallFeatures', value)}
-                                    placeholder="List key features and capabilities with rich formatting..."
-                                />
-                            </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                                                Icon
+                                            </label>
+                                            <IconPicker
+                                                selectedIcon={feature.icon}
+                                                onIconSelect={(iconName) => updateFeature(index, 'icon', iconName)}
+                                                placeholder="Select feature icon"
+                                            />
+                                        </div>
 
-                            <div className="space-y-2">
-                                <label
-                                    className="block text-sm font-medium"
-                                    style={{ color: colors.text.secondary }}
-                                >
-                                    System Requirements
-                                </label>
-                                <RichTextEditor
-                                    value={newProduct.requirements}
-                                    onChange={(value) => handleInputChange('requirements', value)}
-                                    placeholder="List system requirements with rich formatting..."
-                                />
-                            </div>
+                                        <div className="space-y-1">
+                                            <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                                                Title
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={feature.title}
+                                                onChange={(e) => updateFeature(index, 'title', e.target.value)}
+                                                placeholder="Feature title"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                                                Description
+                                            </label>
+                                            <textarea
+                                                value={feature.description}
+                                                onChange={(e) => updateFeature(index, 'description', e.target.value)}
+                                                placeholder="Brief description of the feature"
+                                                rows={2}
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addFeature}
+                                className="w-full py-3 border-2 border-dashed rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                                style={{
+                                    borderColor: colors.border.primary,
+                                    color: colors.text.secondary
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderColor = colors.interactive.primary;
+                                    e.currentTarget.style.color = colors.interactive.primary;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderColor = colors.border.primary;
+                                    e.currentTarget.style.color = colors.text.secondary;
+                                }}
+                            >
+                                <Plus size={18} />
+                                Add Feature
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Structured System Requirements */}
+                    <div className="space-y-6">
+                        <h2
+                            className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                            style={{
+                                color: colors.text.primary,
+                                borderBottomColor: colors.border.primary
+                            }}
+                        >
+                            System Requirements (Structured)
+                        </h2>
+
+                        <div className="space-y-4">
+                            {newProduct.systemRequirements.map((requirement, index) => (
+                                <div key={index} className="border rounded-lg p-4 space-y-3"
+                                    style={{
+                                        borderColor: colors.border.primary,
+                                        backgroundColor: colors.background.primary
+                                    }}>
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-medium" style={{ color: colors.text.primary }}>
+                                            Requirement {index + 1}
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeRequirement(index)}
+                                            className="text-red-400 hover:text-red-300 transition-colors"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                                                Icon
+                                            </label>
+                                            <IconPicker
+                                                selectedIcon={requirement.icon}
+                                                onIconSelect={(iconName) => updateRequirement(index, 'icon', iconName)}
+                                                placeholder="Select requirement icon"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                                                Title
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={requirement.title}
+                                                onChange={(e) => updateRequirement(index, 'title', e.target.value)}
+                                                placeholder="Requirement title"
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                                                Description
+                                            </label>
+                                            <textarea
+                                                value={requirement.description}
+                                                onChange={(e) => updateRequirement(index, 'description', e.target.value)}
+                                                placeholder="Requirement details"
+                                                rows={2}
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                                style={{
+                                                    backgroundColor: colors.background.primary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addRequirement}
+                                className="w-full py-3 border-2 border-dashed rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                                style={{
+                                    borderColor: colors.border.primary,
+                                    color: colors.text.secondary
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderColor = colors.interactive.primary;
+                                    e.currentTarget.style.color = colors.interactive.primary;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderColor = colors.border.primary;
+                                    e.currentTarget.style.color = colors.text.secondary;
+                                }}
+                            >
+                                <Plus size={18} />
+                                Add Requirement
+                            </button>
                         </div>
                     </div>
 
@@ -682,20 +948,20 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                     }}
                                                 />
                                             </div>
-                                        </div>
-                                        <div className="flex justify-end mt-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => removeSubscriptionDuration(index)}
-                                                disabled={newProduct.subscriptionDurations.length === 1}
-                                                className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                                                style={{
-                                                    color: colors.status.error,
-                                                    borderColor: colors.status.error
-                                                }}
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </button>
+                                            <div className="flex justify-center md:justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSubscriptionDuration(index)}
+                                                    disabled={newProduct.subscriptionDurations.length === 1}
+                                                    className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                    style={{
+                                                        color: colors.status.error,
+                                                        borderColor: colors.status.error
+                                                    }}
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -759,8 +1025,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                             </label>
                                             <input
                                                 type="number"
-                                                value={newProduct.lifetimePrice}
-                                                onChange={(e) => handleInputChange('lifetimePrice', e.target.value)}
+                                                value={newProduct.lifetimePriceINR}
+                                                onChange={(e) => handleInputChange('lifetimePriceINR', e.target.value)}
                                                 placeholder="0.00"
                                                 step="0.01"
                                                 min="0"
@@ -862,8 +1128,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                             </label>
                                             <input
                                                 type="number"
-                                                value={newProduct.membershipPrice}
-                                                onChange={(e) => handleInputChange('membershipPrice', e.target.value)}
+                                                value={newProduct.membershipPriceINR}
+                                                onChange={(e) => handleInputChange('membershipPriceINR', e.target.value)}
                                                 placeholder="0.00"
                                                 step="0.01"
                                                 min="0"
@@ -946,11 +1212,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 {newProduct.subscriptions.map((sub, index) => (
                                     <div
                                         key={index}
-                                        className="p-4 rounded-lg space-y-4 transition-colors duration-200"
+                                        className="p-4 rounded-lg transition-colors duration-200"
                                         style={{ backgroundColor: colors.background.tertiary }}
                                     >
-                                        <div className="flex gap-4 items-center">
-                                            <div className="flex-1">
+                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                            <div>
                                                 <label
                                                     className="block text-sm font-medium mb-1"
                                                     style={{ color: colors.text.secondary }}
@@ -980,20 +1246,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                     <option value="Weekly">Weekly</option>
                                                 </select>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeSubscription(index)}
-                                                disabled={newProduct.subscriptions.length === 1}
-                                                className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                                                style={{
-                                                    color: colors.status.error,
-                                                    borderColor: colors.status.error
-                                                }}
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </button>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label
                                                     className="block text-sm font-medium mb-1"
@@ -1049,6 +1301,20 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                                         e.target.style.borderColor = colors.border.primary;
                                                     }}
                                                 />
+                                            </div>
+                                            <div className="flex justify-center md:justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSubscription(index)}
+                                                    disabled={newProduct.subscriptions.length === 1}
+                                                    className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                    style={{
+                                                        color: colors.status.error,
+                                                        borderColor: colors.status.error
+                                                    }}
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
