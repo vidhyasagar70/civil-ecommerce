@@ -7,7 +7,7 @@ import {
   Building2,
   ShoppingCart,
   Settings as SettingsIcon,
-  Users,Image 
+  Users,Image ,TicketPercent,
 } from 'lucide-react';
 import Dashboard from './Dashboard';
 import Products from './products/Products';
@@ -18,7 +18,8 @@ import Settings from './Settings';
 import UserManagement from './users/UserManagement';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 import Banner from './Banner';
-type MenuType = 'dashboard'|'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings' | 'banner';
+import Coupons from '../admin/coupons/Coupons';
+type MenuType = 'dashboard'|'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings' | 'banner' | 'coupons';
 
 const AdminDashboardContent: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>('dashboard');
@@ -32,6 +33,7 @@ const AdminDashboardContent: React.FC = () => {
     { id: 'companies', label: 'Companies', icon: Building2 },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'banner', label: 'Banner', icon: Image },
+    { id: 'coupons', label: 'Coupons', icon: TicketPercent },
     { id: 'settings', label: 'Settings', icon: SettingsIcon }
   ];
 
@@ -51,6 +53,8 @@ const AdminDashboardContent: React.FC = () => {
         return <Orders />;
         case 'banner': 
         return <Banner />;
+      case 'coupons':
+        return <Coupons />;
       case 'settings':
         return <Settings />;
       default:

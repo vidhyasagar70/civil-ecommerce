@@ -5,9 +5,9 @@ export const headerConfig = {
   },
   navigation: [
     { label: "Home", href: "/" },
-    // { label: "Software", href: "/software" },
-    // { label: "Companies", href: "/companies" },
-    { label: "About", href: "/about" },
+    { label: "AutoDesk", href: "/autodesk" },
+    { label: "Microsoft", href: "/microsoft" },
+    { label: "Adobe", href: "/adobe" },
     { label: "Contact", href: "/contact" }
   ],
   contact: {
