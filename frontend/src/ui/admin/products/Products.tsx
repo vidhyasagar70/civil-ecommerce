@@ -178,6 +178,38 @@ const Products: React.FC = () => {
     setShowBestSellers(false);
   };
 
+  const handleToggleBestSeller = (product: Product) => {
+    if (!product._id) return;
+
+    const updatedProduct = {
+      ...product,
+      isBestSeller: !product.isBestSeller
+    };
+
+    updateProductMutation.mutate({
+      id: product._id,
+      updatedProduct: updatedProduct
+    }, {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: `Product ${updatedProduct.isBestSeller ? 'marked as' : 'removed from'} best seller`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      },
+      onError: (error: any) => {
+        console.error('Update best seller error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: error.response?.data?.message || 'Failed to update best seller status',
+        });
+      }
+    });
+  };
+
   // Calculate statistics
   const totalProducts = rawProducts.length;
   const activeProducts = rawProducts.filter((product: Product) =>
@@ -497,6 +529,12 @@ const Products: React.FC = () => {
                       Status
                     </th>
                     <th
+                      className="text-center py-3 px-4 font-medium"
+                      style={{ color: colors.text.primary }}
+                    >
+                      Best Seller
+                    </th>
+                    <th
                       className="text-left py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
                     >
@@ -552,15 +590,7 @@ const Products: React.FC = () => {
                             >
                               v{product.version}
                             </div>
-                            {product.shortDescription && (
-                              <div
-                                className="text-xs truncate mt-1"
-                                title={product.shortDescription}
-                                style={{ color: colors.text.secondary }}
-                              >
-                                {product.shortDescription}
-                              </div>
-                            )}
+
                             {product.rating && (
                               <div className="flex items-center space-x-1 mt-1">
                                 <Star className="w-3 h-3 text-yellow-400 fill-current" />
@@ -642,20 +672,20 @@ const Products: React.FC = () => {
                               >
                                 ₹{product.subscriptionDurations[0].price?.toLocaleString()}
                               </div>
-                              <div
+                              {/* <div
                                 className="text-xs"
                                 style={{ color: colors.text.secondary }}
                               >
                                 {product.subscriptionDurations[0].duration}
-                              </div>
-                              {product.subscriptionDurations.length > 1 && (
+                              </div> */}
+                              {/* {product.subscriptionDurations.length > 1 && (
                                 <div
                                   className="text-xs"
                                   style={{ color: colors.interactive.primary }}
                                 >
                                   +{product.subscriptionDurations.length - 1} more
                                 </div>
-                              )}
+                              )} */}
                             </div>
                           ) : (
                             <div>
@@ -665,20 +695,20 @@ const Products: React.FC = () => {
                               >
                                 ₹{product.price1?.toLocaleString()}
                               </div>
-                              <div
+                              {/* <div
                                 className="text-xs"
                                 style={{ color: colors.text.secondary }}
                               >
                                 1-year
-                              </div>
+                              </div> */}
                             </div>
                           )}
-                          {product.hasLifetime && product.lifetimePrice && (
+                          {/* {product.hasLifetime && product.lifetimePrice && (
                             <div className="text-xs text-green-400">Lifetime: ₹{product.lifetimePrice.toLocaleString()}</div>
                           )}
                           {product.hasMembership && product.membershipPrice && (
                             <div className="text-xs text-purple-400">Membership: ₹{product.membershipPrice.toLocaleString()}</div>
-                          )}
+                          )} */}
                         </div>
                       </td>
                       <td className="py-4 px-4">
@@ -707,6 +737,27 @@ const Products: React.FC = () => {
                               <span className="text-xs text-green-400">Active</span>
                             </div>
                           )}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex justify-center items-center">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={product.isBestSeller || false}
+                              onChange={() => handleToggleBestSeller(product)}
+                              className="w-4 h-4 rounded focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                              style={{
+                                accentColor: colors.interactive.primary
+                              }}
+                            />
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              {product.isBestSeller ? 'Yes' : 'No'}
+                            </span>
+                          </label>
                         </div>
                       </td>
                       <td className="py-4 px-4">
