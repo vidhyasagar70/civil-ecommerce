@@ -10,8 +10,8 @@ import {
     FaPhoneAlt,
     FaClock,
     FaEnvelope,
-    FaArrowUp,
 } from "react-icons/fa";
+import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import logo from "../../assets/logo.png";
 
@@ -41,7 +41,7 @@ const Footer = () => {
 
     return (
         <footer
-            className="font-light transition-colors duration-200"
+            className="font-light transition-colors duration-200 relative"
             style={{
                 backgroundColor: colors.background.primary,
                 color: colors.text.primary
@@ -501,6 +501,21 @@ const Footer = () => {
                 </span>.
                 All rights reserved.
             </div>
+
+            {/* Scroll to Top Button */}
+            {showScrollTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
+                    style={{
+                        backgroundColor: colors.interactive.primary,
+                        color: colors.background.primary
+                    }}
+                    aria-label="Scroll to top"
+                >
+                    <ArrowUp className="w-6 h-6" />
+                </button>
+            )}
         </footer>
     );
 };
