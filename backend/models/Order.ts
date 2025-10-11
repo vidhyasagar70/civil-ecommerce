@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import { IOrder, IOrderItem, IShippingAddress } from '../types/payment.types';
 
 const orderItemSchema = new Schema<IOrderItem>({
@@ -67,7 +67,6 @@ const orderSchema = new Schema<IOrder>({
   },
   orderNumber: {
     type: String,
-    required: true,
     unique: true
   },
   items: [orderItemSchema],
@@ -121,11 +120,21 @@ const orderSchema = new Schema<IOrder>({
   timestamps: true
 });
 
-// Generate order number before saving
-orderSchema.pre('save', async function(next) {
+// Generate order number before validation
+orderSchema.pre('validate', async function(next) {
   if (!this.orderNumber) {
-    const count = await mongoose.model('Order').countDocuments();
-    this.orderNumber = `ORD${Date.now()}${(count + 1).toString().padStart(4, '0')}`;
+    try {
+      // Get count of all orders
+      const count = await mongoose.model('Order').countDocuments();
+      const timestamp = Date.now();
+      const paddedCount = (count + 1).toString().padStart(4, '0');
+      this.orderNumber = `ORD${timestamp}${paddedCount}`;
+    } catch (error) {
+      // Fallback if counting fails
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      this.orderNumber = `ORD${timestamp}${random}`;
+    }
   }
   next();
 });

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Order from '../models/Order';
 import Payment from '../models/Payment';
-import phonePeService from '../services/phonePeService';
+import phonePeService from '../services/phonePeService'; // Import the service
 import { generateTransactionId } from '../utils/crypto';
 import { phonePeConfig } from '../config/phonepe';
 import { CreateOrderRequest } from '../types/payment.types';
@@ -12,6 +12,15 @@ import { IUser } from '../models/User';
  * Create order and initiate payment
  */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
+  console.log('\n' + '='.repeat(60));
+  console.log('🔍 ENVIRONMENT VARIABLES CHECK:');
+  console.log('='.repeat(60));
+  console.log('PHONEPE_MERCHANT_ID:', process.env.PHONEPE_MERCHANT_ID);
+  console.log('PHONEPE_SALT_KEY:', process.env.PHONEPE_SALT_KEY?.substring(0, 10) + '...');
+  console.log('PHONEPE_SALT_KEY Length:', process.env.PHONEPE_SALT_KEY?.length);
+  console.log('PHONEPE_SALT_INDEX:', process.env.PHONEPE_SALT_INDEX);
+  console.log('PHONEPE_HOST_URL:', process.env.PHONEPE_HOST_URL);
+  console.log('='.repeat(60) + '\n');
   try {
     const user = (req as any).user as IUser;
     const userId = user?._id?.toString();
@@ -57,6 +66,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     });
 
     await order.save();
+    console.log('✅ Order created:', order.orderNumber);
 
     // Generate unique transaction ID
     const merchantTransactionId = generateTransactionId('MT');
@@ -71,12 +81,13 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     });
 
     await payment.save();
+    console.log('✅ Payment record created:', merchantTransactionId);
 
-    // Initiate PhonePe payment
-    const paymentRequest = {
+    // 🔥 THIS IS THE UPDATED PART - Initiate PhonePe payment
+    const phonePeResponse = await phonePeService.initiatePayment({
       merchantTransactionId,
       merchantUserId: userId.toString(),
-      amount: orderData.totalAmount,
+      amount: orderData.totalAmount, // Amount in rupees (service converts to paise)
       mobileNumber: orderData.shippingAddress.phoneNumber,
       redirectUrl: `${phonePeConfig.redirectUrl}?orderId=${order._id}`,
       redirectMode: 'POST',
@@ -84,11 +95,11 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       paymentInstrument: {
         type: 'PAY_PAGE'
       }
-    };
-
-    const phonePeResponse = await phonePeService.initiatePayment(paymentRequest);
+    });
 
     if (phonePeResponse.success) {
+      console.log('✅ PhonePe payment initiated successfully');
+      
       res.status(200).json({
         success: true,
         message: 'Order created successfully',
@@ -100,6 +111,13 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         }
       });
     } else {
+      console.error('❌ PhonePe payment initiation failed:', phonePeResponse.message);
+      // Temporary test in paymentController.ts or index.ts
+console.log('🔍 Salt Key Check:', {
+  original: process.env.PHONEPE_SALT_KEY,
+  decoded: Buffer.from(process.env.PHONEPE_SALT_KEY || '', 'base64').toString('utf-8')
+});
+      
       // Update order and payment status
       order.orderStatus = 'CANCELLED';
       await order.save();
@@ -116,7 +134,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       });
     }
   } catch (error: any) {
-    console.error('Create order error:', error);
+    console.error('❌ Create order error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create order',
@@ -130,7 +148,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
  */
 export const handleCallback = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('PhonePe Callback Received:', {
+    console.log('📞 PhonePe Callback Received:', {
       body: req.body,
       headers: req.headers
     });
@@ -139,7 +157,7 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     const xVerify = req.headers['x-verify'] as string;
 
     if (!response || !xVerify) {
-      console.error('Missing callback data:', { response: !!response, xVerify: !!xVerify });
+      console.error('❌ Missing callback data:', { response: !!response, xVerify: !!xVerify });
       res.status(400).json({ success: false, message: 'Invalid callback data' });
       return;
     }
@@ -147,7 +165,7 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     // Verify callback authenticity
     const isValid = phonePeService.verifyCallback(xVerify, response);
     if (!isValid) {
-      console.error('Callback signature verification failed');
+      console.error('❌ Callback signature verification failed');
       res.status(400).json({ success: false, message: 'Invalid callback signature' });
       return;
     }
@@ -157,9 +175,9 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     try {
       const decodedString = Buffer.from(response, 'base64').toString('utf-8');
       decodedResponse = JSON.parse(decodedString);
-      console.log('Decoded callback response:', decodedResponse);
+      console.log('✅ Decoded callback response:', decodedResponse);
     } catch (parseError) {
-      console.error('Failed to decode callback response:', parseError);
+      console.error('❌ Failed to decode callback response:', parseError);
       res.status(400).json({ success: false, message: 'Invalid response format' });
       return;
     }
@@ -167,7 +185,7 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     const merchantTransactionId = decodedResponse.data?.merchantTransactionId;
 
     if (!merchantTransactionId) {
-      console.error('Missing merchantTransactionId in callback');
+      console.error('❌ Missing merchantTransactionId in callback');
       res.status(400).json({ success: false, message: 'Missing transaction ID in callback' });
       return;
     }
@@ -175,7 +193,7 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     // Find payment record
     const payment = await Payment.findOne({ merchantTransactionId });
     if (!payment) {
-      console.error('Payment record not found:', merchantTransactionId);
+      console.error('❌ Payment record not found:', merchantTransactionId);
       res.status(404).json({ success: false, message: 'Payment record not found' });
       return;
     }
@@ -187,10 +205,13 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     // Map PhonePe status to our status
     if (responseCode === 'PAYMENT_SUCCESS' || state === 'COMPLETED') {
       payment.status = 'SUCCESS';
+      console.log('✅ Payment successful:', merchantTransactionId);
     } else if (responseCode === 'PAYMENT_PENDING' || state === 'PENDING') {
       payment.status = 'PENDING';
+      console.log('⏳ Payment pending:', merchantTransactionId);
     } else {
       payment.status = 'FAILED';
+      console.log('❌ Payment failed:', merchantTransactionId);
     }
 
     payment.transactionId = decodedResponse.data?.transactionId;
@@ -203,22 +224,24 @@ export const handleCallback = async (req: Request, res: Response): Promise<void>
     // Update order
     const order = await Order.findById(payment.orderId);
     if (order) {
-      order.paymentId = payment._id;
+      order.paymentId = payment._id as any;
       
       if (payment.status === 'SUCCESS') {
         order.paymentStatus = 'PAID';
         order.orderStatus = 'CONFIRMED';
+        console.log('✅ Order confirmed:', order.orderNumber);
       } else if (payment.status === 'FAILED') {
         order.paymentStatus = 'FAILED';
+        order.orderStatus = 'CANCELLED';
+        console.log('❌ Order cancelled:', order.orderNumber);
       }
       
       await order.save();
-      console.log('Order updated:', order.orderNumber, order.paymentStatus);
     }
 
     res.status(200).json({ success: true, message: 'Callback processed successfully' });
   } catch (error: any) {
-    console.error('Callback handling error:', error);
+    console.error('❌ Callback handling error:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Callback processing failed',
@@ -275,7 +298,7 @@ export const checkStatus = async (req: Request, res: Response): Promise<void> =>
         if (order && order.paymentStatus !== 'PAID') {
           order.paymentStatus = 'PAID';
           order.orderStatus = 'CONFIRMED';
-          order.paymentId = payment._id;
+          order.paymentId = payment._id as any;
           await order.save();
         }
       }
@@ -291,7 +314,7 @@ export const checkStatus = async (req: Request, res: Response): Promise<void> =>
       }
     });
   } catch (error: any) {
-    console.error('Status check error:', error);
+    console.error('❌ Status check error:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to check status',
@@ -320,7 +343,7 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 
     res.status(200).json({ success: true, data: orders });
   } catch (error: any) {
-    console.error('Get orders error:', error);
+    console.error('❌ Get orders error:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to fetch orders',
@@ -360,7 +383,7 @@ export const getOrderDetails = async (req: Request, res: Response): Promise<void
 
     res.status(200).json({ success: true, data: order });
   } catch (error: any) {
-    console.error('Get order details error:', error);
+    console.error('❌ Get order details error:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to fetch order details',
@@ -464,7 +487,7 @@ export const initiateRefund = async (req: Request, res: Response): Promise<void>
       });
     }
   } catch (error: any) {
-    console.error('Refund error:', error);
+    console.error('❌ Refund error:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to initiate refund',

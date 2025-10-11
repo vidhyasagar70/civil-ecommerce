@@ -26,6 +26,7 @@ import TermsAndConditions from './ui/policy/TermsAndConditions';
 import ShippingPolicy from './ui/policy/ShippingPolicy';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from "./pages/CheckoutPage";
+import PaymentCallback from './ui/payment/PaymentCallback';
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -199,6 +200,7 @@ function AppLayout() {
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/payment/callback" element={<PaymentCallback />} />
       </Routes>
       {!shouldHideHeader && <Footer />}
     </>
