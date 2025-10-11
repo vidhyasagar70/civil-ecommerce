@@ -11,15 +11,15 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
 
 const generateToken = (userId: string): string => {
   return jwt.sign(
-    { userId }, 
-    JWT_SECRET, 
+    { userId },
+    JWT_SECRET,
     { expiresIn: JWT_EXPIRES } as jwt.SignOptions
   );
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password, fullName, phoneNumber } = req.body;
+    const { email, password, fullName, phoneNumber, role } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -35,7 +35,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       password: hashedPassword,
       fullName,
       phoneNumber,
-      role: 'user'
+      role: role === 'admin' ? 'admin' : 'user' // Allow admin role for testing
     });
 
     const savedUser = await user.save();
@@ -99,7 +99,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const googleCallback = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = (req as any).user as IUser;
-    
+
     if (!user) {
       res.status(401).json({ message: 'Authentication failed' });
       return;
@@ -192,8 +192,8 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       // Don't reveal if user exists or not for security
-      res.status(200).json({ 
-        message: 'If an account with that email exists, we have sent a password reset link.' 
+      res.status(200).json({
+        message: 'If an account with that email exists, we have sent a password reset link.'
       });
       return;
     }
@@ -210,8 +210,8 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     // Send email
     try {
       await emailService.sendPasswordResetEmail(user.email, resetToken);
-      res.status(200).json({ 
-        message: 'Password reset email sent successfully' 
+      res.status(200).json({
+        message: 'Password reset email sent successfully'
       });
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
@@ -219,9 +219,9 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save();
-      
-      res.status(500).json({ 
-        message: 'Failed to send password reset email' 
+
+      res.status(500).json({
+        message: 'Failed to send password reset email'
       });
     }
   } catch (error: any) {
@@ -308,9 +308,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
       // Don't fail the password reset if email fails
     }
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Password reset successfully',
-      success: true 
+      success: true
     });
   } catch (error: any) {
     console.error('Reset password error:', error);

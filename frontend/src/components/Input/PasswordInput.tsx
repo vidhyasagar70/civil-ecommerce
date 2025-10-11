@@ -24,7 +24,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
 
     return (
         <div>
-            <label 
+            <label
                 className="block font-medium mb-1 transition-colors duration-200"
                 style={{ color: colors.text.primary }}
             >

@@ -180,11 +180,11 @@ function AppLayout() {
           }
         />
 
-         <Route
+        <Route
           path="/checkout"
           element={
             <AuthGuard>
-             <CheckoutPage />
+              <CheckoutPage />
             </AuthGuard>
           }
         />

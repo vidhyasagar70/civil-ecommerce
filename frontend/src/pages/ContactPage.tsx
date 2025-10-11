@@ -42,35 +42,35 @@ const ContactPage: React.FC = () => {
     "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d250875.31940063165!2d79.082117!3d10.74012!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baabee185555555%3A0xcbb0bd1ecb02b6ec!2sCivil%20DigitalStore!5e0!3m2!1sen!2sin!4v1758196477578!5m2!1sen!2sin";
 
   return (
-    <div 
+    <div
       className="min-h-[calc(100vh-120px)] p-6 md:p-10 relative"
-      style={{ 
-        background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})` 
+      style={{
+        background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`
       }}
     >
       {/* Theme Toggle - positioned in top right */}
       <div className="absolute top-4 right-4 z-10">
         <AdminThemeToggle />
       </div>
-      
-      <div 
+
+      <div
         className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"
         style={{ backgroundColor: colors.background.secondary }}
       >
         {/* Header */}
-        <div 
+        <div
           className="p-10 text-center"
-          style={{ 
-            background: `linear-gradient(135deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})` 
+          style={{
+            background: `linear-gradient(135deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`
           }}
         >
-          <h1 
+          <h1
             className="mb-2 text-3xl md:text-4xl font-bold"
             style={{ color: colors.text.inverse }}
           >
             Contact Us
           </h1>
-          <p 
+          <p
             className="mx-auto max-w-xl opacity-90"
             style={{ color: colors.text.inverse }}
           >
@@ -85,16 +85,16 @@ const ContactPage: React.FC = () => {
           <div className="space-y-6">
             <div className="space-y-5">
               {/* Phone */}
-              <div 
+              <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.tertiary,
                   borderLeftColor: colors.interactive.primary
                 }}
               >
-                <div 
+                <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.interactive.primary,
                     color: colors.text.inverse
                   }}
@@ -102,7 +102,7 @@ const ContactPage: React.FC = () => {
                   <Phone size={20} />
                 </div>
                 <div>
-                  <h3 
+                  <h3
                     className="text-lg font-semibold"
                     style={{ color: colors.text.primary }}
                   >
@@ -111,7 +111,7 @@ const ContactPage: React.FC = () => {
                   <p style={{ color: colors.text.secondary }}>
                     We're available 24/7, 7 days a week.
                   </p>
-                  <p 
+                  <p
                     className="font-semibold"
                     style={{ color: colors.interactive.primary }}
                   >
@@ -121,16 +121,16 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Email */}
-              <div 
+              <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.tertiary,
                   borderLeftColor: colors.interactive.primary
                 }}
               >
-                <div 
+                <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.interactive.primary,
                     color: colors.text.inverse
                   }}
@@ -138,7 +138,7 @@ const ContactPage: React.FC = () => {
                   <Mail size={20} />
                 </div>
                 <div>
-                  <h3 
+                  <h3
                     className="text-lg font-semibold"
                     style={{ color: colors.text.primary }}
                   >
@@ -147,7 +147,7 @@ const ContactPage: React.FC = () => {
                   <p style={{ color: colors.text.secondary }}>
                     Fill out our form and we will contact you within 24 hours.
                   </p>
-                  <p 
+                  <p
                     className="font-semibold"
                     style={{ color: colors.interactive.primary }}
                   >
@@ -157,16 +157,16 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Business Hours */}
-              <div 
+              <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.tertiary,
                   borderLeftColor: colors.interactive.primary
                 }}
               >
-                <div 
+                <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.interactive.primary,
                     color: colors.text.inverse
                   }}
@@ -174,7 +174,7 @@ const ContactPage: React.FC = () => {
                   <Clock size={20} />
                 </div>
                 <div>
-                  <h3 
+                  <h3
                     className="text-lg font-semibold"
                     style={{ color: colors.text.primary }}
                   >
@@ -187,16 +187,16 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Address */}
-              <div 
+              <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.tertiary,
                   borderLeftColor: colors.interactive.primary
                 }}
               >
-                <div 
+                <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.interactive.primary,
                     color: colors.text.inverse
                   }}
@@ -204,7 +204,7 @@ const ContactPage: React.FC = () => {
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <h3 
+                  <h3
                     className="text-lg font-semibold"
                     style={{ color: colors.text.primary }}
                   >
@@ -222,7 +222,7 @@ const ContactPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
-                <label 
+                <label
                   className="text-sm font-semibold"
                   style={{ color: colors.text.primary }}
                 >
@@ -251,7 +251,7 @@ const ContactPage: React.FC = () => {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label 
+                <label
                   className="text-sm font-semibold"
                   style={{ color: colors.text.primary }}
                 >
@@ -282,7 +282,7 @@ const ContactPage: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label 
+              <label
                 className="text-sm font-semibold"
                 style={{ color: colors.text.primary }}
               >
@@ -312,7 +312,7 @@ const ContactPage: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label 
+              <label
                 className="text-sm font-semibold"
                 style={{ color: colors.text.primary }}
               >
@@ -357,9 +357,9 @@ const ContactPage: React.FC = () => {
             >
               {submitContactForm.isPending ? (
                 <>
-                  <span 
+                  <span
                     className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-                    style={{ 
+                    style={{
                       borderColor: colors.text.inverse,
                       borderTopColor: 'transparent'
                     }}
@@ -374,7 +374,7 @@ const ContactPage: React.FC = () => {
         </div>
 
         {/* Map Section */}
-        <div 
+        <div
           className="mx-auto my-6 w-11/12 rounded-lg p-5 shadow-md"
           style={{ backgroundColor: colors.background.tertiary }}
         >
