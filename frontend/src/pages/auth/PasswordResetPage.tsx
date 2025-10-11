@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Lock, ArrowLeft, CheckCircle, Eye, EyeOff, Mail } from "lucide-react";
 import Swal from "sweetalert2";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
+import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import { validateResetTokenAPI, resetPasswordAPI } from "../../services/api";
 import logo from "../../assets/logo.png";
 
@@ -21,6 +23,7 @@ export default function PasswordResetPage() {
 
   const { token } = useParams();
   const navigate = useNavigate();
+  const { colors } = useAdminTheme();
 
   // Validate token on component mount
   useEffect(() => {
@@ -104,9 +107,9 @@ export default function PasswordResetPage() {
 
     try {
       await resetPasswordAPI({ token, email, password });
-      
+
       setIsPasswordReset(true);
-      
+
       Swal.fire({
         icon: "success",
         title: "Password Reset Successfully!",
@@ -141,11 +144,28 @@ export default function PasswordResetPage() {
   // Token validation loading state
   if (tokenValidating) {
     return (
-      <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+        style={{ backgroundColor: colors.background.primary }}
+      >
+        {/* Theme Toggle - positioned in top right */}
+        <div className="absolute top-4 right-4">
+          <AdminThemeToggle />
+        </div>
+
+        <div
+          className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
           <div className="p-8 text-center">
-            <div className="animate-spin mx-auto h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full mb-4"></div>
-            <p className="text-gray-600">Validating reset link...</p>
+            <div
+              className="animate-spin mx-auto h-12 w-12 border-4 border-t-transparent rounded-full mb-4"
+              style={{
+                borderColor: `${colors.interactive.primary}40`,
+                borderTopColor: 'transparent'
+              }}
+            ></div>
+            <p style={{ color: colors.text.secondary }}>Validating reset link...</p>
           </div>
         </div>
       </div>
@@ -155,39 +175,88 @@ export default function PasswordResetPage() {
   // Invalid token state
   if (!isValidToken) {
     return (
-      <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+        style={{ backgroundColor: colors.background.primary }}
+      >
+        {/* Theme Toggle - positioned in top right */}
+        <div className="absolute top-4 right-4">
+          <AdminThemeToggle />
+        </div>
+
+        <div
+          className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
           {/* Header */}
-          <div className="py-8 px-6 bg-gradient-to-r from-red-50 to-red-100 rounded-t-2xl flex flex-col items-center">
-            <div className="bg-white p-4 rounded-full shadow-md mb-4">
-              <Lock className="h-12 w-12 text-red-500" />
+          <div
+            className="py-8 px-6 rounded-t-2xl flex flex-col items-center"
+            style={{
+              background: `linear-gradient(135deg, ${colors.status.error}20, ${colors.status.error}40)`
+            }}
+          >
+            <div
+              className="p-4 rounded-full shadow-md mb-4"
+              style={{ backgroundColor: colors.background.primary }}
+            >
+              <Lock
+                className="h-12 w-12"
+                style={{ color: colors.status.error }}
+              />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Invalid Reset Link</h1>
-            <p className="text-gray-700 mt-2 text-sm text-center">
+            <h1
+              className="text-2xl font-bold"
+              style={{ color: colors.text.primary }}
+            >
+              Invalid Reset Link
+            </h1>
+            <p
+              className="mt-2 text-sm text-center"
+              style={{ color: colors.text.secondary }}
+            >
               This password reset link is invalid or has expired
             </p>
           </div>
 
           {/* Body */}
           <div className="p-8 text-center space-y-6">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-sm text-red-800">
+            <div
+              className="border rounded-lg p-4"
+              style={{
+                backgroundColor: `${colors.status.error}20`,
+                borderColor: colors.status.error
+              }}
+            >
+              <p
+                className="text-sm"
+                style={{ color: colors.text.primary }}
+              >
                 The link may have expired or been used already. Please request a new password reset.
               </p>
             </div>
 
             <div className="space-y-4">
               <Link to="/forgot-password">
-                <FormButton className="w-full bg-indigo-600 hover:bg-indigo-700">
+                <FormButton className="w-full">
                   Request New Reset Link
                 </FormButton>
               </Link>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
+            <div
+              className="pt-4 border-t"
+              style={{ borderColor: colors.border.primary }}
+            >
               <Link
                 to="/signin"
-                className="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+                className="inline-flex items-center text-sm transition-colors"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = colors.text.secondary;
+                }}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Sign In
@@ -202,29 +271,68 @@ export default function PasswordResetPage() {
   // Success state
   if (isPasswordReset) {
     return (
-      <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+        style={{ backgroundColor: colors.background.primary }}
+      >
+        {/* Theme Toggle - positioned in top right */}
+        <div className="absolute top-4 right-4">
+          <AdminThemeToggle />
+        </div>
+
+        <div
+          className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
           {/* Header */}
-          <div className="py-8 px-6 bg-gradient-to-r from-green-50 to-green-100 rounded-t-2xl flex flex-col items-center">
-            <div className="bg-white p-4 rounded-full shadow-md mb-4">
-              <CheckCircle className="h-12 w-12 text-green-500" />
+          <div
+            className="py-8 px-6 rounded-t-2xl flex flex-col items-center"
+            style={{
+              background: `linear-gradient(135deg, ${colors.status.success}20, ${colors.status.success}40)`
+            }}
+          >
+            <div
+              className="p-4 rounded-full shadow-md mb-4"
+              style={{ backgroundColor: colors.background.primary }}
+            >
+              <CheckCircle
+                className="h-12 w-12"
+                style={{ color: colors.status.success }}
+              />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Password Reset Complete</h1>
-            <p className="text-gray-700 mt-2 text-sm text-center">
+            <h1
+              className="text-2xl font-bold"
+              style={{ color: colors.text.primary }}
+            >
+              Password Reset Complete
+            </h1>
+            <p
+              className="mt-2 text-sm text-center"
+              style={{ color: colors.text.secondary }}
+            >
               Your password has been successfully updated
             </p>
           </div>
 
           {/* Body */}
           <div className="p-8 text-center space-y-6">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-sm text-green-800">
+            <div
+              className="border rounded-lg p-4"
+              style={{
+                backgroundColor: `${colors.status.success}20`,
+                borderColor: colors.status.success
+              }}
+            >
+              <p
+                className="text-sm"
+                style={{ color: colors.text.primary }}
+              >
                 You can now sign in with your new password. You'll be redirected to the sign in page shortly.
               </p>
             </div>
 
             <Link to="/signin">
-              <FormButton className="w-full bg-indigo-600 hover:bg-indigo-700">
+              <FormButton className="w-full">
                 Continue to Sign In
               </FormButton>
             </Link>
@@ -238,15 +346,42 @@ export default function PasswordResetPage() {
   const isEmailValid = validateEmail(email);
 
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+      style={{ backgroundColor: colors.background.primary }}
+    >
+      {/* Theme Toggle - positioned in top right */}
+      <div className="absolute top-4 right-4">
+        <AdminThemeToggle />
+      </div>
+
+      <div
+        className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
         {/* Header */}
-        <div className="py-6 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
-          <div className="bg-white p-3 rounded-2xl shadow-md">
+        <div
+          className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
+          style={{
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+          }}
+        >
+          <div
+            className="p-3 rounded-2xl shadow-md"
+            style={{ backgroundColor: colors.background.primary }}
+          >
             <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mt-4">Reset Your Password</h1>
-          <p className="text-gray-800 mt-2 text-sm text-center">
+          <h1
+            className="text-2xl font-bold mt-4"
+            style={{ color: colors.text.primary }}
+          >
+            Reset Your Password
+          </h1>
+          <p
+            className="mt-2 text-sm text-center"
+            style={{ color: colors.text.secondary }}
+          >
             Verify your email and create a strong, secure password for your account
           </p>
         </div>
@@ -257,7 +392,14 @@ export default function PasswordResetPage() {
           <div className="mb-6">
             <Link
               to="/signin"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+              className="inline-flex items-center text-sm transition-colors"
+              style={{ color: colors.text.secondary }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = colors.interactive.primary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = colors.text.secondary;
+              }}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Sign In
@@ -265,7 +407,15 @@ export default function PasswordResetPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-6">
+            <div
+              className="px-4 py-3 rounded-lg text-sm mb-6"
+              style={{
+                backgroundColor: `${colors.status.error}20`,
+                borderColor: colors.status.error,
+                color: colors.status.error,
+                border: `1px solid ${colors.status.error}`
+              }}
+            >
               {error}
             </div>
           )}
@@ -281,29 +431,31 @@ export default function PasswordResetPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 required
-                className={`pl-10 ${
-                  email && !isEmailValid 
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                    : email && isEmailValid 
-                    ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                    : ''
-                }`}
+                className={`pl-10 ${email && !isEmailValid
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                    : email && isEmailValid
+                      ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
+                      : ''
+                  }`}
               />
               <div className="absolute left-3 top-9 pointer-events-none">
-                <Mail className={`h-5 w-5 ${
-                  email && !isEmailValid 
-                    ? 'text-red-400' 
-                    : email && isEmailValid 
-                    ? 'text-green-400'
-                    : 'text-gray-400'
-                }`} />
+                <Mail
+                  className="h-5 w-5"
+                  style={{
+                    color: email && !isEmailValid
+                      ? colors.status.error
+                      : email && isEmailValid
+                        ? colors.status.success
+                        : colors.text.secondary
+                  }}
+                />
               </div>
               {email && (
                 <div className="absolute right-3 top-9 pointer-events-none">
                   {isEmailValid ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5" style={{ color: colors.status.success }} />
                   ) : (
-                    <div className="h-5 w-5 rounded-full border-2 border-red-400"></div>
+                    <div className="h-5 w-5 rounded-full border-2" style={{ borderColor: colors.status.error }}></div>
                   )}
                 </div>
               )}
@@ -329,7 +481,7 @@ export default function PasswordResetPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition-colors z-10"
+                className={`absolute right-3 top-9 transition-colors z-10 ${colors.text.secondary} hover:${colors.text.primary}`}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
@@ -349,17 +501,16 @@ export default function PasswordResetPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your new password"
                 required
-                className={`pr-10 ${
-                  confirmPassword && password !== confirmPassword 
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                className={`pr-10 ${confirmPassword && password !== confirmPassword
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                     : confirmPassword && password === confirmPassword && password
-                    ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                    : ''
-                }`}
+                      ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
+                      : ''
+                  }`}
               />
               <button
                 type="button"
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 transition-colors z-10"
+                className={`absolute right-3 top-9 transition-colors z-10 ${colors.text.secondary} hover:${colors.text.primary}`}
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
@@ -372,8 +523,8 @@ export default function PasswordResetPage() {
 
             {/* Password Requirements */}
             {password && (
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-900 mb-3">Password Requirements:</h4>
+              <div className={`rounded-lg p-4`} style={{ backgroundColor: colors.background.secondary }}>
+                <h4 className={`text-sm font-medium mb-3`} style={{ color: colors.text.primary }}>Password Requirements:</h4>
                 <div className="space-y-2">
                   <div className={`flex items-center text-xs ${passwordValidation.minLength ? 'text-green-600' : 'text-gray-500'}`}>
                     <CheckCircle className={`h-3 w-3 mr-2 ${passwordValidation.minLength ? 'text-green-500' : 'text-gray-400'}`} />
@@ -401,24 +552,28 @@ export default function PasswordResetPage() {
 
             {/* Password Match Indicator */}
             {confirmPassword && (
-              <div className={`text-sm flex items-center ${password === confirmPassword ? 'text-green-600' : 'text-red-600'}`}>
-                <CheckCircle className={`h-4 w-4 mr-2 ${password === confirmPassword ? 'text-green-500' : 'text-red-500'}`} />
+              <div className="text-sm flex items-center" style={{ color: password === confirmPassword ? colors.status.success : colors.status.error }}>
+                <CheckCircle className="h-4 w-4 mr-2" style={{ color: password === confirmPassword ? colors.status.success : colors.status.error }} />
                 {password === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
               </div>
             )}
 
-            <FormButton 
-              type="submit" 
+            <FormButton
+              type="submit"
               disabled={
-                isLoading || 
-                !email.trim() || 
+                isLoading ||
+                !email.trim() ||
                 !isEmailValid ||
-                !password.trim() || 
-                !confirmPassword.trim() || 
-                password !== confirmPassword || 
+                !password.trim() ||
+                !confirmPassword.trim() ||
+                password !== confirmPassword ||
                 !passwordValidation.isValid
-              } 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              }
+              className="w-full disabled:cursor-not-allowed transition-colors"
+              style={{
+                backgroundColor: colors.interactive.primary,
+                color: colors.text.inverse
+              }}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
@@ -438,9 +593,9 @@ export default function PasswordResetPage() {
           </form>
 
           {/* Security Notice */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">Security Tips:</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
+          <div className="mt-8 p-4 rounded-lg" style={{ backgroundColor: colors.background.secondary }}>
+            <h3 className="text-sm font-medium mb-2" style={{ color: colors.text.primary }}>Security Tips:</h3>
+            <ul className="text-sm space-y-1" style={{ color: colors.text.secondary }}>
               <li>• Use a unique password you haven't used before</li>
               <li>• Consider using a password manager</li>
               <li>• Don't share your password with anyone</li>
@@ -448,9 +603,17 @@ export default function PasswordResetPage() {
             </ul>
           </div>
 
-          <p className="mt-8 text-center text-sm text-gray-600">
+          <p className="mt-8 text-center text-sm" style={{ color: colors.text.secondary }}>
             Need help?{" "}
-            <Link to="/contact" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link
+              to="/contact"
+              className="font-medium transition-colors"
+              style={{
+                color: colors.interactive.primary,
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = colors.interactive.primaryHover}
+              onMouseLeave={(e) => e.currentTarget.style.color = colors.interactive.primary}
+            >
               Contact Support
             </Link>
           </p>

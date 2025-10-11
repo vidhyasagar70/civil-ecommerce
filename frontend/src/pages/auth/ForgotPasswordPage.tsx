@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
+import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import { forgotPasswordAPI } from "../../services/api";
 import logo from "../../assets/logo.png";
 
@@ -12,6 +14,7 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [error, setError] = useState("");
+  const { colors } = useAdminTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +24,9 @@ export default function ForgotPasswordPage() {
     try {
       // API call to send password reset email
       await forgotPasswordAPI({ email });
-      
+
       setIsEmailSent(true);
-      
+
       Swal.fire({
         icon: "success",
         title: "Email Sent!",
@@ -57,47 +60,107 @@ export default function ForgotPasswordPage() {
 
   if (isEmailSent) {
     return (
-      <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+        style={{ backgroundColor: colors.background.primary }}
+      >
+        {/* Theme Toggle - positioned in top right */}
+        <div className="absolute top-4 right-4">
+          <AdminThemeToggle />
+        </div>
+
+        <div
+          className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
           {/* Header */}
-          <div className="py-8 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
-            <div className="bg-white p-4 rounded-full shadow-md mb-4">
-              <CheckCircle className="h-12 w-12 text-green-500" />
+          <div
+            className="py-8 px-6 rounded-t-2xl flex flex-col items-center"
+            style={{
+              background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+            }}
+          >
+            <div
+              className="p-4 rounded-full shadow-md mb-4"
+              style={{ backgroundColor: colors.background.primary }}
+            >
+              <CheckCircle
+                className="h-12 w-12"
+                style={{ color: colors.status.success }}
+              />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Check Your Email</h1>
-            <p className="text-gray-700 mt-2 text-sm text-center">
+            <h1
+              className="text-2xl font-bold"
+              style={{ color: colors.text.primary }}
+            >
+              Check Your Email
+            </h1>
+            <p
+              className="mt-2 text-sm text-center"
+              style={{ color: colors.text.secondary }}
+            >
               We've sent password reset instructions to
             </p>
-            <p className="text-indigo-600 font-medium text-sm mt-1">{email}</p>
+            <p
+              className="font-medium text-sm mt-1"
+              style={{ color: colors.interactive.primary }}
+            >
+              {email}
+            </p>
           </div>
 
           {/* Body */}
           <div className="p-8 text-center space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <Mail className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-              <p className="text-sm text-blue-800">
+            <div
+              className="border rounded-lg p-4"
+              style={{
+                backgroundColor: `${colors.status.info}20`,
+                borderColor: colors.status.info
+              }}
+            >
+              <Mail
+                className="h-8 w-8 mx-auto mb-2"
+                style={{ color: colors.status.info }}
+              />
+              <p
+                className="text-sm"
+                style={{ color: colors.text.primary }}
+              >
                 Please check your email inbox (and spam folder) for the password reset link.
               </p>
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p
+                className="text-sm"
+                style={{ color: colors.text.secondary }}
+              >
                 Didn't receive the email?
               </p>
-              
+
               <FormButton
                 type="button"
                 onClick={handleResendEmail}
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
+                className="w-full"
               >
                 Resend Email
               </FormButton>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
+            <div
+              className="pt-4 border-t"
+              style={{ borderColor: colors.border.primary }}
+            >
               <Link
                 to="/signin"
-                className="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+                className="inline-flex items-center text-sm transition-colors"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = colors.text.secondary;
+                }}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Sign In
@@ -110,15 +173,42 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+      style={{ backgroundColor: colors.background.primary }}
+    >
+      {/* Theme Toggle - positioned in top right */}
+      <div className="absolute top-4 right-4">
+        <AdminThemeToggle />
+      </div>
+
+      <div
+        className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
         {/* Header */}
-        <div className="py-6 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
-          <div className="bg-white p-3 rounded-2xl shadow-md">
+        <div
+          className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
+          style={{
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+          }}
+        >
+          <div
+            className="p-3 rounded-2xl shadow-md"
+            style={{ backgroundColor: colors.background.primary }}
+          >
             <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mt-4">Forgot Password?</h1>
-          <p className="text-gray-800 mt-2 text-sm text-center">
+          <h1
+            className="text-2xl font-bold mt-4"
+            style={{ color: colors.text.primary }}
+          >
+            Forgot Password?
+          </h1>
+          <p
+            className="mt-2 text-sm text-center"
+            style={{ color: colors.text.secondary }}
+          >
             No worries! Enter your email and we'll send you reset instructions
           </p>
         </div>
@@ -129,7 +219,14 @@ export default function ForgotPasswordPage() {
           <div className="mb-6">
             <Link
               to="/signin"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+              className="inline-flex items-center text-sm transition-colors"
+              style={{ color: colors.text.secondary }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = colors.interactive.primary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = colors.text.secondary;
+              }}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Sign In
@@ -137,7 +234,15 @@ export default function ForgotPasswordPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-6">
+            <div
+              className="px-4 py-3 rounded-lg text-sm mb-6"
+              style={{
+                backgroundColor: `${colors.status.error}20`,
+                borderColor: colors.status.error,
+                color: colors.status.error,
+                border: `1px solid ${colors.status.error}`
+              }}
+            >
               {error}
             </div>
           )}
@@ -153,9 +258,9 @@ export default function ForgotPasswordPage() {
               required
             />
 
-            <FormButton 
-              type="submit" 
-              disabled={isLoading || !email.trim()} 
+            <FormButton
+              type="submit"
+              disabled={isLoading || !email.trim()}
               className="w-full"
             >
               {isLoading ? (
@@ -176,18 +281,42 @@ export default function ForgotPasswordPage() {
           </form>
 
           {/* Additional Info */}
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">What happens next?</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
+          <div
+            className="mt-8 p-4 rounded-lg"
+            style={{ backgroundColor: colors.background.tertiary }}
+          >
+            <h3
+              className="text-sm font-medium mb-2"
+              style={{ color: colors.text.primary }}
+            >
+              What happens next?
+            </h3>
+            <ul
+              className="text-sm space-y-1"
+              style={{ color: colors.text.secondary }}
+            >
               <li>• We'll send a secure link to your email</li>
               <li>• Click the link to create a new password</li>
               <li>• The link expires in 10 minutes for security</li>
             </ul>
           </div>
 
-          <p className="mt-8 text-center text-sm text-gray-600">
+          <p
+            className="mt-8 text-center text-sm"
+            style={{ color: colors.text.secondary }}
+          >
             Remember your password?{" "}
-            <Link to="/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link
+              to="/signin"
+              className="font-medium transition-colors"
+              style={{ color: colors.interactive.primary }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = colors.interactive.primaryHover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = colors.interactive.primary;
+              }}
+            >
               Sign in instead
             </Link>
           </p>
