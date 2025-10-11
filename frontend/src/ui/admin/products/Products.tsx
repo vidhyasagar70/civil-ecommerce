@@ -178,6 +178,12 @@ const Products: React.FC = () => {
     setShowBestSellers(false);
   };
 
+  // Calculate statistics
+  const totalProducts = rawProducts.length;
+  const activeProducts = rawProducts.filter((product: Product) =>
+    (product.status || 'active') === 'active'
+  ).length;
+
   return (
     <div
       className="min-h-screen transition-colors duration-200"
@@ -187,6 +193,97 @@ const Products: React.FC = () => {
       }}
     >
       <div className="p-6 space-y-6">
+        {/* Dashboard Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Total Products Card */}
+          <div
+            className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="text-sm font-medium opacity-75"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Total Products
+                </p>
+                <p
+                  className="text-3xl font-bold mt-2"
+                  style={{ color: colors.text.primary }}
+                >
+                  {totalProducts}
+                </p>
+                <p
+                  className="text-xs mt-1 opacity-60"
+                  style={{ color: colors.text.secondary }}
+                >
+                  +100% active
+                </p>
+              </div>
+              <div
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${colors.status.warning}20` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.status.warning }}
+                >
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Products Card */}
+          <div
+            className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="text-sm font-medium opacity-75"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Active Products
+                </p>
+                <p
+                  className="text-3xl font-bold mt-2"
+                  style={{ color: colors.status.success }}
+                >
+                  {activeProducts}
+                </p>
+                <p
+                  className="text-xs mt-1 opacity-60"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Ready for sale
+                </p>
+              </div>
+              <div
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${colors.status.success}20` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.status.success }}
+                >
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="relative">
