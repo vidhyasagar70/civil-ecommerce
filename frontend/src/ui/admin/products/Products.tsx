@@ -180,7 +180,7 @@ const Products: React.FC = () => {
 
   // Calculate statistics
   const totalProducts = rawProducts.length;
-  const activeProducts = rawProducts.filter((product: Product) => 
+  const activeProducts = rawProducts.filter((product: Product) =>
     (product.status || 'active') === 'active'
   ).length;
 
@@ -196,7 +196,7 @@ const Products: React.FC = () => {
         {/* Dashboard Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Products Card */}
-          <div 
+          <div
             className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
             style={{
               backgroundColor: colors.background.secondary,
@@ -205,30 +205,30 @@ const Products: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p 
+                <p
                   className="text-sm font-medium opacity-75"
                   style={{ color: colors.text.secondary }}
                 >
                   Total Products
                 </p>
-                <p 
+                <p
                   className="text-3xl font-bold mt-2"
                   style={{ color: colors.text.primary }}
                 >
                   {totalProducts}
                 </p>
-                <p 
+                <p
                   className="text-xs mt-1 opacity-60"
                   style={{ color: colors.text.secondary }}
                 >
                   +100% active
                 </p>
               </div>
-              <div 
+              <div
                 className="p-3 rounded-full"
                 style={{ backgroundColor: `${colors.status.warning}20` }}
               >
-                <div 
+                <div
                   className="w-8 h-8 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: colors.status.warning }}
                 >
@@ -241,7 +241,7 @@ const Products: React.FC = () => {
           </div>
 
           {/* Active Products Card */}
-          <div 
+          <div
             className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
             style={{
               backgroundColor: colors.background.secondary,
@@ -250,30 +250,30 @@ const Products: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p 
+                <p
                   className="text-sm font-medium opacity-75"
                   style={{ color: colors.text.secondary }}
                 >
                   Active Products
                 </p>
-                <p 
+                <p
                   className="text-3xl font-bold mt-2"
                   style={{ color: colors.status.success }}
                 >
                   {activeProducts}
                 </p>
-                <p 
+                <p
                   className="text-xs mt-1 opacity-60"
                   style={{ color: colors.text.secondary }}
                 >
                   Ready for sale
                 </p>
               </div>
-              <div 
+              <div
                 className="p-3 rounded-full"
                 style={{ backgroundColor: `${colors.status.success}20` }}
               >
-                <div 
+                <div
                   className="w-8 h-8 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: colors.status.success }}
                 >
