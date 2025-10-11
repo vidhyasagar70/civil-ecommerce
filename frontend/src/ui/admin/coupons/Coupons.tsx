@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X, RefreshCcw } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, RefreshCcw, Calendar, Users, Package } from 'lucide-react';
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 
 interface Coupon {
   id?: string;
@@ -15,23 +16,16 @@ interface Coupon {
   updatedAt?: string;
 }
 
-const defaultColors = {
-  background: { primary: '#ffffff', secondary: '#f9fafb', tertiary: '#f3f4f6' },
-  text: { primary: '#111827', secondary: '#6b7280', inverse: '#ffffff' },
-  border: { primary: '#e5e7eb', secondary: '#d1d5db' },
-  interactive: { primary: '#3b82f6', secondary: '#6b7280' },
-};
-
-const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 
 const Coupons: React.FC = () => {
+  const { colors, theme } = useAdminTheme();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  let colors = defaultColors;
 
   useEffect(() => { fetchCoupons(); }, []);
 
@@ -108,16 +102,16 @@ const Coupons: React.FC = () => {
 
   const getStatusColor = (coupon: Coupon) => {
     if (coupon.status === 'Inactive')
-      return { bg: '#9ca3af', text: '#ffffff' };
+      return { bg: colors.status.warning, text: colors.text.primary };
     if (isExpired(coupon.validTo))
-      return { bg: '#ef4444', text: '#ffffff' };
-    return { bg: '#10b981', text: '#ffffff' };
+      return { bg: colors.status.error, text: colors.text.inverse };
+    return { bg: colors.interactive.primary, text: colors.text.primary };
   };
 
   const getStatusText = (coupon: Coupon) => {
-    if (coupon.status === 'Inactive') return 'Inactive';
-    if (isExpired(coupon.validTo)) return 'Expired';
-    return 'Active';
+    if (coupon.status === 'Inactive') return 'INACTIVE';
+    if (isExpired(coupon.validTo)) return 'EXPIRED';
+    return 'ACTIVE';
   };
 
   return (
@@ -125,7 +119,7 @@ const Coupons: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>Coupons</h2>
+          <h2 className="text-2xl font-semibold" style={{ color: colors.interactive.primary }}>Coupon Management</h2>
           <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
             Manage discount coupons for your store
           </p>
@@ -147,22 +141,34 @@ const Coupons: React.FC = () => {
         </div>
         <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
           <p className="text-sm" style={{ color: colors.text.secondary }}>Active Coupons</p>
-          <p className="text-2xl font-bold mt-1" style={{ color: '#10b981' }}>
+          <p className="text-2xl font-bold mt-1" style={{ color: colors.status.success }}>
             {coupons.filter(c => c.status === 'Active' && !isExpired(c.validTo)).length}
           </p>
         </div>
         <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
           <p className="text-sm" style={{ color: colors.text.secondary }}>Expired Coupons</p>
-          <p className="text-2xl font-bold mt-1" style={{ color: '#ef4444' }}>
+          <p className="text-2xl font-bold mt-1" style={{ color: colors.status.error }}>
             {coupons.filter(c => isExpired(c.validTo)).length}
           </p>
         </div>
       </div>
       {/* Error */}
       {error &&
-        <div className="mb-4 p-4 rounded-lg border border-red-500 bg-red-50">
-          <p className="text-red-600">{error}</p>
-          <button onClick={fetchCoupons} className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Retry</button>
+        <div className="mb-4 p-4 rounded-lg border" style={{ 
+          backgroundColor: colors.background.secondary, 
+          borderColor: colors.status.error 
+        }}>
+          <p style={{ color: colors.status.error }}>{error}</p>
+          <button 
+            onClick={fetchCoupons} 
+            className="mt-2 px-4 py-2 rounded hover:opacity-90 transition"
+            style={{ 
+              backgroundColor: colors.status.error, 
+              color: colors.text.inverse 
+            }}
+          >
+            Retry
+          </button>
         </div>
       }
       {/* Loading */}
@@ -172,102 +178,162 @@ const Coupons: React.FC = () => {
         </div>)
         :
         (
-          <div className="overflow-x-auto rounded-lg border" style={{ borderColor: colors.border.primary }}>
-            <table className="min-w-full divide-y" style={{ borderColor: colors.border.primary }}>
-              <thead style={{ backgroundColor: colors.background.secondary, color: colors.text.primary }}>
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold">Code</th>
-                  <th className="px-4 py-3 text-left font-semibold">Name</th>
-                  <th className="px-4 py-3 text-left font-semibold">Discount</th>
-                  <th className="px-4 py-3 text-left font-semibold">Valid From</th>
-                  <th className="px-4 py-3 text-left font-semibold">Valid To</th>
-                  <th className="px-4 py-3 text-left font-semibold">Status</th>
-                  <th className="px-4 py-3 text-left font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}>
-                {coupons.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="mb-4 p-4 rounded-full" style={{ backgroundColor: colors.background.tertiary }}>
-                          <Plus size={32} style={{ color: colors.text.secondary }} />
-                        </div>
-                        <p className="text-lg font-medium mb-2" style={{ color: colors.text.primary }}>
-                          No coupons found
-                        </p>
-                        <p className="text-sm mb-4" style={{ color: colors.text.secondary }}>
-                          Create your first coupon to start offering discounts
-                        </p>
-                        <button
-                          onClick={() => setShowForm(true)}
-                          className="px-4 py-2 rounded font-medium hover:opacity-90 transition"
-                          style={{ backgroundColor: colors.interactive.primary, color: colors.text.inverse }}
+          <div className="space-y-4">
+            {coupons.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 px-4">
+                <div 
+                  className="flex flex-col items-center justify-center p-4 md:p-6 lg:p-8 rounded-lg border-2 w-full max-w-md sm:max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl min-h-28 md:min-h-32 lg:min-h-36"
+                  style={{ 
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.interactive.primary // Using same border color as coupon cards
+                  }}
+                >
+                  <div className="mb-3 md:mb-4 p-3 md:p-4 rounded-full" style={{ backgroundColor: colors.background.tertiary }}>
+                    <Plus size={24} className="md:w-8 md:h-8" style={{ color: colors.text.secondary }} />
+                  </div>
+                  <p className="text-base md:text-lg lg:text-xl font-semibold mb-2 md:mb-3 text-center" style={{ color: colors.text.primary }}>
+                    No coupons found
+                  </p>
+                  <p className="text-xs md:text-sm lg:text-base mb-4 md:mb-5 text-center max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg" style={{ color: colors.text.secondary }}>
+                    Create your first coupon to offer discounts to customers
+                  </p>
+                  <button
+                    onClick={() => setShowForm(true)}
+                    className="flex items-center gap-2 px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 shadow-md text-xs md:text-sm lg:text-base"
+                    style={{ 
+                      backgroundColor: colors.interactive.primary, // Using same color as Add Coupon button
+                      color: colors.text.inverse
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = colors.interactive.primaryHover || colors.interactive.primary;
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                  >
+                    <Plus size={14} className="md:w-4 md:h-4" />
+                    Create Coupon
+                  </button>
+                </div>
+              </div>
+            ) : (
+              coupons.map(coupon => {
+                const statusColor = getStatusColor(coupon);
+                const statusText = getStatusText(coupon);
+                const discountDisplay = coupon.discountType === 'Percentage' ? `${coupon.discountValue}% OFF` : `$${coupon.discountValue} OFF`;
+                
+                return (
+                  <div 
+                    key={coupon.id} 
+                    className="rounded-lg border p-4 transition-all duration-200 hover:shadow-lg"
+                    style={{ 
+                      backgroundColor: colors.background.secondary, 
+                      borderColor: colors.interactive.primary,
+                      borderWidth: '1px'
+                    }}
+                  >
+                    {/* Header Row */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <span 
+                          className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
+                          style={{ 
+                            backgroundColor: colors.interactive.primary + '20', 
+                            color: colors.interactive.primary,
+                            borderColor: colors.interactive.primary + '40'
+                          }}
                         >
-                          Create Coupon
-                        </button>
+                          {coupon.code}
+                        </span>
+                        <h3 className="text-lg font-semibold" style={{ color: colors.text.primary }}>
+                          {coupon.name}
+                        </h3>
                       </div>
-                    </td>
-                  </tr>
-                ) : (
-                  coupons.map(c => {
-                    const statusColor = getStatusColor(c);
-                    const statusText = getStatusText(c);
-                    return (
-                      <tr key={c.id} style={{ color: colors.text.primary }} className="hover:bg-opacity-50 transition">
-                        <td className="px-4 py-3">
-                          <span className="font-mono font-semibold px-2 py-1 rounded" style={{ backgroundColor: colors.background.tertiary }}>
-                            {c.code}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div>
-                            <p className="font-medium">{c.name}</p>
-                            {c.description && <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>{c.description}</p>}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="font-semibold">{c.discountType === 'Percentage' ? `${c.discountValue}%` : c.discountValue}</span>
-                          <span className="text-xs ml-1" style={{ color: colors.text.secondary }}>
-                            {c.discountType === 'Percentage' ? 'off' : 'flat'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">{formatDate(c.validFrom)}</td>
-                        <td className="px-4 py-3">{formatDate(c.validTo)}</td>
-                        <td className="px-4 py-3">
-                          <span
-                            className="px-2 py-1 rounded text-xs font-medium"
-                            style={{ backgroundColor: statusColor.bg, color: statusColor.text }}
-                          >
-                            {statusText}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleEdit(c)}
-                              className="p-2 rounded hover:opacity-80 transition"
-                              style={{ backgroundColor: colors.background.tertiary, color: colors.text.primary }}
-                              title="Edit coupon"
-                            >
-                              <Pencil size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(c)}
-                              className="p-2 rounded hover:opacity-80 transition"
-                              style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}
-                              title="Delete coupon"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="px-3 py-1 rounded-full text-sm font-medium"
+                          style={{ backgroundColor: '#fbbf24', color: '#111827' }}
+                        >
+                          {discountDisplay}
+                        </span>
+                        <span 
+                          className="px-3 py-1 rounded-full text-sm font-medium"
+                          style={{ backgroundColor: statusColor.bg, color: statusColor.text }}
+                        >
+                          {statusText}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {coupon.description && (
+                      <p className="text-sm mb-3" style={{ color: colors.text.primary }}>
+                        {coupon.description}
+                      </p>
+                    )}
+
+                    {/* Details Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                      {/* Validity */}
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} style={{ color: colors.text.secondary }} />
+                        <span className="text-sm" style={{ color: colors.text.secondary }}>
+                          Valid: {formatDate(coupon.validFrom)} - {formatDate(coupon.validTo)}
+                        </span>
+                      </div>
+
+                      {/* Usage Stats (mock data for now) */}
+                      <div className="flex items-center gap-2">
+                        <Users size={16} style={{ color: colors.text.secondary }} />
+                        <span className="text-sm" style={{ color: colors.text.secondary }}>
+                          0/∞ used
+                        </span>
+                      </div>
+
+                      {/* Min/Max Purchase */}
+                      <div className="flex items-center gap-2">
+                        <Package size={16} style={{ color: colors.text.secondary }} />
+                        <span className="text-sm" style={{ color: colors.text.secondary }}>
+                          Min: $10
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => handleEdit(coupon)}
+                        className="p-2 rounded-full border hover:opacity-80 transition"
+                        style={{ 
+                          backgroundColor: 'transparent', 
+                          color: colors.interactive.primary,
+                          borderColor: colors.interactive.primary,
+                          borderWidth: '1px'
+                        }}
+                        title="Edit coupon"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(coupon)}
+                        className="p-2 rounded-full border hover:opacity-80 transition"
+                        style={{ 
+                          backgroundColor: 'transparent', 
+                          color: colors.status.error,
+                          borderColor: colors.status.error,
+                          borderWidth: '1px'
+                        }}
+                        title="Delete coupon"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         )
       }
@@ -278,6 +344,7 @@ const Coupons: React.FC = () => {
           onSave={handleAddCoupon}
           editingCoupon={editingCoupon}
           colors={colors}
+          theme={theme}
         />
       )}
     </div>
@@ -290,7 +357,8 @@ const CouponFormModal: React.FC<{
   onSave: (coupon: any) => Promise<void>,
   editingCoupon: Coupon | null,
   colors: any,
-}> = ({ onClose, onSave, editingCoupon, colors }) => {
+  theme: 'light' | 'dark',
+}> = ({ onClose, onSave, editingCoupon, colors, theme }) => {
   const [formData, setFormData] = useState({
     code: '',
     name: '',
@@ -302,6 +370,20 @@ const CouponFormModal: React.FC<{
     status: 'Active' as 'Active' | 'Inactive',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    // Save current overflow style
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    
+    // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Cleanup: restore original overflow when modal closes
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
   useEffect(() => {
     if (editingCoupon) {
@@ -356,8 +438,8 @@ const CouponFormModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="w-full max-w-2xl p-6 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]"
+    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="w-full max-w-2xl p-6 rounded-lg shadow-2xl overflow-y-auto max-h-[90vh]"
         style={{ backgroundColor: colors.background.primary, color: colors.text.primary, border: `1px solid ${colors.border.primary}` }}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
@@ -373,8 +455,8 @@ const CouponFormModal: React.FC<{
           {/* Coupon Code & Generate */}
           <div className="grid grid-cols-3 gap-2 items-end">
             <div className="col-span-2">
-              <label className="block text-sm mb-1 font-medium">
-                Coupon Code <span style={{ color: '#ef4444' }}>*</span>
+              <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+                Coupon Code <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 name="code"
@@ -404,8 +486,8 @@ const CouponFormModal: React.FC<{
           </div>
           {/* Name */}
           <div>
-            <label className="block text-sm mb-1 font-medium">
-              Coupon Name <span style={{ color: '#ef4444' }}>*</span>
+            <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+              Coupon Name <span style={{ color: colors.status.error }}>*</span>
             </label>
             <input
               name="name"
@@ -423,7 +505,7 @@ const CouponFormModal: React.FC<{
           </div>
           {/* Description */}
           <div>
-            <label className="block text-sm mb-1 font-medium">Description</label>
+            <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>Description</label>
             <textarea
               name="description"
               value={formData.description}
@@ -441,26 +523,27 @@ const CouponFormModal: React.FC<{
           {/* Discount */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm mb-1 font-medium">
-                Discount Type <span style={{ color: '#ef4444' }}>*</span>
+              <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+                Discount Type <span style={{ color: colors.status.error }}>*</span>
               </label>
               <select
                 name="discountType"
                 value={formData.discountType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded appearance-none bg-no-repeat bg-right bg-[length:16px] pr-8"
                 style={{
                   borderColor: colors.border.primary,
                   color: colors.text.primary,
                   backgroundColor: colors.background.primary,
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='${encodeURIComponent(colors.text.secondary)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`
                 }}>
                 <option value="Percentage">Percentage</option>
                 <option value="Fixed">Fixed</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm mb-1 font-medium">
-                Discount Value <span style={{ color: '#ef4444' }}>*</span>
+              <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+                Discount Value <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 type="number"
@@ -482,8 +565,8 @@ const CouponFormModal: React.FC<{
           {/* Validity Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm mb-1 font-medium">
-                Valid From <span style={{ color: '#ef4444' }}>*</span>
+              <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+                Valid From <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 type="date"
@@ -495,13 +578,14 @@ const CouponFormModal: React.FC<{
                   borderColor: colors.border.primary,
                   color: colors.text.primary,
                   backgroundColor: colors.background.primary,
+                  colorScheme: theme
                 }}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm mb-1 font-medium">
-                Valid To <span style={{ color: '#ef4444' }}>*</span>
+              <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+                Valid To <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 type="date"
@@ -513,6 +597,7 @@ const CouponFormModal: React.FC<{
                   borderColor: colors.border.primary,
                   color: colors.text.primary,
                   backgroundColor: colors.background.primary,
+                  colorScheme: theme
                 }}
                 required
               />
@@ -520,18 +605,19 @@ const CouponFormModal: React.FC<{
           </div>
           {/* Status */}
           <div>
-            <label className="block text-sm mb-1 font-medium">
-              Status <span style={{ color: '#ef4444' }}>*</span>
+            <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+              Status <span style={{ color: colors.status.error }}>*</span>
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded appearance-none bg-no-repeat bg-right bg-[length:16px] pr-8"
               style={{
                 borderColor: colors.border.primary,
                 color: colors.text.primary,
                 backgroundColor: colors.background.primary,
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='${encodeURIComponent(colors.text.secondary)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`
               }}>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
