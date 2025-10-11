@@ -20,24 +20,29 @@ interface OrderSummaryProps {
   summary: Summary;
   colors: any;
   normalizePrice: (price: any) => number;
+  onPlaceOrder: () => void;
+  isProcessing?: boolean;
 }
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({ cartItems, summary, colors, normalizePrice }) => {
+const OrderSummary: React.FC<OrderSummaryProps> = ({ 
+  cartItems, 
+  summary, 
+  colors, 
+  normalizePrice,
+  onPlaceOrder,
+  isProcessing = false
+}) => {
   
-  const handlePlaceOrder = () => {
-    alert("Your order has been placed successfully!");
-  };
-
   return (
-<div
-  className="space-y-6 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-200"
-  style={{
-    backgroundColor: colors.background.secondary,
-    color: colors.text.primary,
-    border: `1px solid ${colors.border.primary}`,
-  }}
->
-      <h2 className="text-2xl font-bold mb-6" style={{ color: colors.text.primary }}>Your order</h2>
+    <div
+      className="space-y-6 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-200"
+      style={{
+        backgroundColor: colors.background.secondary,
+        color: colors.text.primary,
+        border: `1px solid ${colors.border.primary}`,
+      }}
+    >
+      <h2 className="text-2xl font-bold mb-6" style={{ color: colors.text.primary }}>Your Order</h2>
 
       <div className="flex justify-between text-sm font-medium text-gray-500 mb-2">
         <span>Product</span>
@@ -49,8 +54,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ cartItems, summary, colors,
       ) : (
         cartItems.map((item) => (
           <div key={item.id} className="flex justify-between py-2 text-sm">
-            <span style={{ color: colors.text.primary }}>{item.product.name} × {Number(item.quantity) || 1}</span>
-            <span className="font-medium text-blue-800">₹{normalizePrice(summary.subtotal).toFixed(2)}</span>
+            <span style={{ color: colors.text.primary }}>
+              {item.product.name} × {Number(item.quantity) || 1}
+            </span>
+            <span className="font-medium text-blue-800">
+              ₹{(normalizePrice(item.product.price) * Number(item.quantity)).toFixed(2)}
+            </span>
           </div>
         ))
       )}
@@ -93,16 +102,39 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ cartItems, summary, colors,
         <a href="/privacy-policy" className="text-yellow-600 underline">privacy policy</a>.
       </p>
 
-<FormButton
-  type="button"
-  variant="primary"
-  className="w-full py-3 text-lg transition duration-300 ease-in-out 
-             bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
-             hover:shadow-lg"
-  onClick={handlePlaceOrder}
->
-  PLACE ORDER
-</FormButton>
+      <FormButton
+        type="button"
+        variant="primary"
+        className={`w-full py-3 text-lg transition duration-300 ease-in-out 
+                   bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
+                   hover:shadow-lg ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+        onClick={onPlaceOrder}
+        disabled={isProcessing}
+      >
+        {isProcessing ? (
+          <span className="flex items-center justify-center gap-2">
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle 
+                className="opacity-25" 
+                cx="12" 
+                cy="12" 
+                r="10" 
+                stroke="currentColor" 
+                strokeWidth="4"
+                fill="none"
+              />
+              <path 
+                className="opacity-75" 
+                fill="currentColor" 
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            Processing...
+          </span>
+        ) : (
+          'PLACE ORDER'
+        )}
+      </FormButton>
     </div>
   );
 };
