@@ -58,7 +58,7 @@ const ContactPage: React.FC = () => {
         <div
           className="p-10 text-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+            background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover}90)`,
             backgroundColor: colors.background.tertiary
           }}
         >
