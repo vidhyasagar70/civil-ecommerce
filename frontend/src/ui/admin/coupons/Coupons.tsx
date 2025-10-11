@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X, RefreshCcw } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, RefreshCcw, Tag } from 'lucide-react';
+import { useAdminThemeStyles } from '../../../hooks/useAdminThemeStyles';
 
 interface Coupon {
   id?: string;
@@ -15,23 +16,16 @@ interface Coupon {
   updatedAt?: string;
 }
 
-const defaultColors = {
-  background: { primary: '#ffffff', secondary: '#f9fafb', tertiary: '#f3f4f6' },
-  text: { primary: '#111827', secondary: '#6b7280', inverse: '#ffffff' },
-  border: { primary: '#e5e7eb', secondary: '#d1d5db' },
-  interactive: { primary: '#3b82f6', secondary: '#6b7280' },
-};
-
-const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 
 const Coupons: React.FC = () => {
+  const { colors } = useAdminThemeStyles();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  let colors = defaultColors;
 
   useEffect(() => { fetchCoupons(); }, []);
 
@@ -125,9 +119,9 @@ const Coupons: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>Coupons</h2>
+          <h2 className="text-2xl font-semibold" style={{ color: colors.interactive.primary }}>Coupon Management</h2>
           <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
-            Manage discount coupons for your store
+            Create and manage discount coupons for your customers
           </p>
         </div>
         <button
@@ -139,77 +133,81 @@ const Coupons: React.FC = () => {
           Add Coupon
         </button>
       </div>
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
-          <p className="text-sm" style={{ color: colors.text.secondary }}>Total Coupons</p>
-          <p className="text-2xl font-bold mt-1" style={{ color: colors.text.primary }}>{coupons.length}</p>
+      {/* Stats - Only show when there are coupons */}
+      {coupons.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
+            <p className="text-sm" style={{ color: colors.text.secondary }}>Total Coupons</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: colors.text.primary }}>{coupons.length}</p>
+          </div>
+          <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
+            <p className="text-sm" style={{ color: colors.text.secondary }}>Active Coupons</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: colors.status.success }}>
+              {coupons.filter(c => c.status === 'Active' && !isExpired(c.validTo)).length}
+            </p>
+          </div>
+          <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
+            <p className="text-sm" style={{ color: colors.text.secondary }}>Expired Coupons</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: colors.status.error }}>
+              {coupons.filter(c => isExpired(c.validTo)).length}
+            </p>
+          </div>
         </div>
-        <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
-          <p className="text-sm" style={{ color: colors.text.secondary }}>Active Coupons</p>
-          <p className="text-2xl font-bold mt-1" style={{ color: '#10b981' }}>
-            {coupons.filter(c => c.status === 'Active' && !isExpired(c.validTo)).length}
-          </p>
-        </div>
-        <div className="p-4 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
-          <p className="text-sm" style={{ color: colors.text.secondary }}>Expired Coupons</p>
-          <p className="text-2xl font-bold mt-1" style={{ color: '#ef4444' }}>
-            {coupons.filter(c => isExpired(c.validTo)).length}
-          </p>
-        </div>
-      </div>
+      )}
       {/* Error */}
       {error &&
-        <div className="mb-4 p-4 rounded-lg border border-red-500 bg-red-50">
-          <p className="text-red-600">{error}</p>
-          <button onClick={fetchCoupons} className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Retry</button>
+        <div className="mb-4 p-4 rounded-lg border" style={{ borderColor: colors.status.error, backgroundColor: colors.background.secondary }}>
+          <p style={{ color: colors.status.error }}>{error}</p>
+          <button onClick={fetchCoupons} className="mt-2 px-4 py-2 rounded hover:opacity-90 transition" style={{ backgroundColor: colors.status.error, color: colors.text.inverse }}>Retry</button>
         </div>
       }
       {/* Loading */}
-      {loading ?
-        (<div className="flex justify-center items-center py-12">
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: colors.interactive.primary }} />
-        </div>)
-        :
-        (
-          <div className="overflow-x-auto rounded-lg border" style={{ borderColor: colors.border.primary }}>
-            <table className="min-w-full divide-y" style={{ borderColor: colors.border.primary }}>
-              <thead style={{ backgroundColor: colors.background.secondary, color: colors.text.primary }}>
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold">Code</th>
-                  <th className="px-4 py-3 text-left font-semibold">Name</th>
-                  <th className="px-4 py-3 text-left font-semibold">Discount</th>
-                  <th className="px-4 py-3 text-left font-semibold">Valid From</th>
-                  <th className="px-4 py-3 text-left font-semibold">Valid To</th>
-                  <th className="px-4 py-3 text-left font-semibold">Status</th>
-                  <th className="px-4 py-3 text-left font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}>
-                {coupons.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="mb-4 p-4 rounded-full" style={{ backgroundColor: colors.background.tertiary }}>
-                          <Plus size={32} style={{ color: colors.text.secondary }} />
-                        </div>
-                        <p className="text-lg font-medium mb-2" style={{ color: colors.text.primary }}>
-                          No coupons found
-                        </p>
-                        <p className="text-sm mb-4" style={{ color: colors.text.secondary }}>
-                          Create your first coupon to start offering discounts
-                        </p>
-                        <button
-                          onClick={() => setShowForm(true)}
-                          className="px-4 py-2 rounded font-medium hover:opacity-90 transition"
-                          style={{ backgroundColor: colors.interactive.primary, color: colors.text.inverse }}
-                        >
-                          Create Coupon
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
+        </div>
+      ) : coupons.length === 0 ? (
+        /* Empty State Card */
+        <div className="flex justify-center items-center py-12">
+          <div className="w-full  p-12 rounded-lg border text-center" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.accent }}>
+            <div className="mb-6 flex justify-center">
+              <div className="p-4 rounded-full" style={{ backgroundColor: colors.background.tertiary }}>
+                <Tag size={32} style={{ color: colors.text.secondary }} />
+              </div>
+            </div>
+            <h3 className="text-lg font-medium mb-2" style={{ color: colors.text.primary }}>
+              No coupons found
+            </h3>
+            <p className="text-sm mb-6" style={{ color: colors.text.secondary }}>
+              Create your first coupon to offer discounts to customers
+            </p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition mx-auto"
+              style={{ backgroundColor: colors.interactive.primary, color: colors.text.inverse }}
+            >
+              <Plus size={16} />
+              Create Coupon
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* Coupons Table */
+        <div className="overflow-x-auto rounded-lg border" style={{ borderColor: colors.border.primary }}>
+          <table className="min-w-full divide-y" style={{ borderColor: colors.border.primary }}>
+            <thead style={{ backgroundColor: colors.background.secondary, color: colors.text.primary }}>
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold">Code</th>
+                <th className="px-4 py-3 text-left font-semibold">Name</th>
+                <th className="px-4 py-3 text-left font-semibold">Discount</th>
+                <th className="px-4 py-3 text-left font-semibold">Valid From</th>
+                <th className="px-4 py-3 text-left font-semibold">Valid To</th>
+                <th className="px-4 py-3 text-left font-semibold">Status</th>
+                <th className="px-4 py-3 text-left font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}>
+              {(
                   coupons.map(c => {
                     const statusColor = getStatusColor(c);
                     const statusText = getStatusText(c);
@@ -255,7 +253,7 @@ const Coupons: React.FC = () => {
                             <button
                               onClick={() => handleDelete(c)}
                               className="p-2 rounded hover:opacity-80 transition"
-                              style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}
+                              style={{ backgroundColor: colors.background.tertiary, color: colors.status.error }}
                               title="Delete coupon"
                             >
                               <Trash2 size={16} />
@@ -374,7 +372,7 @@ const CouponFormModal: React.FC<{
           <div className="grid grid-cols-3 gap-2 items-end">
             <div className="col-span-2">
               <label className="block text-sm mb-1 font-medium">
-                Coupon Code <span style={{ color: '#ef4444' }}>*</span>
+                Coupon Code <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 name="code"
@@ -405,7 +403,7 @@ const CouponFormModal: React.FC<{
           {/* Name */}
           <div>
             <label className="block text-sm mb-1 font-medium">
-              Coupon Name <span style={{ color: '#ef4444' }}>*</span>
+              Coupon Name <span style={{ color: colors.status.error }}>*</span>
             </label>
             <input
               name="name"
@@ -442,7 +440,7 @@ const CouponFormModal: React.FC<{
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm mb-1 font-medium">
-                Discount Type <span style={{ color: '#ef4444' }}>*</span>
+                Discount Type <span style={{ color: colors.status.error }}>*</span>
               </label>
               <select
                 name="discountType"
@@ -460,7 +458,7 @@ const CouponFormModal: React.FC<{
             </div>
             <div>
               <label className="block text-sm mb-1 font-medium">
-                Discount Value <span style={{ color: '#ef4444' }}>*</span>
+                Discount Value <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 type="number"
@@ -483,7 +481,7 @@ const CouponFormModal: React.FC<{
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm mb-1 font-medium">
-                Valid From <span style={{ color: '#ef4444' }}>*</span>
+                Valid From <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 type="date"
@@ -501,7 +499,7 @@ const CouponFormModal: React.FC<{
             </div>
             <div>
               <label className="block text-sm mb-1 font-medium">
-                Valid To <span style={{ color: '#ef4444' }}>*</span>
+                Valid To <span style={{ color: colors.status.error }}>*</span>
               </label>
               <input
                 type="date"
@@ -521,7 +519,7 @@ const CouponFormModal: React.FC<{
           {/* Status */}
           <div>
             <label className="block text-sm mb-1 font-medium">
-              Status <span style={{ color: '#ef4444' }}>*</span>
+              Status <span style={{ color: colors.status.error }}>*</span>
             </label>
             <select
               name="status"

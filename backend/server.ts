@@ -49,7 +49,7 @@ app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Test email service on startup
 const testEmailService = async () => {

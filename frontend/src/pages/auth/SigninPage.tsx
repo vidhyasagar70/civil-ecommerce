@@ -88,7 +88,7 @@ export default function SigninPage() {
           <GoogleButton
             text="Continue with Google"
             onClick={() => {
-              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5001"
                 }/api/auth/google`;
             }}
           />

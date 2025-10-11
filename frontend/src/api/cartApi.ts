@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { CartItem as CartItemType, CartSummary } from '../types/cartTypes';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/cart`,
