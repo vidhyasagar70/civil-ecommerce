@@ -7,7 +7,7 @@ interface GoogleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 
 const GoogleButton: React.FC<GoogleButtonProps> = ({ text, ...props }) => {
   const { colors } = useAdminTheme();
-  
+
   return (
     <button
       {...props}

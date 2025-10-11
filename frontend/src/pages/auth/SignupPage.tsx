@@ -66,7 +66,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
       style={{ backgroundColor: colors.background.primary }}
     >
@@ -74,31 +74,31 @@ export default function SignupPage() {
       <div className="absolute top-4 right-4">
         <AdminThemeToggle />
       </div>
-      
-      <div 
+
+      <div
         className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
         style={{ backgroundColor: colors.background.secondary }}
       >
         {/* Header */}
-        <div 
+        <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
-          style={{ 
+          style={{
             background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
           }}
         >
-          <div 
+          <div
             className="p-3 rounded-2xl shadow-md"
             style={{ backgroundColor: colors.background.primary }}
           >
             <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
-          <h1 
+          <h1
             className="text-2xl font-bold mt-4"
             style={{ color: colors.text.primary }}
           >
             Create Account
           </h1>
-          <p 
+          <p
             className="mt-2 text-sm text-center"
             style={{ color: colors.text.secondary }}
           >
@@ -109,9 +109,9 @@ export default function SignupPage() {
         {/* Body */}
         <div className="p-8">
           {error && (
-            <div 
+            <div
               className="px-4 py-3 rounded-lg text-sm mb-4"
-              style={{ 
+              style={{
                 backgroundColor: `${colors.status.error}20`,
                 borderColor: colors.status.error,
                 color: colors.status.error,
@@ -151,13 +151,13 @@ export default function SignupPage() {
             </FormButton>
           </form>
 
-          <p 
+          <p
             className="text-center text-sm mt-6"
             style={{ color: colors.text.secondary }}
           >
             Already have an account?{" "}
-            <Link 
-              to="/signin" 
+            <Link
+              to="/signin"
               className="font-medium transition-colors duration-200"
               style={{ color: colors.interactive.primary }}
               onMouseEnter={(e) => {

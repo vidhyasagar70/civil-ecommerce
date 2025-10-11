@@ -66,7 +66,7 @@ export default function SigninPage() {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
       style={{ backgroundColor: colors.background.primary }}
     >
@@ -74,31 +74,31 @@ export default function SigninPage() {
       <div className="absolute top-4 right-4">
         <AdminThemeToggle />
       </div>
-      
-      <div 
+
+      <div
         className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
         style={{ backgroundColor: colors.background.secondary }}
       >
         {/* Header */}
-        <div 
+        <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
-          style={{ 
+          style={{
             background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
           }}
         >
-          <div 
+          <div
             className="p-3 rounded-2xl shadow-md"
             style={{ backgroundColor: colors.background.primary }}
           >
             <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
-          <h1 
+          <h1
             className="text-2xl font-bold mt-4"
             style={{ color: colors.text.primary }}
           >
             Welcome Back
           </h1>
-          <p 
+          <p
             className="mt-2 text-sm text-center"
             style={{ color: colors.text.secondary }}
           >
@@ -109,9 +109,9 @@ export default function SigninPage() {
         {/* Body */}
         <div className="p-8">
           {error && (
-            <div 
+            <div
               className="px-4 py-3 rounded-lg text-sm mb-4"
-              style={{ 
+              style={{
                 backgroundColor: `${colors.status.error}20`,
                 borderColor: colors.status.error,
                 color: colors.status.error,
@@ -133,17 +133,17 @@ export default function SigninPage() {
 
           {/* Divider */}
           <div className="flex items-center my-6">
-            <div 
+            <div
               className="flex-grow border-t"
               style={{ borderColor: colors.border.primary }}
             ></div>
-            <span 
+            <span
               className="mx-4 text-sm"
               style={{ color: colors.text.secondary }}
             >
               Or continue with email
             </span>
-            <div 
+            <div
               className="flex-grow border-t"
               style={{ borderColor: colors.border.primary }}
             ></div>
@@ -169,13 +169,13 @@ export default function SigninPage() {
                 placeholder="Enter your password"
                 required
               />
-              
+
               {/* Forgot Password Link */}
               <div className="text-right">
-                <Link 
-                  to="/forgot-password" 
+                <Link
+                  to="/forgot-password"
                   className="text-sm font-medium transition-colors duration-200"
-                  style={{ 
+                  style={{
                     color: colors.interactive.primary,
                   }}
                   onMouseEnter={(e) => {
@@ -195,13 +195,13 @@ export default function SigninPage() {
             </FormButton>
           </form>
 
-          <p 
+          <p
             className="mt-8 text-center text-sm"
             style={{ color: colors.text.secondary }}
           >
             Don't have an account?{" "}
-            <Link 
-              to="/signup" 
+            <Link
+              to="/signup"
               className="font-medium transition-colors duration-200"
               style={{ color: colors.interactive.primary }}
               onMouseEnter={(e) => {

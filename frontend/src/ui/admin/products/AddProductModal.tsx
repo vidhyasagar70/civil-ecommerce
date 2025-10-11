@@ -329,6 +329,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 name: newProduct.name,
                 version: newProduct.version,
                 shortDescription: newProduct.shortDescription,
+                description: newProduct.shortDescription, // Map shortDescription to description for backend compatibility
                 category: newProduct.category,
 
                 // Brand/Company (backward compatibility)
@@ -397,22 +398,79 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 systemRequirements: newProduct.systemRequirements,
             };
 
+            // Validation
+            if (!productData.name || productData.name.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Product Name is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (!productData.version || productData.version.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Product Version is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (!productData.shortDescription || productData.shortDescription.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Product Description is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (!productData.category || productData.category.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Product Category is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (!productData.company || productData.company.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Company/Brand is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (!productData.image || productData.image.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Main Product Image is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            // Check if we have at least one price
+            const hasValidPrice = productData.price1 > 0 ||
+                (productData.hasLifetime && productData.lifetimePrice && productData.lifetimePrice > 0) ||
+                productData.subscriptionDurations.some(sub => sub.price > 0 || (sub.priceINR && sub.priceINR > 0) || (sub.priceUSD && sub.priceUSD > 0));
+
+            if (!hasValidPrice) {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'At least one valid price is required (subscription, lifetime, or membership)',
+                    icon: 'error'
+                });
+                return;
+            }
+
             console.log('Saving product data:', productData);
             onSave(productData);
 
-            // Show success message
-            Swal.fire({
-                title: product ? 'Updated!' : 'Created!',
-                text: product
-                    ? `"${newProduct.name}" has been successfully updated.`
-                    : `"${newProduct.name}" has been successfully created.`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false,
-                customClass: {
-                    popup: 'rounded-xl'
-                }
-            });
+            // Success message is now handled in the parent component
         }
     };
 

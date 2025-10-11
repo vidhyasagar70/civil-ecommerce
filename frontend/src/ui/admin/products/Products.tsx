@@ -84,12 +84,50 @@ const Products: React.FC = () => {
       updateProductMutation.mutate({
         id: editingProduct._id,
         updatedProduct: productData
+      }, {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Product updated successfully',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          setModalOpen(false);
+          setEditingProduct(null);
+        },
+        onError: (error: any) => {
+          console.error('Update product error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: error.response?.data?.message || 'Failed to update product',
+          });
+        }
       });
     } else {
-      createProductMutation.mutate(productData);
+      createProductMutation.mutate(productData, {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Product created successfully',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          setModalOpen(false);
+          setEditingProduct(null);
+        },
+        onError: (error: any) => {
+          console.error('Create product error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: error.response?.data?.message || 'Failed to create product',
+          });
+        }
+      });
     }
-    setModalOpen(false);
-    setEditingProduct(null);
   };
 
   const handleEditProduct = (product: Product) => {
