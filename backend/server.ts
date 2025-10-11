@@ -16,6 +16,7 @@ import couponRoutes from './routes/couponRoutes';
 import paymentRoutes from './routes/paymentRoutes'; // NEW
 import { validatePhonePeConfig } from './config/phonepe'; // NEW
 import "./config/passport";
+import reviewRoutes from "./routes/reviewRoutes";
 
 const app = express();
 
@@ -51,7 +52,7 @@ app.use('/api/contact', contactRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payments', paymentRoutes); // NEW
-
+app.use("/api/reviews", reviewRoutes);
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
 const PORT = process.env.PORT || 5000;
