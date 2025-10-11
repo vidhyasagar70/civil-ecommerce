@@ -48,10 +48,7 @@ const ContactPage: React.FC = () => {
         background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`
       }}
     >
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 z-10">
-        <AdminThemeToggle />
-      </div>
+      
 
       <div
         className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"
