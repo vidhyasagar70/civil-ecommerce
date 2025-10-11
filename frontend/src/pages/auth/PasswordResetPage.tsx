@@ -438,7 +438,7 @@ export default function PasswordResetPage() {
                       : ''
                   }`}
               />
-              <div className="absolute left-3 top-9 pointer-events-none">
+              <div className="absolute left-3 top-10 pointer-events-none">
                 <Mail
                   className="h-5 w-5"
                   style={{
