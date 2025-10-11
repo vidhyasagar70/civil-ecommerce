@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Star } from 'lucide-react';
 import { useProducts } from '../api/productApi';
 import { useUser } from '../api/userQueries';
 import { useCartContext } from '../contexts/CartContext';
@@ -74,7 +75,7 @@ const CompanyListing: React.FC = () => {
             >
               {/* Image */}
               <div
-                className="rounded-xl overflow-hidden h-52 mb-3 cursor-pointer transition-colors duration-200"
+                className="rounded-xl overflow-hidden h-52 mb-3 cursor-pointer transition-colors duration-200 relative"
                 style={{ backgroundColor: colors.background.secondary }}
                 onClick={() => navigate(`/product/${product._id}`)}
               >
@@ -83,6 +84,22 @@ const CompanyListing: React.FC = () => {
                   alt={product.name}
                   className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
                 />
+                {/* Best Seller Ribbon */}
+                {product.isBestSeller && (
+                  <div className="absolute top-3 right-3 z-10 transform transition-all duration-300 hover:scale-110">
+                    <div className="relative">
+                      {/* Main ribbon */}
+                      <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-black text-xs font-bold px-4 py-2 rounded-md shadow-2xl border-2 border-white/50 backdrop-blur-sm">
+                        <div className="flex items-center space-x-1.5">
+                          <Star className="w-3.5 h-3.5 fill-current text-yellow-100 animate-pulse" />
+                          <span className="tracking-wide">BEST SELLER</span>
+                        </div>
+                      </div>
+                      {/* Glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 rounded-full blur-sm opacity-20 -z-10"></div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Badges */}
