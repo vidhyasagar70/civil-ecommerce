@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 import {
     FaFacebookF,
     FaPinterestP,
@@ -10,8 +10,8 @@ import {
     FaPhoneAlt,
     FaClock,
     FaEnvelope,
+    FaArrowUp,
 } from "react-icons/fa";
-import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import logo from "../../assets/logo.png";
 
@@ -21,23 +21,27 @@ const Footer = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 300);
+            if (window.scrollY > 300) {
+                setShowScrollTop(true);
+            } else {
+                setShowScrollTop(false);
+            }
         };
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
-            behavior: "smooth"
+            behavior: 'smooth'
         });
     };
 
     return (
         <footer
-            className="font-light transition-colors duration-200 relative"
+            className="font-light transition-colors duration-200"
             style={{
                 backgroundColor: colors.background.primary,
                 color: colors.text.primary
@@ -69,6 +73,7 @@ const Footer = () => {
                 ))}
             </div>
 
+            {/* Main Footer Content */}
             <div
                 className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 py-12 px-6 border-b transition-colors duration-200"
                 style={{ borderColor: colors.border.primary }}
@@ -324,6 +329,7 @@ const Footer = () => {
                     </ul>
                 </div>
 
+                {/* Download App */}
                 <div>
                     <h3
                         className="font-semibold mb-4 tracking-wide transition-colors duration-200"
@@ -439,6 +445,45 @@ const Footer = () => {
                 </div>
             </div>
 
+            {/* Legal Links Section */}
+            <div
+                className="max-w-7xl mx-auto px-6 py-4 border-t transition-colors duration-200"
+                style={{ borderColor: colors.border.secondary }}
+            >
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                    {[
+                        { label: "Privacy Policy", href: "/privacy-policy" },
+                        { label: "Terms & Conditions", href: "/terms-conditions" },
+                        { label: "Disclaimer", href: "/disclaimer" },
+                        { label: "Contact Us", href: "/contact" }
+                    ].map((link, index) => (
+                        <React.Fragment key={link.href}>
+                            <Link
+                                to={link.href}
+                                className="hover:underline transition-colors duration-200"
+                                style={{ color: colors.text.secondary }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = colors.interactive.primary;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = colors.text.secondary;
+                                }}
+                            >
+                                {link.label}
+                            </Link>
+                            {index < 3 && (
+                                <span 
+                                    className="hidden sm:inline"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    |
+                                </span>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+
             {/* Copyright */}
             <div
                 className="text-center text-xs py-4 border-t transition-colors duration-200"
@@ -456,21 +501,6 @@ const Footer = () => {
                 </span>.
                 All rights reserved.
             </div>
-
-            {/* Scroll to Top Button */}
-            {showScrollTop && (
-                <button
-                    onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
-                    style={{
-                        backgroundColor: colors.interactive.primary,
-                        color: colors.background.primary
-                    }}
-                    aria-label="Scroll to top"
-                >
-                    <ArrowUp className="w-6 h-6" />
-                </button>
-            )}
         </footer>
     );
 };
