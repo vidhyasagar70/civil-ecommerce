@@ -154,17 +154,17 @@ const Coupons: React.FC = () => {
       </div>
       {/* Error */}
       {error &&
-        <div className="mb-4 p-4 rounded-lg border" style={{ 
-          backgroundColor: colors.background.secondary, 
-          borderColor: colors.status.error 
+        <div className="mb-4 p-4 rounded-lg border" style={{
+          backgroundColor: colors.background.secondary,
+          borderColor: colors.status.error
         }}>
           <p style={{ color: colors.status.error }}>{error}</p>
-          <button 
-            onClick={fetchCoupons} 
+          <button
+            onClick={fetchCoupons}
             className="mt-2 px-4 py-2 rounded hover:opacity-90 transition"
-            style={{ 
-              backgroundColor: colors.status.error, 
-              color: colors.text.inverse 
+            style={{
+              backgroundColor: colors.status.error,
+              color: colors.text.inverse
             }}
           >
             Retry
@@ -181,9 +181,9 @@ const Coupons: React.FC = () => {
           <div className="space-y-4">
             {coupons.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
-                <div 
+                <div
                   className="flex flex-col items-center justify-center p-4 md:p-6 lg:p-8 rounded-lg border-2 w-full max-w-md sm:max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl min-h-28 md:min-h-32 lg:min-h-36"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.background.secondary,
                     borderColor: colors.interactive.primary // Using same border color as coupon cards
                   }}
@@ -200,7 +200,7 @@ const Coupons: React.FC = () => {
                   <button
                     onClick={() => setShowForm(true)}
                     className="flex items-center gap-2 px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 shadow-md text-xs md:text-sm lg:text-base"
-                    style={{ 
+                    style={{
                       backgroundColor: colors.interactive.primary, // Using same color as Add Coupon button
                       color: colors.text.inverse
                     }}
@@ -223,13 +223,13 @@ const Coupons: React.FC = () => {
                 const statusColor = getStatusColor(coupon);
                 const statusText = getStatusText(coupon);
                 const discountDisplay = coupon.discountType === 'Percentage' ? `${coupon.discountValue}% OFF` : `$${coupon.discountValue} OFF`;
-                
+
                 return (
-                  <div 
-                    key={coupon.id} 
+                  <div
+                    key={coupon.id}
                     className="rounded-lg border p-4 transition-all duration-200 hover:shadow-lg"
-                    style={{ 
-                      backgroundColor: colors.background.secondary, 
+                    style={{
+                      backgroundColor: colors.background.secondary,
                       borderColor: colors.interactive.primary,
                       borderWidth: '1px'
                     }}
@@ -237,10 +237,10 @@ const Coupons: React.FC = () => {
                     {/* Header Row */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <span 
+                        <span
                           className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
-                          style={{ 
-                            backgroundColor: colors.interactive.primary + '20', 
+                          style={{
+                            backgroundColor: colors.interactive.primary + '20',
                             color: colors.interactive.primary,
                             borderColor: colors.interactive.primary + '40'
                           }}
@@ -252,13 +252,13 @@ const Coupons: React.FC = () => {
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span 
+                        <span
                           className="px-3 py-1 rounded-full text-sm font-medium"
                           style={{ backgroundColor: '#fbbf24', color: '#111827' }}
                         >
                           {discountDisplay}
                         </span>
-                        <span 
+                        <span
                           className="px-3 py-1 rounded-full text-sm font-medium"
                           style={{ backgroundColor: statusColor.bg, color: statusColor.text }}
                         >
@@ -306,8 +306,8 @@ const Coupons: React.FC = () => {
                       <button
                         onClick={() => handleEdit(coupon)}
                         className="p-2 rounded-full border hover:opacity-80 transition"
-                        style={{ 
-                          backgroundColor: 'transparent', 
+                        style={{
+                          backgroundColor: 'transparent',
                           color: colors.interactive.primary,
                           borderColor: colors.interactive.primary,
                           borderWidth: '1px'
@@ -319,8 +319,8 @@ const Coupons: React.FC = () => {
                       <button
                         onClick={() => handleDelete(coupon)}
                         className="p-2 rounded-full border hover:opacity-80 transition"
-                        style={{ 
-                          backgroundColor: 'transparent', 
+                        style={{
+                          backgroundColor: 'transparent',
                           color: colors.status.error,
                           borderColor: colors.status.error,
                           borderWidth: '1px'
@@ -375,10 +375,10 @@ const CouponFormModal: React.FC<{
   useEffect(() => {
     // Save current overflow style
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    
+
     // Prevent background scrolling
     document.body.style.overflow = 'hidden';
-    
+
     // Cleanup: restore original overflow when modal closes
     return () => {
       document.body.style.overflow = originalStyle;
