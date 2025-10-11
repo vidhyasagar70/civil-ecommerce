@@ -190,11 +190,7 @@ function AppLayout() {
         />
         <Route
           path="/contact"
-          element={
-            <AuthGuard>
-              <ContactPage />
-            </AuthGuard>
-          }
+          element={<ContactPage />}
         />
 
         {/* Catch all route */}
