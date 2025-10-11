@@ -283,31 +283,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             </div>
           </div>
         )}
-
-        {/* Mobile legal links */}
-        <div
-          className="pt-2 border-t transition-colors duration-200"
-          style={{ borderColor: colors.border.primary }}
-        >
-          <div className="flex flex-col space-y-2 sm:flex-row sm:flex-wrap sm:space-y-0 sm:space-x-4">
-            {headerConfig.legal.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => onNavigate(link.href)}
-                className="text-left px-3 py-1 text-xs sm:text-sm transition-all duration-200 hover:opacity-80"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                }}
-              >
-                {link.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

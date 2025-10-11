@@ -85,15 +85,12 @@ const Header: React.FC = () => {
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
   const toggleUserDropdown = () => setIsUserDropdownOpen(!isUserDropdownOpen);
   const toggleAutodeskDropdown = () => {
-    console.log('Toggle Autodesk');
     setIsAutodeskDropdownOpen(!isAutodeskDropdownOpen);
   };
   const toggleMicrosoftDropdown = () => {
-    console.log('Toggle Microsoft');
     setIsMicrosoftDropdownOpen(!isMicrosoftDropdownOpen);
   };
   const toggleAdobeDropdown = () => {
-    console.log('Toggle Adobe');
     setIsAdobeDropdownOpen(!isAdobeDropdownOpen);
   };
 
@@ -147,37 +144,10 @@ const Header: React.FC = () => {
     });
   };
 
-  // Debug logs
-  console.log('Autodesk Dropdown Open:', isAutodeskDropdownOpen);
-  console.log('Microsoft Dropdown Open:', isMicrosoftDropdownOpen);
-  console.log('Adobe Dropdown Open:', isAdobeDropdownOpen);
-
   if (showAdminDashboard) {
     return (
       <div>
         <header className="bg-white shadow-sm border-b border-gray-200 w-full">
-          <div className="bg-gray-50 border-b border-gray-200 hidden sm:block">
-            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-              <div className="flex justify-start py-1 sm:py-2">
-                <div className="flex flex-wrap gap-2 sm:space-x-4 text-xs sm:text-sm text-gray-600">
-                  {headerConfig.legal.map((link, index) => (
-                    <React.Fragment key={link.href}>
-                      <button
-                        onClick={() => handleNavigation(link.href)}
-                        className="hover:text-blue-600 transition-colors duration-200 whitespace-nowrap"
-                      >
-                        {link.label}
-                      </button>
-                      {index < headerConfig.legal.length - 1 && (
-                        <span className="text-gray-400 hidden sm:inline">|</span>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div className="w-full">
             <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
               <div className="flex items-center flex-shrink-0">
@@ -223,48 +193,6 @@ const Header: React.FC = () => {
         borderColor: colors.border.primary 
       }}
     >
-      {/* Top legal bar */}
-      <div 
-        className="border-b hidden sm:block transition-colors duration-200"
-        style={{ 
-          backgroundColor: colors.background.secondary,
-          borderColor: colors.border.primary 
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex justify-start py-1 sm:py-2">
-            <div 
-              className="flex flex-wrap gap-2 sm:space-x-4 text-xs sm:text-sm transition-colors duration-200"
-              style={{ color: colors.text.secondary }}
-            >
-              {headerConfig.legal.map((link, index) => (
-                <React.Fragment key={link.href}>
-                  <button
-                    onClick={() => handleNavigation(link.href)}
-                    className="hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      (e.target as HTMLElement).style.color = colors.interactive.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.target as HTMLElement).style.color = colors.text.secondary;
-                    }}
-                  >
-                    {link.label}
-                  </button>
-                  {index < headerConfig.legal.length - 1 && (
-                    <span 
-                      className="hidden sm:inline"
-                      style={{ color: colors.text.secondary }}
-                    >|</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main header content */}
       <div className="w-full">
         <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
@@ -498,7 +426,8 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={toggleMenu}
-              className="lg:hidden p-1.5 sm:p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 ml-2"
+              className="lg:hidden p-1.5 sm:p-2 rounded-md hover:opacity-80 transition-colors duration-200 ml-2"
+              style={{ color: colors.text.secondary }}
             >
               {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>

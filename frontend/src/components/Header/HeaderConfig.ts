@@ -14,12 +14,6 @@ export const headerConfig = {
     phone: "790-355-4767",
     phoneHref: "tel:+17903554767"
   },
-  legal: [
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Terms & Conditions", href: "/terms-conditions" },
-    { label: "Disclaimer", href: "/disclaimer" },
-    { href: '/contact', label: 'Contact Us' },
-  ],
   search: {
     placeholder: "Search for software, brands, or categories..."
   },
