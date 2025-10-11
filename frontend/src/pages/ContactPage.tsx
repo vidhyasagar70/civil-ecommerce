@@ -48,7 +48,7 @@ const ContactPage: React.FC = () => {
         background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`
       }}
     >
-      {/* Theme Toggle - positioned in top right */}
+      {/* Theme Toggle */}
       <div className="absolute top-4 right-4 z-10">
         <AdminThemeToggle />
       </div>
@@ -61,18 +61,19 @@ const ContactPage: React.FC = () => {
         <div
           className="p-10 text-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`
+            background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+            backgroundColor: colors.background.tertiary
           }}
         >
           <h1
             className="mb-2 text-3xl md:text-4xl font-bold"
-            style={{ color: colors.text.inverse }}
+            style={{ color: colors.text.primary }}
           >
             Contact Us
           </h1>
           <p
             className="mx-auto max-w-xl opacity-90"
-            style={{ color: colors.text.inverse }}
+            style={{ color: colors.text.secondary }}
           >
             We'd love to hear from you. Please fill out the form below or visit
             our headquarters.
@@ -89,14 +90,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: colors.interactive.primary
+                  borderLeftColor: `${colors.interactive.primary}90`
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    backgroundColor: colors.interactive.primary,
-                    color: colors.text.inverse
+                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+                    color: colors.text.primary
                   }}
                 >
                   <Phone size={20} />
@@ -125,14 +126,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: colors.interactive.primary
+                  borderLeftColor: `${colors.interactive.primary}90`
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    backgroundColor: colors.interactive.primary,
-                    color: colors.text.inverse
+                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+                    color: colors.text.primary
                   }}
                 >
                   <Mail size={20} />
@@ -161,14 +162,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: colors.interactive.primary
+                  borderLeftColor: `${colors.interactive.primary}90`
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    backgroundColor: colors.interactive.primary,
-                    color: colors.text.inverse
+                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+                    color: colors.text.primary
                   }}
                 >
                   <Clock size={20} />
@@ -191,14 +192,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: colors.interactive.primary
+                  borderLeftColor: `${colors.interactive.primary}90`
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    backgroundColor: colors.interactive.primary,
-                    color: colors.text.inverse
+                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+                    color: colors.text.primary
                   }}
                 >
                   <MapPin size={20} />
@@ -345,7 +346,7 @@ const ContactPage: React.FC = () => {
               disabled={submitContactForm.isPending}
               className="flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold transition hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
               style={{
-                background: `linear-gradient(135deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`,
+                background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
                 color: colors.text.inverse,
               }}
               onMouseEnter={(e) => {
@@ -376,7 +377,9 @@ const ContactPage: React.FC = () => {
         {/* Map Section */}
         <div
           className="mx-auto my-6 w-11/12 rounded-lg p-5 shadow-md"
-          style={{ backgroundColor: colors.background.tertiary }}
+          style={{
+            background: `linear-gradient(135deg, ${colors.background.tertiary}, ${colors.background.secondary})`,
+          }}
         >
           <div className="overflow-hidden rounded-lg shadow">
             <iframe
@@ -398,14 +401,15 @@ const ContactPage: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-block rounded-md px-5 py-2 font-medium transition"
               style={{
-                backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse,
+                background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
+                backgroundColor: colors.background.tertiary,
+                color: colors.text.primary,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                e.currentTarget.style.background = `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover}90)`;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                e.currentTarget.style.background = `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`;
               }}
             >
               Open in Google Maps
