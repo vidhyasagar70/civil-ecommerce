@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Search, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, X, LogOut, Settings, Package } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import DesktopNavigation from './DesktopNavigation';
 import AuthDropdown from './AuthDropdown';
@@ -349,6 +349,22 @@ const Header: React.FC = () => {
                     >
                       <User className="w-4 h-4" />
                       <span>Profile</span>
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/my-orders')}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                      }}
+                    >
+                      <Package className="w-4 h-4" />
+                      <span>My Orders</span>
                     </button>
                     <button
                       onClick={() => handleNavigation('/logout')}

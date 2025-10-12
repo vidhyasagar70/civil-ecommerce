@@ -27,6 +27,7 @@ import ShippingPolicy from './ui/policy/ShippingPolicy';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentCallback from './ui/payment/PaymentCallback';
+import MyOrdersPage from './pages/MyOrdersPage';
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -186,6 +187,14 @@ function AppLayout() {
           element={
             <AuthGuard>
               <CheckoutPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/my-orders"
+          element={
+            <AuthGuard>
+              <MyOrdersPage />
             </AuthGuard>
           }
         />
