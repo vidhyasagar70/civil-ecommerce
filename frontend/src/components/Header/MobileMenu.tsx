@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings } from 'lucide-react';
+import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings, Package } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import FormSelect from '../Select/FormSelect';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
@@ -198,6 +198,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               >
                 <User className="w-5 h-5" />
                 <span>Profile</span>
+              </button>
+              <button
+                onClick={() => onNavigate('/my-orders')}
+                className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                }}
+              >
+                <Package className="w-5 h-5" />
+                <span>My Orders</span>
               </button>
               <button
                 onClick={onLogout}
