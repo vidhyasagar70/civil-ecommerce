@@ -301,11 +301,11 @@ const ProductDetail: React.FC = () => {
     const getCartLicenseType = (): '1year' | '3year' | 'lifetime' => {
       // Handle lifetime license
       if (selectedLicense === 'lifetime') return 'lifetime';
-      
+
       // Handle main subscription/pricing options
       if (selectedLicense === 'yearly' || selectedLicense.includes('subscription-0')) return '1year';
       if (selectedLicense === '3year' || selectedLicense.includes('subscription-1')) return '3year';
-      
+
       // Handle admin subscription plans and membership
       if (selectedLicense.includes('admin-subscription-') || selectedLicense === 'membership') {
         const selectedPlan = selectedOption;
@@ -318,7 +318,7 @@ const ProductDetail: React.FC = () => {
           return '1year';
         }
       }
-      
+
       // Default fallback
       return '1year';
     };
@@ -353,7 +353,7 @@ const ProductDetail: React.FC = () => {
             planType: selectedOption.type
           }
         };
-        
+
         // Temporarily override pricing based on selected option
         if (cartLicenseType === '1year') {
           productWithSelectedPrice.price1INR = selectedOption.priceINR;
@@ -411,11 +411,11 @@ const ProductDetail: React.FC = () => {
   const getCartLicenseTypeForCheck = (): '1year' | '3year' | 'lifetime' => {
     // Handle lifetime license
     if (selectedLicense === 'lifetime') return 'lifetime';
-    
+
     // Handle main subscription/pricing options
     if (selectedLicense === 'yearly' || selectedLicense.includes('subscription-0')) return '1year';
     if (selectedLicense === '3year' || selectedLicense.includes('subscription-1')) return '3year';
-    
+
     // Handle admin subscription plans and membership
     if (selectedLicense.includes('admin-subscription-') || selectedLicense === 'membership') {
       const selectedPlan = selectedOption;
@@ -428,7 +428,7 @@ const ProductDetail: React.FC = () => {
         return '1year';
       }
     }
-    
+
     // Default fallback
     return '1year';
   };
