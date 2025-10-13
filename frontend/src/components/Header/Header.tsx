@@ -16,6 +16,7 @@ import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
 import { useCartContext } from '../../contexts/CartContext';
 import AdminThemeToggle from '../ThemeToggle/AdminThemeToggle';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import CurrencyDropdown from '../CurrencyDropdown/CurrencyDropdown';
 import logo from '../../assets/logo.png';
 
 const Header: React.FC = () => {
@@ -29,11 +30,11 @@ const Header: React.FC = () => {
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
-  
+
   const autodeskButtonRef = useRef<HTMLButtonElement>(null);
   const microsoftButtonRef = useRef<HTMLButtonElement>(null);
   const adobeButtonRef = useRef<HTMLButtonElement>(null);
-  
+
   const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
@@ -124,7 +125,7 @@ const Header: React.FC = () => {
     setIsMicrosoftDropdownOpen(false);
     setIsAdobeDropdownOpen(false);
   };
-  
+
   const logoutMutation = useLogout();
 
   const handleLogout = () => {
@@ -186,11 +187,11 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header 
+    <header
       className="shadow-sm border-b w-full transition-colors duration-200 relative"
-      style={{ 
+      style={{
         backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary 
+        borderColor: colors.border.primary
       }}
     >
       {/* Main header content */}
@@ -233,7 +234,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <DesktopNavigation 
+            <DesktopNavigation
               onNavigate={handleNavigation}
               autodeskButtonRef={autodeskButtonRef}
               onAutodeskClick={toggleAutodeskDropdown}
@@ -309,7 +310,7 @@ const Header: React.FC = () => {
 
                 {/* User Dropdown */}
                 {isUserDropdownOpen && (
-                  <div 
+                  <div
                     className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
                     style={{
                       backgroundColor: colors.background.primary,
@@ -412,6 +413,9 @@ const Header: React.FC = () => {
               </div>
             )}
 
+            {/* Currency Selector */}
+            <CurrencyDropdown className="hidden sm:block" compact />
+
             {/* Cart */}
             <button
               onClick={() => handleNavigation('/cart')}
@@ -427,7 +431,7 @@ const Header: React.FC = () => {
               <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
               <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">My Cart</span>
               {getItemCount() > 0 && (
-                <span 
+                <span
                   className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center"
                   style={{
                     backgroundColor: colors.interactive.primary,

@@ -5,6 +5,12 @@ export interface CartItem {
   quantity: number;
   price: number;
   totalPrice: number;
+  // Optional subscription plan details
+  subscriptionPlan?: {
+    planId: string;
+    planLabel: string;
+    planType: string;
+  };
 }
 
 export interface Product {

@@ -60,6 +60,17 @@ const writeCache = (data: any): void => {
   }
 };
 
+// Google Places API response interface
+interface GooglePlacesResponse {
+  status: string;
+  result: {
+    name?: string;
+    rating?: number;
+    user_ratings_total?: number;
+    reviews?: any[];
+  };
+}
+
 router.get("/", async (req: Request, res: Response) => {
   try {
     // Check if we have valid cached data
@@ -83,7 +94,7 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     // Fetch from Google API
-    const response = await axios.get(
+    const response = await axios.get<GooglePlacesResponse>(
       "https://maps.googleapis.com/maps/api/place/details/json",
       {
         params: {
