@@ -22,7 +22,7 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
   // If subscription plan details are provided, use them to find the exact plan
   if (subscriptionPlan && subscriptionPlan.planId && subscriptionPlan.planLabel) {
     console.log(`Looking for specific plan: ${subscriptionPlan.planLabel} (${subscriptionPlan.planId})`);
-    
+
     // Check admin subscription plans first
     if (product.subscriptions && product.subscriptions.length > 0) {
       for (const [index, sub] of product.subscriptions.entries()) {
@@ -34,7 +34,7 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
         }
       }
     }
-    
+
     // Check main subscription durations
     if (product.subscriptionDurations && product.subscriptionDurations.length > 0) {
       for (const [index, sub] of product.subscriptionDurations.entries()) {
@@ -46,14 +46,14 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
         }
       }
     }
-    
+
     // Check for lifetime plan
     if (subscriptionPlan.planId === 'lifetime') {
       const lifetimePrice = product.lifetimePriceINR || product.priceLifetimeINR || product.priceLifetime || 0;
       console.log(`Found lifetime plan: ₹${lifetimePrice}`);
       return lifetimePrice;
     }
-    
+
     // Check for membership plan
     if (subscriptionPlan.planId === 'membership') {
       const membershipPrice = product.membershipPriceINR || product.membershipPrice || 0;
@@ -65,7 +65,7 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
   // First check modern subscription durations (primary pricing)
   if (product.subscriptionDurations && product.subscriptionDurations.length > 0) {
     console.log('Checking subscription durations...');
-    
+
     // For 1year license type, try to find 1-year subscription plans
     if (licenseType === '1year') {
       for (const sub of product.subscriptionDurations) {
@@ -84,7 +84,7 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
         return price;
       }
     }
-    
+
     // For 3year license type
     if (licenseType === '3year') {
       for (const sub of product.subscriptionDurations) {
@@ -97,7 +97,7 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
       }
     }
   }
-  
+
   // Check admin subscription plans for 1year mapping
   if (product.subscriptions && product.subscriptions.length > 0 && licenseType === '1year') {
     console.log('Checking admin subscription plans...');
@@ -106,31 +106,31 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
     console.log(`Using first admin subscription: ${firstSub.duration} = ₹${price}`);
     return price;
   }
-  
+
   // Check lifetime pricing
   if (licenseType === 'lifetime') {
     const lifetimePrice = product.lifetimePriceINR || product.priceLifetimeINR || product.priceLifetime || 0;
     console.log(`Lifetime price: ₹${lifetimePrice}`);
     return lifetimePrice;
   }
-  
+
   // Fallback to legacy pricing structure
   console.log('Using legacy pricing structure...');
   let price = 0;
   switch (licenseType) {
-    case '1year': 
+    case '1year':
       price = product.price1INR || product.price1 || 0;
       break;
-    case '3year': 
+    case '3year':
       price = product.price3INR || product.price3 || 0;
       break;
-    case 'lifetime': 
+    case 'lifetime':
       price = product.priceLifetimeINR || product.priceLifetime || 0;
       break;
-    default: 
+    default:
       price = product.price1INR || product.price1 || 0;
   }
-  
+
   console.log(`Legacy price for ${licenseType}: ₹${price}`);
   return price;
 };
@@ -138,7 +138,7 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
 export const getCart = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).user._id;
-    
+
     const cart = await Cart.findOne({ user: userId })
       .populate('items.product', 'name description image company category version')
       .exec();
@@ -177,11 +177,11 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
 
     const price = getPriceByLicenseType(product, licenseType, subscriptionPlan);
     console.log(`Final price for ${product.name} with ${licenseType}: ₹${price}`);
-    
+
     if (price <= 0) {
       console.error(`Invalid price for product ${product.name} with license ${licenseType}. Price: ${price}`);
       console.error('Subscription plan details:', subscriptionPlan);
-      res.status(400).json({ 
+      res.status(400).json({
         message: 'Invalid price for selected license',
         details: {
           productName: product.name,
@@ -203,8 +203,8 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
 
     // Check if item already exists
     const existingItemIndex = cart.items.findIndex(
-      (item: any) => 
-        item.product.toString() === productId && 
+      (item: any) =>
+        item.product.toString() === productId &&
         item.licenseType === licenseType
     );
 
@@ -284,7 +284,7 @@ export const removeFromCart = async (req: Request, res: Response): Promise<void>
 
     // Filter out the item to remove instead of using .pull()
     cart.items = cart.items.filter((item: any) => item._id?.toString() !== itemId);
-    
+
     await cart.save();
     await cart.populate('items.product', 'name description image company category version');
 

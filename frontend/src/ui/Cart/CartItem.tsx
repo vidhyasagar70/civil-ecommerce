@@ -106,7 +106,7 @@ const CartItem: React.FC<CartItemProps> = ({
           return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
       }
     }
-    
+
     // Otherwise, use generic license styling
     switch (licenseType) {
       case '1year':
@@ -125,7 +125,7 @@ const CartItem: React.FC<CartItemProps> = ({
     if (subscriptionPlan && subscriptionPlan.planLabel) {
       return subscriptionPlan.planLabel;
     }
-    
+
     // Otherwise, use generic license labels
     switch (licenseType) {
       case '1year':
