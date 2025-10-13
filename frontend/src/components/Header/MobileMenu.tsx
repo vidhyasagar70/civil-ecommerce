@@ -1,7 +1,8 @@
 import React from 'react';
-import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings } from 'lucide-react';
+import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings, Package } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import FormSelect from '../Select/FormSelect';
+import CurrencyDropdown from '../CurrencyDropdown/CurrencyDropdown';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 interface MobileMenuProps {
@@ -128,6 +129,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               className="w-full text-sm"
             />
           </div>
+
+          {/* Currency Selector - Mobile */}
+          <div className="space-y-1">
+            <label
+              className="block text-xs font-medium"
+              style={{ color: colors.text.secondary }}
+            >
+              Currency
+            </label>
+            <CurrencyDropdown className="w-full" />
+          </div>
         </div>
 
         {/* Mobile navigation */}
@@ -198,6 +210,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               >
                 <User className="w-5 h-5" />
                 <span>Profile</span>
+              </button>
+              <button
+                onClick={() => onNavigate('/my-orders')}
+                className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                }}
+              >
+                <Package className="w-5 h-5" />
+                <span>My Orders</span>
               </button>
               <button
                 onClick={onLogout}
@@ -283,31 +311,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             </div>
           </div>
         )}
-
-        {/* Mobile legal links */}
-        <div
-          className="pt-2 border-t transition-colors duration-200"
-          style={{ borderColor: colors.border.primary }}
-        >
-          <div className="flex flex-col space-y-2 sm:flex-row sm:flex-wrap sm:space-y-0 sm:space-x-4">
-            {headerConfig.legal.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => onNavigate(link.href)}
-                className="text-left px-3 py-1 text-xs sm:text-sm transition-all duration-200 hover:opacity-80"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                }}
-              >
-                {link.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

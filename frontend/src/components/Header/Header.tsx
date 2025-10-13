@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { Search, User, ShoppingCart, Menu, X, LogOut, Settings } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Search, User, ShoppingCart, Menu, X, LogOut, Settings, Package } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import DesktopNavigation from './DesktopNavigation';
 import AuthDropdown from './AuthDropdown';
 import MobileMenu from './MobileMenu';
 import AdminDashboard from '../../ui/admin/AdminDashboard';
 import FormSelect from '../Select/FormSelect';
+import AutodeskDropdown from './AutodeskDropdown';
+import MicrosoftDropdown from './MicrosoftDropdown';
+import AdobeDropdown from './AdobeDropdown';
 import { useCategories, useCompanies } from '../../api/productApi';
 import { useNavigate } from 'react-router-dom';
 import { clearAuth, isAdmin } from '../../utils/auth';
@@ -13,22 +16,30 @@ import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
 import { useCartContext } from '../../contexts/CartContext';
 import AdminThemeToggle from '../ThemeToggle/AdminThemeToggle';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import CurrencyDropdown from '../CurrencyDropdown/CurrencyDropdown';
 import logo from '../../assets/logo.png';
+
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isAutodeskDropdownOpen, setIsAutodeskDropdownOpen] = useState(false);
+  const [isMicrosoftDropdownOpen, setIsMicrosoftDropdownOpen] = useState(false);
+  const [isAdobeDropdownOpen, setIsAdobeDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
+
+  const autodeskButtonRef = useRef<HTMLButtonElement>(null);
+  const microsoftButtonRef = useRef<HTMLButtonElement>(null);
+  const adobeButtonRef = useRef<HTMLButtonElement>(null);
+
   const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
   const { getItemCount } = useCartContext();
   const { colors } = useAdminTheme();
-
-
 
   const { data: categories = [] } = useCategories();
   const { data: companies = [] } = useCompanies();
@@ -74,6 +85,15 @@ const Header: React.FC = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
   const toggleUserDropdown = () => setIsUserDropdownOpen(!isUserDropdownOpen);
+  const toggleAutodeskDropdown = () => {
+    setIsAutodeskDropdownOpen(!isAutodeskDropdownOpen);
+  };
+  const toggleMicrosoftDropdown = () => {
+    setIsMicrosoftDropdownOpen(!isMicrosoftDropdownOpen);
+  };
+  const toggleAdobeDropdown = () => {
+    setIsAdobeDropdownOpen(!isAdobeDropdownOpen);
+  };
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -101,7 +121,11 @@ const Header: React.FC = () => {
     setIsMenuOpen(false);
     setIsAuthDropdownOpen(false);
     setIsUserDropdownOpen(false);
+    setIsAutodeskDropdownOpen(false);
+    setIsMicrosoftDropdownOpen(false);
+    setIsAdobeDropdownOpen(false);
   };
+
   const logoutMutation = useLogout();
 
   const handleLogout = () => {
@@ -113,7 +137,6 @@ const Header: React.FC = () => {
         window.location.reload();
       },
       onError: () => {
-        // Fallback if mutation fails
         clearAuth();
         invalidateUser();
         navigate('/');
@@ -126,29 +149,6 @@ const Header: React.FC = () => {
     return (
       <div>
         <header className="bg-white shadow-sm border-b border-gray-200 w-full">
-          {/* Admin header content */}
-          <div className="bg-gray-50 border-b border-gray-200 hidden sm:block">
-            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-              <div className="flex justify-start py-1 sm:py-2">
-                <div className="flex flex-wrap gap-2 sm:space-x-4 text-xs sm:text-sm text-gray-600">
-                  {headerConfig.legal.map((link, index) => (
-                    <React.Fragment key={link.href}>
-                      <button
-                        onClick={() => handleNavigation(link.href)}
-                        className="hover:text-blue-600 transition-colors duration-200 whitespace-nowrap"
-                      >
-                        {link.label}
-                      </button>
-                      {index < headerConfig.legal.length - 1 && (
-                        <span className="text-gray-400 hidden sm:inline">|</span>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div className="w-full">
             <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
               <div className="flex items-center flex-shrink-0">
@@ -187,55 +187,13 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header 
-      className="shadow-sm border-b w-full transition-colors duration-200"
-      style={{ 
+    <header
+      className="shadow-sm border-b w-full transition-colors duration-200 relative"
+      style={{
         backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary 
+        borderColor: colors.border.primary
       }}
     >
-      {/* Top legal bar */}
-      <div 
-        className="border-b hidden sm:block transition-colors duration-200"
-        style={{ 
-          backgroundColor: colors.background.secondary,
-          borderColor: colors.border.primary 
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex justify-start py-1 sm:py-2">
-            <div 
-              className="flex flex-wrap gap-2 sm:space-x-4 text-xs sm:text-sm transition-colors duration-200"
-              style={{ color: colors.text.secondary }}
-            >
-              {headerConfig.legal.map((link, index) => (
-                <React.Fragment key={link.href}>
-                  <button
-                    onClick={() => handleNavigation(link.href)}
-                    className="hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      (e.target as HTMLElement).style.color = colors.interactive.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.target as HTMLElement).style.color = colors.text.secondary;
-                    }}
-                  >
-                    {link.label}
-                  </button>
-                  {index < headerConfig.legal.length - 1 && (
-                    <span 
-                      className="hidden sm:inline"
-                      style={{ color: colors.text.secondary }}
-                    >|</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main header content */}
       <div className="w-full">
         <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
@@ -262,7 +220,7 @@ const Header: React.FC = () => {
                   options={categoryOptions}
                   value={selectedCategory}
                   onChange={handleCategoryChange}
-                  className="text-sm"
+                  className="text-sm border-0"
                 />
               </div>
               <div className="min-w-[140px] max-w-[180px]">
@@ -270,13 +228,21 @@ const Header: React.FC = () => {
                   options={companyOptions}
                   value={selectedCompany}
                   onChange={handleCompanyChange}
-                  className="text-sm"
+                  className="text-sm border-0"
                 />
               </div>
             </div>
 
             {/* Desktop Navigation */}
-            <DesktopNavigation onNavigate={handleNavigation} />
+            <DesktopNavigation
+              onNavigate={handleNavigation}
+              autodeskButtonRef={autodeskButtonRef}
+              onAutodeskClick={toggleAutodeskDropdown}
+              microsoftButtonRef={microsoftButtonRef}
+              onMicrosoftClick={toggleMicrosoftDropdown}
+              adobeButtonRef={adobeButtonRef}
+              onAdobeClick={toggleAdobeDropdown}
+            />
 
             {/* Search Bar - Desktop */}
             <div className="hidden md:flex flex-1 max-w-xs lg:max-w-md xl:max-w-lg ml-4">
@@ -344,7 +310,7 @@ const Header: React.FC = () => {
 
                 {/* User Dropdown */}
                 {isUserDropdownOpen && (
-                  <div 
+                  <div
                     className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
                     style={{
                       backgroundColor: colors.background.primary,
@@ -384,6 +350,22 @@ const Header: React.FC = () => {
                     >
                       <User className="w-4 h-4" />
                       <span>Profile</span>
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/my-orders')}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                      }}
+                    >
+                      <Package className="w-4 h-4" />
+                      <span>My Orders</span>
                     </button>
                     <button
                       onClick={() => handleNavigation('/logout')}
@@ -431,6 +413,9 @@ const Header: React.FC = () => {
               </div>
             )}
 
+            {/* Currency Selector */}
+            <CurrencyDropdown className="hidden sm:block" compact />
+
             {/* Cart */}
             <button
               onClick={() => handleNavigation('/cart')}
@@ -446,7 +431,7 @@ const Header: React.FC = () => {
               <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
               <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">My Cart</span>
               {getItemCount() > 0 && (
-                <span 
+                <span
                   className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center"
                   style={{
                     backgroundColor: colors.interactive.primary,
@@ -461,7 +446,8 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={toggleMenu}
-              className="lg:hidden p-1.5 sm:p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 ml-2"
+              className="lg:hidden p-1.5 sm:p-2 rounded-md hover:opacity-80 transition-colors duration-200 ml-2"
+              style={{ color: colors.text.secondary }}
             >
               {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
@@ -489,13 +475,46 @@ const Header: React.FC = () => {
       />
 
       {/* Overlay to close dropdowns */}
-      {(isAuthDropdownOpen || isUserDropdownOpen) && (
+      {(isAuthDropdownOpen || isUserDropdownOpen || isAutodeskDropdownOpen || isMicrosoftDropdownOpen || isAdobeDropdownOpen) && (
         <div
           className="fixed inset-0 z-40"
           onClick={() => {
             setIsAuthDropdownOpen(false);
             setIsUserDropdownOpen(false);
+            setIsAutodeskDropdownOpen(false);
+            setIsMicrosoftDropdownOpen(false);
+            setIsAdobeDropdownOpen(false);
           }}
+        />
+      )}
+
+      {/* Autodesk Dropdown */}
+      {isAutodeskDropdownOpen && (
+        <AutodeskDropdown
+          isOpen={isAutodeskDropdownOpen}
+          onClose={() => setIsAutodeskDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={autodeskButtonRef}
+        />
+      )}
+
+      {/* Microsoft Dropdown */}
+      {isMicrosoftDropdownOpen && (
+        <MicrosoftDropdown
+          isOpen={isMicrosoftDropdownOpen}
+          onClose={() => setIsMicrosoftDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={microsoftButtonRef}
+        />
+      )}
+
+      {/* Adobe Dropdown */}
+      {isAdobeDropdownOpen && (
+        <AdobeDropdown
+          isOpen={isAdobeDropdownOpen}
+          onClose={() => setIsAdobeDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={adobeButtonRef}
         />
       )}
     </header>

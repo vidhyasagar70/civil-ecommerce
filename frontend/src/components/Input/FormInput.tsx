@@ -20,7 +20,7 @@ const FormInput: React.FC<FormInputProps> = ({ label, required, ...props }) => {
       <input
         {...props}
         required={required}
-        className="w-full border p-2 rounded transition-all duration-200 focus:ring-2 focus:outline-none"
+        className={`w-full border p-2 rounded transition-all duration-200 focus:ring-2 focus:outline-none ${props.className || ''}`}
         style={{
           backgroundColor: colors.background.primary,
           borderColor: colors.border.primary,

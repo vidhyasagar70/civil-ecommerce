@@ -84,12 +84,50 @@ const Products: React.FC = () => {
       updateProductMutation.mutate({
         id: editingProduct._id,
         updatedProduct: productData
+      }, {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Product updated successfully',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          setModalOpen(false);
+          setEditingProduct(null);
+        },
+        onError: (error: any) => {
+          console.error('Update product error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: error.response?.data?.message || 'Failed to update product',
+          });
+        }
       });
     } else {
-      createProductMutation.mutate(productData);
+      createProductMutation.mutate(productData, {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Product created successfully',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          setModalOpen(false);
+          setEditingProduct(null);
+        },
+        onError: (error: any) => {
+          console.error('Create product error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: error.response?.data?.message || 'Failed to create product',
+          });
+        }
+      });
     }
-    setModalOpen(false);
-    setEditingProduct(null);
   };
 
   const handleEditProduct = (product: Product) => {
@@ -140,6 +178,44 @@ const Products: React.FC = () => {
     setShowBestSellers(false);
   };
 
+  const handleToggleBestSeller = (product: Product) => {
+    if (!product._id) return;
+
+    const updatedProduct = {
+      ...product,
+      isBestSeller: !product.isBestSeller
+    };
+
+    updateProductMutation.mutate({
+      id: product._id,
+      updatedProduct: updatedProduct
+    }, {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: `Product ${updatedProduct.isBestSeller ? 'marked as' : 'removed from'} best seller`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      },
+      onError: (error: any) => {
+        console.error('Update best seller error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: error.response?.data?.message || 'Failed to update best seller status',
+        });
+      }
+    });
+  };
+
+  // Calculate statistics
+  const totalProducts = rawProducts.length;
+  const activeProducts = rawProducts.filter((product: Product) =>
+    (product.status || 'active') === 'active'
+  ).length;
+
   return (
     <div
       className="min-h-screen transition-colors duration-200"
@@ -149,6 +225,97 @@ const Products: React.FC = () => {
       }}
     >
       <div className="p-6 space-y-6">
+        {/* Dashboard Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Total Products Card */}
+          <div
+            className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="text-sm font-medium opacity-75"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Total Products
+                </p>
+                <p
+                  className="text-3xl font-bold mt-2"
+                  style={{ color: colors.text.primary }}
+                >
+                  {totalProducts}
+                </p>
+                <p
+                  className="text-xs mt-1 opacity-60"
+                  style={{ color: colors.text.secondary }}
+                >
+                  +100% active
+                </p>
+              </div>
+              <div
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${colors.status.warning}20` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.status.warning }}
+                >
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Products Card */}
+          <div
+            className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="text-sm font-medium opacity-75"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Active Products
+                </p>
+                <p
+                  className="text-3xl font-bold mt-2"
+                  style={{ color: colors.status.success }}
+                >
+                  {activeProducts}
+                </p>
+                <p
+                  className="text-xs mt-1 opacity-60"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Ready for sale
+                </p>
+              </div>
+              <div
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${colors.status.success}20` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.status.success }}
+                >
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="relative">
@@ -362,6 +529,12 @@ const Products: React.FC = () => {
                       Status
                     </th>
                     <th
+                      className="text-center py-3 px-4 font-medium"
+                      style={{ color: colors.text.primary }}
+                    >
+                      Best Seller
+                    </th>
+                    <th
                       className="text-left py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
                     >
@@ -417,15 +590,7 @@ const Products: React.FC = () => {
                             >
                               v{product.version}
                             </div>
-                            {product.shortDescription && (
-                              <div
-                                className="text-xs truncate mt-1"
-                                title={product.shortDescription}
-                                style={{ color: colors.text.secondary }}
-                              >
-                                {product.shortDescription}
-                              </div>
-                            )}
+
                             {product.rating && (
                               <div className="flex items-center space-x-1 mt-1">
                                 <Star className="w-3 h-3 text-yellow-400 fill-current" />
@@ -507,20 +672,20 @@ const Products: React.FC = () => {
                               >
                                 ₹{product.subscriptionDurations[0].price?.toLocaleString()}
                               </div>
-                              <div
+                              {/* <div
                                 className="text-xs"
                                 style={{ color: colors.text.secondary }}
                               >
                                 {product.subscriptionDurations[0].duration}
-                              </div>
-                              {product.subscriptionDurations.length > 1 && (
+                              </div> */}
+                              {/* {product.subscriptionDurations.length > 1 && (
                                 <div
                                   className="text-xs"
                                   style={{ color: colors.interactive.primary }}
                                 >
                                   +{product.subscriptionDurations.length - 1} more
                                 </div>
-                              )}
+                              )} */}
                             </div>
                           ) : (
                             <div>
@@ -530,20 +695,20 @@ const Products: React.FC = () => {
                               >
                                 ₹{product.price1?.toLocaleString()}
                               </div>
-                              <div
+                              {/* <div
                                 className="text-xs"
                                 style={{ color: colors.text.secondary }}
                               >
                                 1-year
-                              </div>
+                              </div> */}
                             </div>
                           )}
-                          {product.hasLifetime && product.lifetimePrice && (
+                          {/* {product.hasLifetime && product.lifetimePrice && (
                             <div className="text-xs text-green-400">Lifetime: ₹{product.lifetimePrice.toLocaleString()}</div>
                           )}
                           {product.hasMembership && product.membershipPrice && (
                             <div className="text-xs text-purple-400">Membership: ₹{product.membershipPrice.toLocaleString()}</div>
-                          )}
+                          )} */}
                         </div>
                       </td>
                       <td className="py-4 px-4">
@@ -572,6 +737,27 @@ const Products: React.FC = () => {
                               <span className="text-xs text-green-400">Active</span>
                             </div>
                           )}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex justify-center items-center">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={product.isBestSeller || false}
+                              onChange={() => handleToggleBestSeller(product)}
+                              className="w-4 h-4 rounded focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                              style={{
+                                accentColor: colors.interactive.primary
+                              }}
+                            />
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              {product.isBestSeller ? 'Yes' : 'No'}
+                            </span>
+                          </label>
                         </div>
                       </td>
                       <td className="py-4 px-4">

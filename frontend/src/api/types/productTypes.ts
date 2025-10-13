@@ -10,6 +10,18 @@ export interface FAQ {
   answer: string;
 }
 
+export interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface Requirement {
+  icon: string;
+  title: string;
+  description: string;
+}
+
 export interface Product {
   _id?: string;
   name: string;
@@ -18,6 +30,8 @@ export interface Product {
   description: string;
   overallFeatures?: string;
   requirements?: string;
+  keyFeatures?: Feature[];
+  systemRequirements?: Requirement[];
   category: string;
   company: string; // Backward compatibility
   brand?: string; // New field
@@ -32,6 +46,7 @@ export interface Product {
   priceLifetimeINR?: number;
   priceLifetimeUSD?: number;
   subscriptionDurations?: SubscriptionDuration[];
+  subscriptions?: SubscriptionDuration[]; // Separate subscription plans for admin use
   hasLifetime?: boolean;
   lifetimePrice?: number;
   lifetimePriceINR?: number;

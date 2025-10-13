@@ -12,6 +12,18 @@ interface FAQ {
   answer: string;
 }
 
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Requirement {
+  icon: string;
+  title: string;
+  description: string;
+}
+
 export interface IProduct extends Document {
   name: string;
   version: string;
@@ -19,6 +31,8 @@ export interface IProduct extends Document {
   description: string;
   overallFeatures?: string;
   requirements?: string;
+  keyFeatures?: Feature[];
+  systemRequirements?: Requirement[];
   category: string;
   company: string; // Will map to brand in frontend
   brand?: string; // New field for brand
@@ -33,6 +47,7 @@ export interface IProduct extends Document {
   priceLifetimeINR?: number;
   priceLifetimeUSD?: number;
   subscriptionDurations?: SubscriptionDuration[];
+  subscriptions?: SubscriptionDuration[]; // Separate field for admin subscription plans
   hasLifetime?: boolean;
   lifetimePrice?: number;
   lifetimePriceINR?: number;
@@ -65,6 +80,18 @@ const faqSchema = new Schema({
   answer: { type: String, required: true }
 }, { _id: false });
 
+const featureSchema = new Schema({
+  icon: { type: String, required: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true }
+}, { _id: false });
+
+const requirementSchema = new Schema({
+  icon: { type: String, required: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true }
+}, { _id: false });
+
 const productSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
@@ -73,6 +100,8 @@ const productSchema: Schema = new Schema(
     description: { type: String, required: true },
     overallFeatures: { type: String },
     requirements: { type: String },
+    keyFeatures: [featureSchema],
+    systemRequirements: [requirementSchema],
     category: { type: String, required: true },
     company: { type: String, required: true }, // Backward compatibility
     brand: { type: String }, // New field
@@ -87,6 +116,7 @@ const productSchema: Schema = new Schema(
     priceLifetimeINR: { type: Number },
     priceLifetimeUSD: { type: Number },
     subscriptionDurations: [subscriptionDurationSchema],
+    subscriptions: [subscriptionDurationSchema], // Separate subscription plans for admin use
     hasLifetime: { type: Boolean, default: false },
     lifetimePrice: { type: Number },
     lifetimePriceINR: { type: Number },

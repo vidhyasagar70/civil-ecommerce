@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
     >
       {/* Header */}
 
-
+   
       {/* Main Content */}
       <main className="flex-grow">
         <section className="px-4 sm:px-6 lg:px-8">
@@ -26,12 +26,13 @@ const HomePage: React.FC = () => {
 
         <section className="px-4 sm:px-6 lg:px-8">
           <HeroSection />
+          
         </section>
 
         <section className="px-4 sm:px-6 lg:px-8">
           <HomeProducts />
         </section>
-
+        
         <section className="px-4 sm:px-6 lg:px-8">
           <ExclusiveOffers />
         </section>

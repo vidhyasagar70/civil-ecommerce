@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CartProvider } from './contexts/CartContext';
 import { AdminThemeProvider } from './contexts/AdminThemeContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import Header from './components/Header/Header';
 import Products from './ui/admin/products/Products';
 import AdminDashboard from './ui/admin/AdminDashboard';
@@ -25,6 +26,9 @@ import ReturnPolicy from './ui/policy/ReturnPolicy';
 import TermsAndConditions from './ui/policy/TermsAndConditions';
 import ShippingPolicy from './ui/policy/ShippingPolicy';
 import ContactPage from './pages/ContactPage';
+import CheckoutPage from "./pages/CheckoutPage";
+import PaymentCallback from './ui/payment/PaymentCallback';
+import MyOrdersPage from './pages/MyOrdersPage';
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -178,13 +182,26 @@ function AppLayout() {
             </AuthGuard>
           }
         />
+
         <Route
-          path="/contact"
+          path="/checkout"
           element={
             <AuthGuard>
-              <ContactPage />
+              <CheckoutPage />
             </AuthGuard>
           }
+        />
+        <Route
+          path="/my-orders"
+          element={
+            <AuthGuard>
+              <MyOrdersPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/contact"
+          element={<ContactPage />}
         />
 
         {/* Catch all route */}
@@ -193,6 +210,7 @@ function AppLayout() {
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/payment/callback" element={<PaymentCallback />} />
       </Routes>
       {!shouldHideHeader && <Footer />}
     </>
@@ -203,11 +221,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AdminThemeProvider>
-        <CartProvider>
-          <Router>
-            <AppLayout />
-          </Router>
-        </CartProvider>
+        <CurrencyProvider>
+          <CartProvider>
+            <Router>
+              <AppLayout />
+            </Router>
+          </CartProvider>
+        </CurrencyProvider>
       </AdminThemeProvider>
     </QueryClientProvider>
   );
