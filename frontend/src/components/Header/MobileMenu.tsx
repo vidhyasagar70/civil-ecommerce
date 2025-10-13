@@ -2,6 +2,7 @@ import React from 'react';
 import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings, Package } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import FormSelect from '../Select/FormSelect';
+import CurrencyDropdown from '../CurrencyDropdown/CurrencyDropdown';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 interface MobileMenuProps {
@@ -127,6 +128,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               onChange={onCompanyChange}
               className="w-full text-sm"
             />
+          </div>
+
+          {/* Currency Selector - Mobile */}
+          <div className="space-y-1">
+            <label
+              className="block text-xs font-medium"
+              style={{ color: colors.text.secondary }}
+            >
+              Currency
+            </label>
+            <CurrencyDropdown className="w-full" />
           </div>
         </div>
 

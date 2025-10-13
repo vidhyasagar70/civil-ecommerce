@@ -6,6 +6,11 @@ export interface ICartItem {
   quantity: number;
   price: number;
   totalPrice: number;
+  subscriptionPlan?: {
+    planId: string;
+    planLabel: string;
+    planType: string;
+  };
 }
 
 export interface ICart extends Document {
@@ -45,6 +50,11 @@ const cartItemSchema = new Schema({
   totalPrice: {
     type: Number,
     required: true
+  },
+  subscriptionPlan: {
+    planId: { type: String },
+    planLabel: { type: String },
+    planType: { type: String }
   }
 });
 
