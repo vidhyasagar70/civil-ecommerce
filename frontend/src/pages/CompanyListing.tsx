@@ -5,7 +5,6 @@ import { useProducts } from '../api/productApi';
 import { useUser } from '../api/userQueries';
 import { useCartContext } from '../contexts/CartContext';
 import { useAdminTheme } from '../contexts/AdminThemeContext';
-import { useCurrency } from '../contexts/CurrencyContext';
 import Swal from 'sweetalert2';
 const CompanyListing: React.FC = () => {
   const { company } = useParams<{ company: string }>();
@@ -15,7 +14,6 @@ const CompanyListing: React.FC = () => {
   const { addItem } = useCartContext();
   const { data: user } = useUser();
   const { colors } = useAdminTheme();
-  const { formatPriceWithSymbol } = useCurrency();
 
   const handleAddToCart = async (product: any, licenseType: '1year' = '1year') => {
     if (!user) {
@@ -145,23 +143,14 @@ const CompanyListing: React.FC = () => {
 
               {/* Price Block */}
               <div className="text-blue-600 font-semibold text-xl mb-1">
-                {formatPriceWithSymbol(
-                  product.price1INR || product.price1 || 0,
-                  product.price1USD || (product.price1 ? product.price1 / 83 : 0)
-                )}/<span className="text-sm font-normal">year</span>
+                ₹{product.price1?.toLocaleString()}/<span className="text-sm font-normal">year</span>
               </div>
               <div className="text-gray-500 text-xs mb-4">
-                {(product.price3 || product.price3INR || product.price3USD) && (
-                  <>3-year: {formatPriceWithSymbol(
-                    product.price3INR || product.price3 || 0,
-                    product.price3USD || (product.price3 ? product.price3 / 83 : 0)
-                  )} • </>
+                {product.price3 && (
+                  <>3-year: ₹{product.price3?.toLocaleString()} • </>
                 )}
-                {(product.priceLifetime || product.priceLifetimeINR || product.priceLifetimeUSD) && (
-                  <>Lifetime: {formatPriceWithSymbol(
-                    product.priceLifetimeINR || product.priceLifetime || 0,
-                    product.priceLifetimeUSD || (product.priceLifetime ? product.priceLifetime / 83 : 0)
-                  )}</>
+                {product.priceLifetime && (
+                  <>Lifetime: ₹{product.priceLifetime?.toLocaleString()}</>
                 )}
               </div>
 

@@ -22,17 +22,6 @@ interface PaymentResponse {
   data?: any;
 }
 
-interface PhonePeApiResponse {
-  success: boolean;
-  code: string;
-  message: string;
-  data?: any;
-}
-
-interface AxiosPhonePeResponse {
-  data: PhonePeApiResponse;
-}
-
 class PhonePeService {
   private merchantId: string;
   private saltKey: string;
@@ -54,7 +43,7 @@ class PhonePeService {
     const stringToHash = payload + endpoint + this.saltKey;
     const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
     const xVerify = `${sha256}###${this.saltIndex}`;
-
+    
     console.log('🔐 Checksum Generation Debug:');
     console.log('  Base64 Payload Length:', payload.length);
     console.log('  Endpoint:', endpoint);
@@ -62,7 +51,7 @@ class PhonePeService {
     console.log('  String to Hash:', stringToHash.substring(0, 100) + '...');
     console.log('  SHA256:', sha256);
     console.log('  Final X-VERIFY:', xVerify);
-
+    
     return xVerify;
   }
 
@@ -97,7 +86,7 @@ class PhonePeService {
 
       // Base64 encode the payload
       const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
-
+      
       // Generate X-VERIFY header
       const endpoint = '/pg/v1/pay';
       const xVerify = this.generateXVerify(base64Payload, endpoint);
@@ -105,7 +94,7 @@ class PhonePeService {
       console.log('🔐 X-VERIFY:', xVerify);
 
       // Make API request
-      const response = await axios.post<PhonePeApiResponse>(
+      const response = await axios.post(
         `${this.apiUrl}${endpoint}`,
         {
           request: base64Payload
@@ -156,7 +145,7 @@ class PhonePeService {
       const endpoint = `/pg/v1/status/${this.merchantId}/${merchantTransactionId}`;
       const xVerify = this.generateXVerify('', endpoint);
 
-      const response = await axios.get<PhonePeApiResponse>(
+      const response = await axios.get(
         `${this.apiUrl}${endpoint}`,
         {
           headers: {
@@ -227,7 +216,7 @@ class PhonePeService {
       const endpoint = '/pg/v1/refund';
       const xVerify = this.generateXVerify(base64Payload, endpoint);
 
-      const response = await axios.post<PhonePeApiResponse>(
+      const response = await axios.post(
         `${this.apiUrl}${endpoint}`,
         {
           request: base64Payload

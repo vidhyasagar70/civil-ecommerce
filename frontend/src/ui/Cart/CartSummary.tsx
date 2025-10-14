@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import type { CartSummary as CartSummaryType } from '../../types/cartTypes';
 import FormButton from '../../components/Button/FormButton';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import { useCurrency } from '../../contexts/CurrencyContext';
 
 interface CartSummaryProps {
   summary: CartSummaryType;
@@ -18,7 +17,6 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   isLoading = false
 }) => {
   const { colors } = useAdminTheme();
-  const { formatPriceWithSymbol } = useCurrency();
 
   // Refs for direct DOM updates
   const itemCountRef = useRef<HTMLSpanElement>(null);
@@ -33,24 +31,24 @@ const CartSummary: React.FC<CartSummaryProps> = ({
       itemCountRef.current.textContent = summary.itemCount.toString();
     }
     if (subtotalRef.current) {
-      subtotalRef.current.textContent = formatPriceWithSymbol(summary.subtotal);
+      subtotalRef.current.textContent = `₹${summary.subtotal.toLocaleString()}`;
     }
     if (taxRef.current) {
-      taxRef.current.textContent = formatPriceWithSymbol(summary.tax);
+      taxRef.current.textContent = `₹${summary.tax.toLocaleString()}`;
     }
     if (totalRef.current) {
-      totalRef.current.textContent = formatPriceWithSymbol(summary.total);
+      totalRef.current.textContent = `₹${summary.total.toLocaleString()}`;
     }
     if (discountRef.current) {
       discountRef.current.style.display = summary.discount > 0 ? 'flex' : 'none';
       if (summary.discount > 0) {
         const discountSpan = discountRef.current.querySelector('span:last-child');
         if (discountSpan) {
-          discountSpan.textContent = `-${formatPriceWithSymbol(summary.discount)}`;
+          discountSpan.textContent = `-₹${summary.discount.toLocaleString()}`;
         }
       }
     }
-  }, [summary, formatPriceWithSymbol]);
+  }, [summary]);
 
   return (
     <div
@@ -78,7 +76,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
             className="font-medium"
             style={{ color: colors.text.primary }}
           >
-            {formatPriceWithSymbol(summary.subtotal)}
+            ₹{summary.subtotal.toLocaleString()}
           </span>
         </div>
 
@@ -89,7 +87,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
             className="font-medium"
             style={{ color: colors.text.primary }}
           >
-            {formatPriceWithSymbol(summary.tax)}
+            ₹{summary.tax.toLocaleString()}
           </span>
         </div>
 
@@ -103,7 +101,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
             className="font-medium"
             style={{ color: colors.status.success }}
           >
-            -{formatPriceWithSymbol(summary.discount)}
+            -₹{summary.discount.toLocaleString()}
           </span>
         </div>
 
@@ -123,7 +121,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
               className="text-lg font-bold"
               style={{ color: colors.text.primary }}
             >
-              {formatPriceWithSymbol(summary.total)}
+              ₹{summary.total.toLocaleString()}
             </span>
           </div>
         </div>

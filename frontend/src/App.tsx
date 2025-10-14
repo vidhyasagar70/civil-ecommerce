@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CartProvider } from './contexts/CartContext';
 import { AdminThemeProvider } from './contexts/AdminThemeContext';
-import { CurrencyProvider } from './contexts/CurrencyContext';
 import Header from './components/Header/Header';
 import Products from './ui/admin/products/Products';
 import AdminDashboard from './ui/admin/AdminDashboard';
@@ -221,13 +220,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AdminThemeProvider>
-        <CurrencyProvider>
-          <CartProvider>
-            <Router>
-              <AppLayout />
-            </Router>
-          </CartProvider>
-        </CurrencyProvider>
+        <CartProvider>
+          <Router>
+            <AppLayout />
+          </Router>
+        </CartProvider>
       </AdminThemeProvider>
     </QueryClientProvider>
   );

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { useCurrency } from "../contexts/CurrencyContext";
 import { toast } from "react-hot-toast";
 import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
@@ -26,7 +25,6 @@ const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
-  const { formatPriceWithSymbol } = useCurrency();
 
   const rawCartItems: any[] = location.state?.items || [];
   const rawSummary: any = location.state?.summary || {};
@@ -111,7 +109,7 @@ const CheckoutPage: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('authToken');
-
+      
       if (!token) {
         toast.error("Please login to continue");
         navigate('/login');
@@ -171,9 +169,9 @@ const CheckoutPage: React.FC = () => {
         // Store order details in localStorage for callback page
         localStorage.setItem('pendingOrderId', data.data.orderId);
         localStorage.setItem('merchantTransactionId', data.data.merchantTransactionId);
-
+        
         toast.success("Redirecting to payment gateway...");
-
+        
         // Redirect to PhonePe payment page
         window.location.href = data.data.paymentUrl;
       } else {
@@ -201,7 +199,7 @@ const CheckoutPage: React.FC = () => {
 
     try {
       // const token = localStorage.getItem('token') || localStorage.getItem('authToken');
-
+      
       // If you have a coupon validation API, call it here
       // For now, using simple validation
       const subtotal = normalizePrice(summary.subtotal);
@@ -237,7 +235,7 @@ const CheckoutPage: React.FC = () => {
       </h1>
 
       <div className="max-w-7xl mx-auto flex flex-col space-y-8">
-
+      
         {/* Coupon Section */}
         <div className="text-sm flex flex-col gap-2">
           <div className="flex items-center gap-2" style={{ color: colors.text.primary }}>
@@ -280,7 +278,6 @@ const CheckoutPage: React.FC = () => {
             }}
             colors={colors}
             normalizePrice={normalizePrice}
-            formatPriceWithSymbol={formatPriceWithSymbol}
             onPlaceOrder={handlePlaceOrder}
             isProcessing={isProcessing}
           />
