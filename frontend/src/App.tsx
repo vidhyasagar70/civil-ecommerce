@@ -11,8 +11,7 @@ import SigninPage from './pages/auth/SigninPage';
 import AuthCallbackPage from './pages/auth/AuthCallbackPage';
 import ProfilePage from './ui/profile/ProfilePage';
 import { Orders, Settings, Categories, Companies, Dashboard } from './ui/admin';
-import CategoryListing from './pages/CategoryListing';
-import CompanyListing from './pages/CompanyListing';
+import BrandCategoryListing from './pages/BrandCategoryListing';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import AuthGuard from './components/Auth/AuthGuard';
@@ -151,18 +150,10 @@ function AppLayout() {
           }
         />
         <Route
-          path="/software"
+          path="/category"
           element={
             <AuthGuard>
-              <CategoryListing />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/company/:company"
-          element={
-            <AuthGuard>
-              <CompanyListing />
+              <BrandCategoryListing />
             </AuthGuard>
           }
         />

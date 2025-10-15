@@ -1,15 +1,21 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import { useProducts } from '../api/productApi';
-import { useUser } from '../api/userQueries';
-import { useCartContext } from '../contexts/CartContext';
-import { useAdminTheme } from '../contexts/AdminThemeContext';
-import { useCurrency } from '../contexts/CurrencyContext';
+import { useProducts } from '../../api/productApi';
+import { useUser } from '../../api/userQueries';
+import { useCartContext } from '../../contexts/CartContext';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import Swal from 'sweetalert2';
-const CompanyListing: React.FC = () => {
-  const { company } = useParams<{ company: string }>();
-  const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } = useProducts({ company });
+
+interface FeaturedProductsProps {
+  limit?: number;
+  showCount?: boolean;
+}
+
+const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ limit = 6, showCount = false }) => {
+  // Fetch all products (no category filter - for homepage featured products)
+  const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } = useProducts({});
   const products = data.products || [];
   const navigate = useNavigate();
   const { addItem } = useCartContext();
@@ -47,26 +53,31 @@ const CompanyListing: React.FC = () => {
       });
     }
   };
+
+  // Limit the number of products displayed (for featured section)
+  const displayedProducts = products.slice(0, limit);
+
+  if (displayedProducts.length === 0) {
+    return null;
+  }
+
   return (
     <div
-      className="min-h-screen transition-colors duration-200"
+      className="transition-colors duration-200"
       style={{ backgroundColor: colors.background.secondary }}
     >
       <div className="max-w-7xl mx-auto py-6 px-4">
-        <h1
-          className="text-3xl font-bold mb-1 transition-colors duration-200"
-          style={{ color: colors.text.primary }}
-        >
-          {company}
-        </h1>
-        <p
-          className="text-lg mb-4 transition-colors duration-200"
-          style={{ color: colors.text.secondary }}
-        >
-          {products.length} product{products.length !== 1 && 's'} found
-        </p>
+        {showCount && (
+          <p
+            className="text-lg mb-4 transition-colors duration-200"
+            style={{ color: colors.text.secondary }}
+          >
+            {displayedProducts.length} featured product
+            {displayedProducts.length !== 1 && "s"}
+          </p>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {products.map((product: any) => (
+          {displayedProducts.map((product: any) => (
             <div
               key={product._id}
               className="border rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-5 flex flex-col hover:scale-[1.02]"
@@ -122,35 +133,61 @@ const CompanyListing: React.FC = () => {
                     color: colors.text.secondary
                   }}
                 >
-                  {company}
+                  {product.company}
                 </span>
               </div>
 
               {/* Name */}
-              <h2 className="text-lg font-semibold mb-1">{product.name} {product.version && <span className="text-gray-500 font-normal">({product.version})</span>}</h2>
+              <h2
+                className="text-lg font-semibold mb-1 transition-colors duration-200"
+                style={{ color: colors.text.primary }}
+              >
+                {product.name}
+                {product.version && (
+                  <span
+                    className="font-normal transition-colors duration-200"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    ({product.version})
+                  </span>
+                )}
+              </h2>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
+              <p
+                className="text-sm mb-2 line-clamp-2 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
+                {product.description}
+              </p>
 
-              {/* Stars & Rating */}
+              {/* Stars & Ratings */}
               <div className="flex items-center text-sm mb-2">
-                {/* Replace with actual rating stars if you have a RatingStar component */}
                 <span className="text-yellow-400 mr-1">
-                  {'★'.repeat(Math.round(product.rating || 4))}
+                  {'★'.repeat(Math.round(product.rating || 4))}{' '}
                 </span>
-                {product.ratingCount && (
-                  <span className="text-gray-500 ml-1">({product.ratingCount})</span>
-                )}
+                <span
+                  className="transition-colors duration-200"
+                  style={{ color: colors.text.accent }}
+                >
+                  {product.ratingCount ? `(${product.ratingCount})` : ""}
+                </span>
               </div>
 
               {/* Price Block */}
-              <div className="text-blue-600 font-semibold text-xl mb-1">
+              <div
+                className="font-semibold text-xl mb-1 transition-colors duration-200"
+                style={{ color: colors.interactive.primary }}
+              >
                 {formatPriceWithSymbol(
                   product.price1INR || product.price1 || 0,
                   product.price1USD || (product.price1 ? product.price1 / 83 : 0)
                 )}/<span className="text-sm font-normal">year</span>
               </div>
-              <div className="text-gray-500 text-xs mb-4">
+              <div
+                className="text-xs mb-4 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
                 {(product.price3 || product.price3INR || product.price3USD) && (
                   <>3-year: {formatPriceWithSymbol(
                     product.price3INR || product.price3 || 0,
@@ -169,13 +206,29 @@ const CompanyListing: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-2 mt-auto">
                 <button
                   onClick={() => navigate(`/product/${product._id}`)}
-                  className="w-full border border-gray-300 text-gray-700 font-medium rounded-lg py-2 hover:bg-gray-50 transition"
+                  className="w-full border font-medium rounded-lg py-2 transition-all duration-200 hover:scale-[1.02]"
+                  style={{
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = colors.background.secondary;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
                   BUY NOW
                 </button>
                 <button
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg py-2 font-semibold hover:from-blue-600 hover:to-purple-600 transition"
-                  onClick={() => handleAddToCart(product)}>
+                  className="w-full rounded-lg py-2 font-semibold transition-all duration-200 hover:scale-[1.02]"
+                  style={{
+                    background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
+                    color: colors.background.primary
+                  }}
+                  onClick={() => handleAddToCart(product)}
+                >
                   Add to Cart
                 </button>
               </div>
@@ -187,4 +240,4 @@ const CompanyListing: React.FC = () => {
   );
 };
 
-export default CompanyListing;
+export default FeaturedProducts;

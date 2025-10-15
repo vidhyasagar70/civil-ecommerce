@@ -5,11 +5,11 @@ import DesktopNavigation from './DesktopNavigation';
 import AuthDropdown from './AuthDropdown';
 import MobileMenu from './MobileMenu';
 import AdminDashboard from '../../ui/admin/AdminDashboard';
-import FormSelect from '../Select/FormSelect';
 import AutodeskDropdown from './AutodeskDropdown';
 import MicrosoftDropdown from './MicrosoftDropdown';
 import AdobeDropdown from './AdobeDropdown';
-import { useCategories, useCompanies } from '../../api/productApi';
+import AntivirusDropdown from './AntivirusDropdown';
+import AllCategoriesDropdown from './AllCategoriesDropdown';
 import { useNavigate } from 'react-router-dom';
 import { clearAuth, isAdmin } from '../../utils/auth';
 import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
@@ -26,14 +26,16 @@ const Header: React.FC = () => {
   const [isAutodeskDropdownOpen, setIsAutodeskDropdownOpen] = useState(false);
   const [isMicrosoftDropdownOpen, setIsMicrosoftDropdownOpen] = useState(false);
   const [isAdobeDropdownOpen, setIsAdobeDropdownOpen] = useState(false);
+  const [isAntivirusDropdownOpen, setIsAntivirusDropdownOpen] = useState(false);
+  const [isAllCategoriesDropdownOpen, setIsAllCategoriesDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState('');
 
   const autodeskButtonRef = useRef<HTMLButtonElement>(null);
   const microsoftButtonRef = useRef<HTMLButtonElement>(null);
   const adobeButtonRef = useRef<HTMLButtonElement>(null);
+  const antivirusButtonRef = useRef<HTMLButtonElement>(null);
+  const allCategoriesButtonRef = useRef<HTMLButtonElement>(null);
 
   const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();
@@ -41,46 +43,9 @@ const Header: React.FC = () => {
   const { getItemCount } = useCartContext();
   const { colors } = useAdminTheme();
 
-  const { data: categories = [] } = useCategories();
-  const { data: companies = [] } = useCompanies();
 
-  const categoryOptions = [
-    { value: '', label: 'All Categories' },
-    ...categories.map((category: string) => ({
-      value: category,
-      label: category
-    }))
-  ];
 
-  const companyOptions = [
-    { value: '', label: 'All Brands' },
-    ...companies.map((company: string) => ({
-      value: company,
-      label: company
-    }))
-  ];
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const categoryValue = e.target.value;
-    setSelectedCategory(categoryValue);
-
-    if (categoryValue) {
-      navigate(`/software?category=${encodeURIComponent(categoryValue)}`);
-    } else {
-      navigate('/software');
-    }
-  };
-
-  const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const companyValue = e.target.value;
-    setSelectedCompany(companyValue);
-
-    if (companyValue) {
-      navigate(`/company/${encodeURIComponent(companyValue)}`);
-    } else {
-      navigate('/companies');
-    }
-  };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
@@ -93,6 +58,12 @@ const Header: React.FC = () => {
   };
   const toggleAdobeDropdown = () => {
     setIsAdobeDropdownOpen(!isAdobeDropdownOpen);
+  };
+  const toggleAntivirusDropdown = () => {
+    setIsAntivirusDropdownOpen(!isAntivirusDropdownOpen);
+  };
+  const toggleAllCategoriesDropdown = () => {
+    setIsAllCategoriesDropdownOpen(!isAllCategoriesDropdownOpen);
   };
 
   const handleSearch = () => {
@@ -124,6 +95,8 @@ const Header: React.FC = () => {
     setIsAutodeskDropdownOpen(false);
     setIsMicrosoftDropdownOpen(false);
     setIsAdobeDropdownOpen(false);
+    setIsAntivirusDropdownOpen(false);
+    setIsAllCategoriesDropdownOpen(false);
   };
 
   const logoutMutation = useLogout();
@@ -213,35 +186,19 @@ const Header: React.FC = () => {
 
           {/* Center section - Desktop */}
           <div className="flex-1 flex items-center justify-center px-4 lg:px-8">
-            {/* Category and Company Dropdowns - Desktop Only */}
-            <div className="hidden lg:flex items-center space-x-3 mr-6">
-              <div className="min-w-[140px] max-w-[180px]">
-                <FormSelect
-                  options={categoryOptions}
-                  value={selectedCategory}
-                  onChange={handleCategoryChange}
-                  className="text-sm border-0"
-                />
-              </div>
-              <div className="min-w-[140px] max-w-[180px]">
-                <FormSelect
-                  options={companyOptions}
-                  value={selectedCompany}
-                  onChange={handleCompanyChange}
-                  className="text-sm border-0"
-                />
-              </div>
-            </div>
-
             {/* Desktop Navigation */}
             <DesktopNavigation
               onNavigate={handleNavigation}
+              allCategoriesButtonRef={allCategoriesButtonRef}
+              onAllCategoriesClick={toggleAllCategoriesDropdown}
               autodeskButtonRef={autodeskButtonRef}
               onAutodeskClick={toggleAutodeskDropdown}
               microsoftButtonRef={microsoftButtonRef}
               onMicrosoftClick={toggleMicrosoftDropdown}
               adobeButtonRef={adobeButtonRef}
               onAdobeClick={toggleAdobeDropdown}
+              antivirusButtonRef={antivirusButtonRef}
+              onAntivirusClick={toggleAntivirusDropdown}
             />
 
             {/* Search Bar - Desktop */}
@@ -464,18 +421,12 @@ const Header: React.FC = () => {
         onSearchChange={setSearchQuery}
         onSearchKeyPress={handleKeyPress}
         onNavigate={handleNavigation}
-        categoryOptions={categoryOptions}
-        companyOptions={companyOptions}
-        selectedCategory={selectedCategory}
-        selectedCompany={selectedCompany}
-        onCategoryChange={handleCategoryChange}
-        onCompanyChange={handleCompanyChange}
         user={user}
         onLogout={handleLogout}
       />
 
       {/* Overlay to close dropdowns */}
-      {(isAuthDropdownOpen || isUserDropdownOpen || isAutodeskDropdownOpen || isMicrosoftDropdownOpen || isAdobeDropdownOpen) && (
+      {(isAuthDropdownOpen || isUserDropdownOpen || isAutodeskDropdownOpen || isMicrosoftDropdownOpen || isAdobeDropdownOpen || isAntivirusDropdownOpen || isAllCategoriesDropdownOpen) && (
         <div
           className="fixed inset-0 z-40"
           onClick={() => {
@@ -484,7 +435,18 @@ const Header: React.FC = () => {
             setIsAutodeskDropdownOpen(false);
             setIsMicrosoftDropdownOpen(false);
             setIsAdobeDropdownOpen(false);
+            setIsAntivirusDropdownOpen(false);
+            setIsAllCategoriesDropdownOpen(false);
           }}
+        />
+      )}
+
+      {/* All Categories Dropdown */}
+      {isAllCategoriesDropdownOpen && (
+        <AllCategoriesDropdown
+          isOpen={isAllCategoriesDropdownOpen}
+          onClose={() => setIsAllCategoriesDropdownOpen(false)}
+          buttonRef={allCategoriesButtonRef}
         />
       )}
 
@@ -515,6 +477,16 @@ const Header: React.FC = () => {
           onClose={() => setIsAdobeDropdownOpen(false)}
           onNavigate={handleNavigation}
           buttonRef={adobeButtonRef}
+        />
+      )}
+
+      {/* Antivirus Dropdown */}
+      {isAntivirusDropdownOpen && (
+        <AntivirusDropdown
+          isOpen={isAntivirusDropdownOpen}
+          onClose={() => setIsAntivirusDropdownOpen(false)}
+          onNavigate={handleNavigation}
+          buttonRef={antivirusButtonRef}
         />
       )}
     </header>
