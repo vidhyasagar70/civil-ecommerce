@@ -34,6 +34,22 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
   return (
     <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 mr-4">
+      {/* Home Nav First */}
+      <button
+        key="home-nav"
+        onClick={() => onNavigate("/")}
+        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+        style={{ color: colors.text.secondary }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+        }}
+      >
+        Home
+      </button>
+
       {/* All Categories Menu */}
       <button
         ref={allCategoriesButtonRef}
@@ -56,7 +72,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         <ChevronDown className="w-4 h-4" style={{ display: 'inline-block' }} />
       </button>
 
-      {headerConfig.navigation.map((item) => {
+      {headerConfig.navigation.filter(item => item.label !== "Home").map((item) => {
         // Special handling for AutoDesk menu item
         if (item.label === 'AutoDesk') {
           return (
