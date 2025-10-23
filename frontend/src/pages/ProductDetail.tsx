@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProductDetail } from '../api/productApi';
 import { useCartContext } from '../contexts/CartContext';
 import { useUser } from '../api/userQueries';
 import { useAdminTheme } from '../contexts/AdminThemeContext';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { getProductReviews, getProductReviewStats, createReview, updateReview, deleteReview, type Review, type ReviewStats } from '../api/reviewApi';
 import Swal from 'sweetalert2';
 import * as LucideIcons from 'lucide-react';
 
@@ -89,6 +90,15 @@ const ProductDetail: React.FC = () => {
   const [bannersLoading, setBannersLoading] = useState(true);
   const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
 
+  // Review-related state
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
     const IconComponent = (LucideIcons as any)[iconName];
@@ -97,6 +107,134 @@ const ProductDetail: React.FC = () => {
     }
     // Fallback to a default icon if the specified icon doesn't exist
     return <LucideIcons.Check className={className} size={24} />;
+  };
+
+  // Load reviews when component mounts or product changes
+  useEffect(() => {
+    console.log('useEffect triggered with id:', id);
+    if (id) {
+      loadReviews();
+      loadReviewStats();
+    }
+  }, [id]);
+
+  // Load reviews for the product
+  const loadReviews = async () => {
+    if (!id) return;
+    try {
+      setReviewsLoading(true);
+      const response = await getProductReviews(id);
+      setReviews(response.reviews);
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  // Load review statistics
+  const loadReviewStats = async () => {
+    console.log('loadReviewStats called with id:', id);
+    if (!id) {
+      console.log('No id provided, returning');
+      return;
+    }
+    try {
+      console.log('Calling getProductReviewStats with id:', id);
+      const stats = await getProductReviewStats(id);
+      console.log('Review stats loaded:', stats);
+      setReviewStats(stats);
+    } catch (error) {
+      console.error('Error loading review stats:', error);
+    }
+  };
+
+  // Handle review submission
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      Swal.fire({
+        title: 'Login Required',
+        text: 'Please login to post a review',
+        icon: 'info',
+        confirmButtonText: 'Login',
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/signin');
+        }
+      });
+      return;
+    }
+
+    if (!reviewForm.comment.trim()) {
+      Swal.fire('Error', 'Please enter a comment', 'error');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      if (editingReview) {
+        await updateReview(editingReview._id, reviewForm);
+        Swal.fire('Success', 'Review updated successfully', 'success');
+      } else {
+        await createReview(id!, reviewForm);
+        Swal.fire('Success', 'Review posted successfully', 'success');
+      }
+
+      setReviewForm({ rating: 5, comment: '' });
+      setShowReviewForm(false);
+      setEditingReview(null);
+      loadReviews();
+      loadReviewStats();
+    } catch (error: any) {
+      Swal.fire('Error', error.response?.data?.message || 'Failed to submit review', 'error');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  // Handle review editing
+  const handleEditReview = (review: Review) => {
+    console.log('handleEditReview called');
+    console.log('user:', user);
+    console.log('user.id:', user?.id);
+    console.log('review.user._id:', review.user._id);
+    console.log('user.role:', user?.role);
+    console.log('Comparison result:', user?.id !== review.user._id, user?.role !== 'admin');
+
+    // Temporarily allow all edits for debugging
+    // if (!user || (user.id !== review.user._id && user.role !== 'admin')) {
+    //   Swal.fire('Error', 'You can only edit your own reviews', 'error');
+    //   return;
+    // }
+    setEditingReview(review);
+    setReviewForm({ rating: review.rating, comment: review.comment });
+    setShowReviewForm(true);
+  };
+
+  // Handle review deletion
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!user) return;
+
+    const result = await Swal.fire({
+      title: 'Delete Review',
+      text: 'Are you sure you want to delete this review?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteReview(reviewId);
+      Swal.fire('Success', 'Review deleted successfully', 'success');
+      loadReviews();
+      loadReviewStats();
+    } catch (error: any) {
+      Swal.fire('Error', error.response?.data?.message || 'Failed to delete review', 'error');
+    }
   };
 
   // Get all available pricing options
@@ -949,7 +1087,7 @@ const ProductDetail: React.FC = () => {
               {[
                 { key: 'features', label: 'Features' },
                 { key: 'requirements', label: 'System' },
-                { key: 'reviews', label: 'Reviews (3)' },
+                { key: 'reviews', label: `Reviews (${reviewStats?.totalReviews || 0})` },
                 { key: 'faq', label: 'FAQ' }
               ].map((tab) => (
                 <button
@@ -1216,99 +1354,247 @@ const ProductDetail: React.FC = () => {
                   What users are saying about {product.name}
                 </p>
 
-                {/* Review Form */}
-                <div
-                  className="rounded-2xl p-6 mb-8 transition-colors duration-200"
-                  style={{ backgroundColor: colors.background.secondary }}
-                >
-                  <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>Write a Review</h4>
-                  <p className="mb-4" style={{ color: colors.text.secondary }}>Share your experience with this product...</p>
-                  <button
-                    className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
-                    style={{
-                      backgroundColor: colors.interactive.primary,
-                      color: colors.background.primary
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = colors.interactive.primary;
-                    }}
+                {/* Review Statistics */}
+                {reviewStats && (
+                  <div
+                    className="rounded-2xl p-6 mb-8 transition-colors duration-200"
+                    style={{ backgroundColor: colors.background.secondary }}
                   >
-                    Post Review
-                  </button>
-                </div>
-
-                {/* Sample Review */}
-                <div
-                  className="rounded-2xl p-6 transition-colors duration-200"
-                  style={{ backgroundColor: colors.background.secondary }}
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
-                      style={{
-                        backgroundColor: colors.interactive.primary,
-                        color: colors.background.primary
-                      }}
-                    >
-                      JS
-                    </div>
-                    <div>
-                      <h5 className="font-bold" style={{ color: colors.text.primary }}>John Smith</h5>
-                      <div className="flex items-center gap-2">
-                        <div className="flex text-yellow-400">
-                          {'★'.repeat(5)}
+                    <div className="flex items-center gap-6 mb-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold" style={{ color: colors.interactive.primary }}>
+                          {reviewStats.averageRating.toFixed(1)}
                         </div>
-                        <span className="text-sm" style={{ color: colors.text.secondary }}>2025-01-15</span>
+                        <div className="flex text-yellow-400 mb-1">
+                          {'★'.repeat(Math.floor(reviewStats.averageRating))}
+                          {'☆'.repeat(5 - Math.floor(reviewStats.averageRating))}
+                        </div>
+                        <div className="text-sm" style={{ color: colors.text.secondary }}>
+                          {reviewStats.totalReviews} reviews
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        {[5, 4, 3, 2, 1].map((star) => (
+                          <div key={star} className="flex items-center gap-2 mb-1">
+                            <span className="text-sm w-8">{star}★</span>
+                            <div className="flex-1 bg-gray-700 rounded-full h-2">
+                              <div
+                                className="h-2 rounded-full"
+                                style={{
+                                  width: `${reviewStats.totalReviews > 0 ? (reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution] / reviewStats.totalReviews) * 100 : 0}%`,
+                                  backgroundColor: colors.interactive.primary
+                                }}
+                              ></div>
+                            </div>
+                            <span className="text-sm w-8">{reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution]}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <p className="mb-4" style={{ color: colors.text.secondary }}>
-                    Excellent software with powerful features. Great for professional CAD work. The new collaboration features are game-changing!
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <button
-                      className="flex items-center gap-2 transition-colors duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = colors.text.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = colors.text.secondary;
-                      }}
-                    >
-                      <span>👍</span>
-                      Helpful (12)
-                    </button>
-                    <button
-                      className="transition-colors duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = colors.text.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = colors.text.secondary;
-                      }}
-                    >
-                      Reply
-                    </button>
-                  </div>
+                )}
 
-                  {/* Reply */}
-                  <div
-                    className="ml-8 mt-4 rounded-xl p-4 transition-colors duration-200"
-                    style={{ backgroundColor: colors.background.primary }}
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="font-bold" style={{ color: colors.interactive.primary }}>AutoCAD Support</span>
-                      <span className="text-sm" style={{ color: colors.text.secondary }}>2025-01-16</span>
-                    </div>
-                    <p style={{ color: colors.text.secondary }}>
-                      Thank you for the positive feedback! We're glad you're enjoying the new features.
-                    </p>
+                {/* Write Review Button */}
+                {!showReviewForm && (
+                  <div className="mb-8">
+                    {user ? (
+                      <button
+                        onClick={() => setShowReviewForm(true)}
+                        className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.interactive.primary,
+                          color: colors.background.primary
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                        }}
+                      >
+                        Write a Review
+                      </button>
+                    ) : (
+                      <div
+                        className="rounded-2xl p-6 transition-colors duration-200"
+                        style={{ backgroundColor: colors.background.secondary }}
+                      >
+                        <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>Write a Review</h4>
+                        <p className="mb-4" style={{ color: colors.text.secondary }}>Please login to share your experience with this product.</p>
+                        <button
+                          onClick={() => navigate('/signin')}
+                          className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.interactive.primary,
+                            color: colors.background.primary
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                          }}
+                        >
+                          Login to Review
+                        </button>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                {/* Review Form */}
+                {showReviewForm && user && (
+                  <div
+                    className="rounded-2xl p-6 mb-8 transition-colors duration-200"
+                    style={{ backgroundColor: colors.background.secondary }}
+                  >
+                    <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>
+                      {editingReview ? 'Edit Review' : 'Write a Review'}
+                    </h4>
+                    <form onSubmit={handleReviewSubmit}>
+                      <div className="mb-4">
+                        <label className="block mb-2 font-medium" style={{ color: colors.text.primary }}>Rating</label>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setReviewForm(prev => ({ ...prev, rating: star }))}
+                              className="text-2xl transition-colors"
+                              style={{
+                                color: star <= reviewForm.rating ? '#fbbf24' : colors.text.secondary
+                              }}
+                            >
+                              ★
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block mb-2 font-medium" style={{ color: colors.text.primary }}>Comment</label>
+                        <textarea
+                          value={reviewForm.comment}
+                          onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
+                          className="w-full p-3 rounded-lg border transition-colors"
+                          style={{
+                            backgroundColor: colors.background.primary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary
+                          }}
+                          rows={4}
+                          placeholder="Share your experience with this product..."
+                          required
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          type="submit"
+                          disabled={submittingReview}
+                          className="font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                          style={{
+                            backgroundColor: colors.interactive.primary,
+                            color: colors.background.primary
+                          }}
+                        >
+                          {submittingReview ? 'Submitting...' : (editingReview ? 'Update Review' : 'Post Review')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowReviewForm(false);
+                            setEditingReview(null);
+                            setReviewForm({ rating: 5, comment: '' });
+                          }}
+                          className="font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.primary,
+                            color: colors.text.primary,
+                            border: `1px solid ${colors.border.primary}`
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {/* Reviews List */}
+                <div className="space-y-6">
+                  {reviewsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: colors.interactive.primary }}></div>
+                      <p className="mt-2" style={{ color: colors.text.secondary }}>Loading reviews...</p>
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <div
+                      className="rounded-2xl p-8 text-center transition-colors duration-200"
+                      style={{ backgroundColor: colors.background.secondary }}
+                    >
+                      <p style={{ color: colors.text.secondary }}>No reviews yet. Be the first to review this product!</p>
+                    </div>
+                  ) : (
+                    reviews.map((review) => (
+                      <div
+                        key={review._id}
+                        className="rounded-2xl p-6 transition-colors duration-200"
+                        style={{ backgroundColor: colors.background.secondary }}
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-4">
+                            <div
+                              className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
+                              style={{
+                                backgroundColor: colors.interactive.primary,
+                                color: colors.background.primary
+                              }}
+                            >
+                              {review.user.fullName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h5 className="font-bold" style={{ color: colors.text.primary }}>{review.user.fullName}</h5>
+                              <div className="flex items-center gap-2">
+                                <div className="flex text-yellow-400">
+                                  {'★'.repeat(review.rating)}
+                                  {'☆'.repeat(5 - review.rating)}
+                                </div>
+                                <span className="text-sm" style={{ color: colors.text.secondary }}>
+                                  {new Date(review.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          {(user && (user.id === review.user._id || user.role === 'admin')) && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditReview(review)}
+                                className="text-sm px-3 py-1 rounded transition-colors"
+                                style={{
+                                  color: colors.interactive.primary,
+                                  backgroundColor: colors.background.primary
+                                }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteReview(review._id)}
+                                className="text-sm px-3 py-1 rounded transition-colors"
+                                style={{
+                                  color: '#ef4444',
+                                  backgroundColor: colors.background.primary
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <p className="mb-4" style={{ color: colors.text.secondary }}>
+                          {review.comment}
+                        </p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             )}
