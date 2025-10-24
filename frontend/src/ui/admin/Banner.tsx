@@ -82,64 +82,205 @@ const BannerManagement: React.FC = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 min-h-screen bg-admin-bg-primary">
-      {showForm && <BannerForm banner={editingBanner} onClose={() => { setShowForm(false); setEditingBanner(null); }} onSubmit={handleFormSubmit} />}
+    <div className="p-6 sm:p-8 min-h-screen bg-admin-bg-primary">
+  {showForm && (
+    <BannerForm
+      banner={editingBanner}
+      onClose={() => {
+        setShowForm(false);
+        setEditingBanner(null);
+      }}
+      onSubmit={handleFormSubmit}
+    />
+  )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2 sm:p-6 gap-3">
-        <div className="flex flex-col gap-1 w-full sm:w-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: colors.text.primary }}>Banner Management</h1>
-          <div className="w-20 h-1 bg-yellow-400 rounded-full"></div>
-          <p className="mt-1 text-sm sm:text-base" style={{ color: colors.text.secondary }}>Create & manage promotional banners</p>
+  {/* Header */}
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2 sm:p-6 gap-3">
+    <div className="flex flex-col gap-1 w-full sm:w-auto">
+      <h1
+        className="text-2xl sm:text-3xl font-bold"
+        style={{ color: colors.text.primary }}
+      >
+        Banner Management
+      </h1>
+      <div className="w-20 h-1 bg-yellow-400 rounded-full"></div>
+      <p
+        className="mt-1 text-sm sm:text-base"
+        style={{ color: colors.text.secondary }}
+      >
+        Create & manage promotional banners
+      </p>
+    </div>
+    <button
+      onClick={() => {
+        setEditingBanner(null);
+        setShowForm(true);
+      }}
+      className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center border-2 border-yellow-400"
+      style={buttonStyle("primary")}
+    >
+      <Plus size={20} /> Add Banner
+    </button>
+  </div>
+
+  {/* Banner List */}
+  <div className="mt-4 sm:mt-6 flex flex-col gap-4">
+    {loading ? (
+      <div className="text-center py-16" style={{ color: colors.text.secondary }}>
+        Loading...
+      </div>
+    ) : banners.length === 0 ? (
+      <div className="flex flex-col items-center justify-center py-12 px-4">
+        <div
+          className="flex flex-col items-center justify-center p-4 md:p-6 lg:p-8 rounded-lg border-2 w-full max-w-md sm:max-w-lg md:max-w-4xl lg:max-w-6xl xl:max-w-7xl min-h-28 md:min-h-32 lg:min-h-36"
+          style={{
+            borderColor: colors.interactive.primary,
+            color: colors.text.secondary,
+            backgroundColor: colors.background.secondary,
+          }}
+        >
+          <div
+            className="mb-3 md:mb-4 p-3 md:p-4 rounded-full"
+            style={{ backgroundColor: colors.background.tertiary }}
+          >
+            <Plus
+              size={24}
+              className="md:w-8 md:h-8"
+              style={{ color: colors.text.secondary }}
+            />
+          </div>
+          <h2
+            className="text-lg sm:text-xl font-semibold mb-2"
+            style={{ color: colors.text.primary }}
+          >
+            No banners found
+          </h2>
+          <p className="text-sm sm:text-base mb-4 max-w-md">
+            Create your first banner to promote offers and updates to your
+            customers.
+          </p>
+          <button
+            onClick={() => {
+              setEditingBanner(null);
+              setShowForm(true);
+            }}
+            style={buttonStyle("primary")}
+            className="rounded-lg px-4 py-2 font-medium hover:shadow-md transition border-2 border-yellow-400"
+          >
+            Create Your First Banner
+          </button>
         </div>
-        <button onClick={() => { setEditingBanner(null); setShowForm(true); }} className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center" style={buttonStyle('primary')}>
-          <Plus size={20} /> Add Banner
+      </div>
+    ) : (
+      banners.map((b, idx) => {
+       return (
+ <div
+  key={b._id}
+  className="relative rounded-xl p-4 sm:p-6 flex flex-col justify-between gap-4 hover:shadow-2xl transition-transform transform hover:-translate-y-1"
+  style={{
+    ...cardStyle("secondary"),
+    border: `1px solid ${colors.interactive.primary}`, // use primary color from theme
+    transitionDelay: `${idx * 50}ms`,
+  }}
+>
+  {/* === Top-right badges === */}
+  <div className="absolute top-3 right-3 flex flex-col sm:flex-row sm:flex-wrap gap-2 justify-end items-end">
+    <span
+      className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
+      style={{
+        backgroundColor: colors.interactive.primary + '20',
+        color: colors.interactive.primary,
+        borderColor: colors.interactive.primary + '40',
+      }}
+    >
+      {b.bannerType}
+    </span>
+
+   <span
+  className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
+  style={{
+    backgroundColor: '#f4d96eff', // yellow
+    color: '#000',               // black text for visibility
+    borderColor: '#fcd34d'       // slightly darker yellow for border
+  }}
+>
+  {b.status}
+</span>
+
+  </div>
+
+  {/* === Main Content === */}
+  <div className="flex flex-col gap-2 min-w-0">
+    <h3 className="text-lg sm:text-xl font-bold">{b.title}</h3>
+    <p className="text-sm sm:text-base">{truncate(b.description, 100)}</p>
+
+     {/* === Date + Priority + Position + Buttons Row === */}
+     <div className="flex flex-wrap justify-between items-center mt-3 gap-3">
+       <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
+         <div className="flex items-center gap-1 sm:gap-2">
+           <Calendar size={14} />
+           <span>
+             {new Date(b.startDate).toLocaleDateString()} —{" "}
+             {new Date(b.endDate).toLocaleDateString()}
+           </span>
+         </div>
+         <span className="hidden sm:inline">|</span>
+         <div className="flex items-center gap-1 sm:gap-2">
+           <ExternalLink size={14} />
+           <span className="font-semibold">Priority: {b.priority}/10</span>
+         </div>
+         <span className="hidden sm:inline">|</span>
+         <div className="flex items-center gap-1 sm:gap-2">
+           <span className="font-medium" style={{ color: colors.text.secondary }}>
+             Position: {b.position}
+           </span>
+         </div>
+       </div>
+
+      {/* Right: Action Buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            setEditingBanner(b);
+            setShowForm(true);
+          }}
+          className="p-2 rounded-full border hover:opacity-80 transition"
+          style={{
+            backgroundColor: "transparent",
+            color: colors.interactive.primary,
+            borderColor: colors.interactive.primary,
+            borderWidth: "1px",
+          }}
+          title="Edit banner"
+        >
+          <Edit3 size={16} />
+        </button>
+
+        <button
+          onClick={() => b._id && handleDelete(b._id)}
+          className="p-2 rounded-full border hover:opacity-80 transition"
+          style={{
+            backgroundColor: "transparent",
+            color: colors.status.error,
+            borderColor: colors.status.error,
+            borderWidth: "1px",
+          }}
+          title="Delete banner"
+        >
+          <Trash size={16} />
         </button>
       </div>
-
-      {/* Banner List */}
-      <div className="mt-4 sm:mt-6 flex flex-col gap-4">
-        {loading ? <div className="text-center py-16" style={{ color: colors.text.secondary }}>Loading...</div> :
-          banners.length === 0 ? (
-            <div className="text-center py-16 border-2 border-dashed rounded-lg"
-                 style={{ borderColor: colors.border.primary, color: colors.text.secondary }}>
-              <p className="mb-3">No banners found</p>
-          <button
-  onClick={() => { setEditingBanner(null); setShowForm(true); }}
-  style={buttonStyle('primary')}
-  className="rounded-lg px-4 py-2 font-medium hover:shadow-md transition"
->
-  Create Your First Banner 
-</button>
-
-            </div>
-          ) :
-            banners.map((b, idx) => {
-              const statusColor = getStatusColor(b.status);
-              return (
-                <div key={b._id} className="rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4 hover:shadow-2xl transition-transform transform hover:-translate-y-1" style={{ ...cardStyle('secondary'), border: `2px solid ${colors.border.primary}`, transitionDelay: `${idx * 50}ms` }}>
-                  <div className="flex flex-col gap-2 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-bold">{b.title}</h3>
-                    <p className="text-sm sm:text-base">{truncate(b.description, 100)}</p>
-                    <div className="flex flex-wrap gap-2 mt-2 overflow-x-auto">
-                      <span className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${getBannerTypeStyle(b.bannerType)}`}>{b.bannerType}</span>
-                      <span className="px-2 py-1 rounded-full text-xs sm:text-sm font-semibold" style={{ backgroundColor: statusColor.bg, color: statusColor.text }}>{b.status}</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm mt-2">
-                      <div className="flex items-center gap-1 sm:gap-2"><Calendar size={14} /> {new Date(b.startDate).toLocaleDateString()} — {new Date(b.endDate).toLocaleDateString()}</div>
-                      <div className="flex items-center gap-1 sm:gap-2"><ExternalLink size={14} /> Priority: {b.priority}/10</div>
-                    </div>
-                  </div>
-                  <div className="flex flex-row sm:flex-col gap-2 mt-2 sm:mt-0 justify-start sm:justify-center items-start sm:items-center flex-shrink-0">
-                    <button onClick={() => { setEditingBanner(b); setShowForm(true); }} className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg border border-yellow-400 bg-yellow-50 hover:bg-yellow-100 hover:shadow-md transition transform hover:scale-105" title="Edit"><Edit3 size={16} className="text-yellow-600" /></button>
-                    <button onClick={() => b._id && handleDelete(b._id)} className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg border border-red-400 bg-red-50 hover:bg-red-100 hover:shadow-md transition transform hover:scale-105" title="Delete"><Trash size={16} className="text-red-600" /></button>
-                  </div>
-                </div>
-              );
-            })
-        }
-      </div>
     </div>
+  </div>
+</div>
+
+);
+
+      })
+    )}
+  </div>
+</div>
+
   );
 };
 
