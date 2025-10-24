@@ -86,10 +86,6 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
-  const [banners, setBanners] = useState<any[]>([]);
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
-  const [bannersLoading, setBannersLoading] = useState(true);
-  const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
 
   // Review-related state
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -100,6 +96,7 @@ const ProductDetail: React.FC = () => {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
 
+  
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
     const IconComponent = (LucideIcons as any)[iconName];

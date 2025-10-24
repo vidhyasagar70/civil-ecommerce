@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { useAdminTheme } from "../../../contexts/AdminThemeContext";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 interface Banner {
   _id: string;
@@ -27,24 +26,22 @@ interface BannerCarouselProps {
 const API_BASE_URL = "http://localhost:5000/api";
 
 const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
-  const { colors } = useAdminTheme();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [current, setCurrent] = useState(0);
-  const [isClosed, setIsClosed] = useState(false);
 
   useEffect(() => {
     const fetchBanners = async () => {
       try {
         console.log(`Fetching banners for page: ${page}`);
         const res = await fetch(`${API_BASE_URL}/banners/active/${page}`);
-        
+
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-        
+
         const result = await res.json();
         console.log(`Banner API response for ${page}:`, result);
-        
+
         // Handle different response formats
         let banners = [];
         if (result.success && result.data) {
@@ -54,10 +51,10 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
         } else if (result.data && Array.isArray(result.data)) {
           banners = result.data;
         }
-        
+
         setBanners(banners);
         console.log(`Found ${banners.length} banners for ${page}`);
-        
+
         if (banners.length === 0) {
           console.log(`No banners found for ${page}. Check if you have banners with position "Product Page" or "Both" in the database.`);
         }
@@ -87,28 +84,8 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
     else window.location.href = link;
   };
 
-  if (isClosed) return null;
-  
-  // Show debug info in development
+  // Hide banner if no banners are found
   if (banners.length === 0) {
-    console.log(`No banners found for ${page} page. Make sure you have banners with position "Product Page" or "Both" in the database.`);
-    
-    // Show a placeholder in development mode
-    if (process.env.NODE_ENV === 'development') {
-      return (
-        <div className="relative max-w-7xl mx-auto mb-6 px-4">
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-8 text-center border-2 border-dashed border-gray-300 dark:border-gray-600">
-            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
-              No Banners Found
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-500">
-              Create banners with position "Product Page" or "Both" in the admin panel
-            </p>
-          </div>
-        </div>
-      );
-    }
-    
     return null;
   }
   const banner = banners[current];
@@ -213,13 +190,13 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
             {banner.title}
           </h2>
           {banner.description && <p className="text-base sm:text-lg md:text-xl opacity-95 max-w-xl drop-shadow-md text-white">{banner.description}</p>}
-        {/* Buttons */}
-<div className="flex flex-wrap justify-center gap-4 mt-4">
-  {/* Primary CTA Button */}
-  {banner.ctaButtonText && (
-    <button
-      onClick={() => handleClick(banner.ctaButtonLink)}
-      className={`
+          {/* Buttons */}
+          <div className="flex flex-wrap justify-center gap-4 mt-4">
+            {/* Primary CTA Button */}
+            {banner.ctaButtonText && (
+              <button
+                onClick={() => handleClick(banner.ctaButtonLink)}
+                className={`
         font-bold 
         text-yellow-400 
         hover:text-yellow-500 
@@ -236,19 +213,19 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
         sm:rounded-2xl                     // tablet
         md:rounded-3xl                     // desktop
       `}
-      style={{
-        background: "linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.7) 100%)",
-      }}
-    >
-      {banner.ctaButtonText}
-    </button>
-  )}
+                style={{
+                  background: "linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.7) 100%)",
+                }}
+              >
+                {banner.ctaButtonText}
+              </button>
+            )}
 
-  {/* Secondary Button */}
-  {banner.secondaryButtonText && (
-    <button
-      onClick={() => handleClick(banner.secondaryButtonLink)}
-      className={`
+            {/* Secondary Button */}
+            {banner.secondaryButtonText && (
+              <button
+                onClick={() => handleClick(banner.secondaryButtonLink)}
+                className={`
         font-semibold 
         border 
         border-white/50 
@@ -266,30 +243,30 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
         sm:rounded-xl                      // tablet
         md:rounded-2xl                     // desktop
       `}
-    >
-      {banner.secondaryButtonText}
-    </button>
-  )}
-</div>
+              >
+                {banner.secondaryButtonText}
+              </button>
+            )}
+          </div>
 
-</div>
+        </div>
 
         {/* Indicators */}
         {totalSlides > 1 && (
           <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-30">
-{banners.map((_, index) => (
-  <button
-    key={index}
-    onClick={() => setCurrent(index)}
-    aria-label={`Go to slide ${index + 1}`}
-    className={`
+            {banners.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrent(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                className={`
       w-4 h-4 sm:w-3 sm:h-3 rounded-full transition-all duration-300
-      ${index === current 
-        ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
-        : "bg-white/40 hover:bg-white/70"} // inactive: semi-transparent white
+      ${index === current
+                    ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
+                    : "bg-white/40 hover:bg-white/70"} // inactive: semi-transparent white
     `}
-  />
-))}
+              />
+            ))}
 
           </div>
         )}
