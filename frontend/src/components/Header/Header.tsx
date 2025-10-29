@@ -161,7 +161,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className="shadow-sm border-b w-full transition-colors duration-200 relative"
+      className="shadow-sm border-b w-full transition-colors duration-200 fixed top-0 left-0 right-0 z-50"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary

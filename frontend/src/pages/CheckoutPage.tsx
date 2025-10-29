@@ -225,7 +225,7 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen py-10 px-4 sm:px-6 md:px-12"
+      className="min-h-screen py-10 px-4 sm:px-6 md:px-12 pt-20"
       style={{ backgroundColor: colors.background.primary }}
     >
       {/* Heading */}

@@ -41,9 +41,9 @@ const MyOrdersPage: React.FC = () => {
   // Memoized data processing
   const orders = useMemo(() => {
     if (!data?.data) return [];
-    
+
     const ordersList = data.data as IOrder[];
-    
+
     // Sort orders based on selected option
     return [...ordersList].sort((a, b) => {
       switch (sortBy) {
@@ -93,13 +93,13 @@ const MyOrdersPage: React.FC = () => {
   // Empty state
   if (orders.length === 0) {
     return (
-      <div 
+      <div
         className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200"
         style={{ backgroundColor: colors.background.primary }}
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
-            <h1 
+            <h1
               className="text-2xl sm:text-3xl font-bold"
               style={{ color: colors.text.primary }}
             >
@@ -114,21 +114,21 @@ const MyOrdersPage: React.FC = () => {
 
   // Main content
   return (
-    <div 
-      className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200"
+    <div
+      className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200 pt-20"
       style={{ backgroundColor: colors.background.primary }}
     >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-          <h1 
+          <h1
             className="text-2xl sm:text-3xl font-bold"
             style={{ color: colors.text.primary }}
           >
             My Orders
           </h1>
-          
-          <SortDropdown 
+
+          <SortDropdown
             value={sortBy}
             onChange={handleSortChange}
           />

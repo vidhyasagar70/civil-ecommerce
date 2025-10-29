@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import passport from "passport";
 import session from "express-session";
+import "./config/passport"; // Import passport configuration
 import cartRoutes from "./routes/cartRoutes";
 import authRoutes from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
@@ -15,14 +16,24 @@ import bannerRoutes from "./routes/bannerRoutes";
 import couponRoutes from './routes/couponRoutes';
 import paymentRoutes from './routes/paymentRoutes'; // NEW
 import { validatePhonePeConfig } from './config/phonepe'; // NEW
-import "./config/passport";
 import reviewRoutes from "./routes/reviewRoutes";
+import googleReviewsRoutes from "./routes/googleReviewsRoutes";
 
 const app = express();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+      if (process.env.FRONTEND_URL) {
+        allowedOrigins.push(process.env.FRONTEND_URL);
+      }
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -53,6 +64,7 @@ app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payments', paymentRoutes); // NEW
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/google-reviews", googleReviewsRoutes);
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
 const PORT = process.env.PORT || 5000;
@@ -60,16 +72,16 @@ const PORT = process.env.PORT || 5000;
 // Test email service on startup
 const testEmailService = async () => {
   console.log('\n🔧 Testing email configuration...');
-  
+
   const requiredEmailVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'FROM_EMAIL'];
   const missingVars = requiredEmailVars.filter(varName => !process.env[varName]);
-  
+
   if (missingVars.length > 0) {
     console.warn('⚠️  Missing email environment variables:', missingVars.join(', '));
     console.warn('⚠️  Password reset functionality will not work properly');
     return;
   }
-  
+
   try {
     const isConnected = await emailService.testConnection();
     if (isConnected) {
@@ -85,7 +97,7 @@ const testEmailService = async () => {
 // Test PhonePe configuration on startup
 const testPhonePeConfig = () => {
   console.log('\n🔧 Testing PhonePe configuration...');
-  
+
   const isValid = validatePhonePeConfig();
   if (isValid) {
     console.log('✅ PhonePe payment gateway is configured');
@@ -99,22 +111,22 @@ mongoose
   .connect(process.env.MONGODB_URI as string)
   .then(async () => {
     console.log("✅ MongoDB connected");
-    
+
     // Test email service after database connection
     await testEmailService();
-    
+
     // Test PhonePe configuration
     testPhonePeConfig();
-    
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
-      
+
       console.log('\n📧 Password reset endpoints available:');
       console.log(`   POST /api/auth/forgot-password`);
       console.log(`   GET  /api/auth/validate-reset-token/:token`);
       console.log(`   POST /api/auth/reset-password/:token`);
-      
+
       console.log('\n💳 PhonePe payment endpoints available:');
       console.log(`   POST /api/payments/create-order`);
       console.log(`   POST /api/payments/callback`);
@@ -122,7 +134,7 @@ mongoose
       console.log(`   GET  /api/payments/orders`);
       console.log(`   GET  /api/payments/orders/:orderId`);
       console.log(`   POST /api/payments/refund/:orderId`);
-      
+
       console.log('\n' + '='.repeat(50));
     });
   })

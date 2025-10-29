@@ -116,7 +116,7 @@ export default function ProfilePage() {
 
   return (
     <div
-      className="min-h-screen py-8 px-4 transition-colors duration-200"
+      className="min-h-screen py-8 px-4 pt-20 transition-colors duration-200"
       style={{ backgroundColor: colors.background.secondary }}
     >
       <div className="max-w-4xl mx-auto">

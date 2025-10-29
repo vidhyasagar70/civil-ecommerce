@@ -96,7 +96,7 @@ const ProductDetail: React.FC = () => {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  
+
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
     const IconComponent = (LucideIcons as any)[iconName];
@@ -541,7 +541,7 @@ const ProductDetail: React.FC = () => {
   const cartQuantity = product ? getItemQuantity(product._id!, cartLicenseType) : 0;
   return (
     <div
-      className="min-h-screen transition-colors duration-200"
+      className="min-h-screen transition-colors duration-200 pt-20"
       style={{ backgroundColor: colors.background.primary, color: colors.text.primary }}
     >
       {/* Breadcrumb */}
