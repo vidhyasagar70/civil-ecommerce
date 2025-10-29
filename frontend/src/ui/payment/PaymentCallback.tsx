@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const PaymentCallback = () => {
@@ -43,7 +43,7 @@ const PaymentCallback = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center pt-20">
       <div className="text-center">
         {status === 'loading' && <p>Processing...</p>}
         {status === 'success' && <p className="text-green-600">{message}</p>}

@@ -134,7 +134,7 @@ const BrandCategoryListing: React.FC = () => {
 
     return (
         <div
-            className="min-h-screen transition-colors duration-200"
+            className="min-h-screen transition-colors duration-200 pt-20"
             style={{ backgroundColor: colors.background.secondary }}
         >
             <div className="max-w-7xl mx-auto py-8 px-4">

@@ -42,12 +42,12 @@ const ContactPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-[calc(100vh-120px)] p-6 md:p-10 relative"
+      className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative"
       style={{
         background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`
       }}
     >
-      
+
 
       <div
         className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"

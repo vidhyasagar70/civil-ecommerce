@@ -6,7 +6,7 @@ const TermsAndConditions: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen py-12 px-4 transition-colors duration-200"
+      className="min-h-screen py-12 px-4 pt-20 transition-colors duration-200"
       style={{ backgroundColor: colors.background.secondary }}
     >
       <div
