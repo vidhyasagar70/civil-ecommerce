@@ -95,15 +95,8 @@ function AppLayout() {
         {/* Auth callback (public) */}
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/"
-          element={
-            <AuthGuard>
-              <HomePage />
-            </AuthGuard>
-          }
-        />
+        {/* Home page is public */}
+        <Route path="/" element={<HomePage />} />
         <Route
           path="/profile"
           element={
@@ -176,91 +169,20 @@ function AppLayout() {
             </AuthGuard>
           }
         />
-        <Route
-          path="/products"
-          element={
-            <AuthGuard>
-              <AllProductsPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/category"
-          element={
-            <AuthGuard>
-              <BrandCategoryListing />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/product/:id"
-          element={
-            <AuthGuard>
-              <ProductDetail />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <AuthGuard>
-              <CartPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/autodesk"
-          element={
-            <AuthGuard>
-              <BrandSubcategoriesPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/microsoft"
-          element={
-            <AuthGuard>
-              <BrandSubcategoriesPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/adobe"
-          element={
-            <AuthGuard>
-              <BrandSubcategoriesPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/antivirus"
-          element={
-            <AuthGuard>
-              <BrandSubcategoriesPage />
-            </AuthGuard>
-          }
-        />
-
-        <Route
-          path="/checkout"
-          element={
-            <AuthGuard>
-              <CheckoutPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/my-orders"
-          element={
-            <AuthGuard>
-              <MyOrdersPage />
-            </AuthGuard>
-          }
-        />
+        <Route path="/products" element={<AllProductsPage />} />
+        <Route path="/category" element={<BrandCategoryListing />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<AuthGuard><CartPage /></AuthGuard>} />
+        <Route path="/autodesk" element={<BrandSubcategoriesPage />} />
+        <Route path="/microsoft" element={<BrandSubcategoriesPage />} />
+        <Route path="/adobe" element={<BrandSubcategoriesPage />} />
+        <Route path="/antivirus" element={<BrandSubcategoriesPage />} />
+        <Route path="/checkout" element={<AuthGuard><CheckoutPage /></AuthGuard>} />
+        <Route path="/my-orders" element={<AuthGuard><MyOrdersPage /></AuthGuard>} />
         <Route path="/contact" element={<ContactPage />} />
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/signin" replace />} />
+        {/* Catch all route: redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
